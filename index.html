@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Blast Radius · Impact analysis for Rust</title>
-<meta name="description" content="Blast Radius draws your Rust workspace as nested circles. Pick any symbol and everything that depends on it lights up, ring by ring, one hop at a time.">
+<meta name="description" content="Blast Radius draws your Rust workspace as nested circles. Pick any symbol and everything that depends on it lights up in rings around it.">
 <meta name="theme-color" content="#e7eaef" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0d0f14" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
@@ -54,6 +54,7 @@
   --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
   --buy-bg: #b4561a; --buy-fg: #ffffff;
+  --bar-h: 64px;
   color-scheme: light;
 }
 /* Dark follows the system unless the header switch picked light; the switch picking dark wins
@@ -90,7 +91,7 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--bar-h) + 12px); }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 [hidden] { display: none !important; }
 img { max-width: 100%; }
@@ -108,18 +109,6 @@ a { color: var(--link); }
 :focus-visible { outline: 2px solid var(--heat); outline-offset: 3px; border-radius: 4px; }
 h1, h2, h3 { font-family: var(--display); color: var(--bright); text-wrap: balance; margin: 0; }
 p { margin: 0; }
-kbd {
-  font-family: var(--mono);
-  font-size: 0.78em;
-  font-weight: 500;
-  color: var(--bright);
-  background: var(--raised);
-  border: 1px solid var(--border);
-  border-bottom-width: 2px;
-  border-radius: 5px;
-  padding: 0.05em 0.42em;
-  white-space: nowrap;
-}
 code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 .eyebrow {
   font-family: var(--mono);
@@ -170,11 +159,9 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   font-variant-numeric: tabular-nums;
 }
 .viewport-foot b { color: var(--bright); font-weight: 500; }
-.legend { display: flex; gap: 10px; margin-left: auto; }
-.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
 
 /* ---------- highlights ---------- */
-.highlights { padding-block: 38px; border-top: 1px solid var(--border); scroll-margin-top: 12px; }
+.highlights { padding-block: 38px; border-top: 1px solid var(--border); }
 .hl-title { font-size: 26px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.1; margin-bottom: 18px; }
 .hl-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .hl {
@@ -214,9 +201,8 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   gap: 40px;
   padding-block: 38px;
   border-top: 1px solid var(--border);
-  scroll-margin-top: 12px;
 }
-.cat-label { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); align-self: start; }
+.cat-label { position: sticky; top: calc(var(--bar-h) + 20px); align-self: start; }
 .cat-label h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.1; }
 .cat-label p { color: var(--dim); font-size: 15px; margin-top: 10px; }
 .cat-label .count { font-family: var(--mono); font-size: 12px; color: var(--heat); margin-top: 12px; display: block; }
@@ -229,7 +215,6 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 .feat { display: grid; gap: 5px; align-content: start; min-width: 0; }
 .feat h3 { font-family: var(--body); font-size: 16.5px; font-weight: 600; color: var(--bright); line-height: 1.3; }
 .feat p { font-size: 15px; color: var(--dim); }
-.feat .keys { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
 .tag {
   font-family: var(--mono); font-size: 11px; font-weight: 400; letter-spacing: 0.04em;
   color: var(--dim);
@@ -250,10 +235,18 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 .spec dd { margin: 4px 0 0; color: var(--bright); }
 
 /* ---------- top bar, buy buttons, closing call, footer ---------- */
+/* Pinned to the top of the window; its height is --bar-h, which anchors and sticky labels clear. */
+.site-bar {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
 .topbar {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding-block: 18px;
-  border-bottom: 1px solid var(--border);
+  height: var(--bar-h);
 }
 .brand {
   display: inline-flex; align-items: center; gap: 10px;
@@ -326,13 +319,13 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   .hl { padding-inline: 0; border-left: 0; }
   .feats { grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .spec dl { grid-template-columns: minmax(0, 1fr); }
-  .legend { margin-left: 0; }
   .topnav a:not(.buy) { display: none; }
 }
 </style>
 </head>
 <body>
 
+<div class="site-bar">
 <div class="wrap topbar">
   <a class="brand" href="./">
     <svg viewBox="0 0 32 32" aria-hidden="true">
@@ -354,13 +347,14 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
     <a class="buy" href="#TODO-GUMROAD">Buy on Gumroad</a>
   </nav>
 </div>
+</div>
 
 <header class="hero">
   <div class="wrap hero-grid">
     <div>
       <div class="eyebrow">Impact analysis for Rust</div>
       <h1>If I change this, <span class="hot">what breaks?</span></h1>
-      <p class="lede">Blast Radius draws your Rust workspace as nested circles, from packages down to the fields of a struct. Pick any symbol and everything that depends on it lights up, ring by ring, one hop at a time.</p>
+      <p class="lede">Blast Radius draws your Rust workspace as nested circles, from packages down to the fields of a struct. Pick any symbol and everything that depends on it lights up in rings around it.</p>
       <div class="hero-actions">
         <a class="buy" href="#TODO-GUMROAD">Buy on Gumroad</a>
         <a class="ghost" href="#features">See every feature</a>
@@ -373,16 +367,10 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       </div>
     </div>
     <figure class="viewport" style="margin:0">
-      <canvas id="blast" role="img" aria-label="A sample Rust workspace drawn as nested circles of packages, modules and types. The method Socket::connect is selected; the eleven symbols that depend on it are named and pulled toward it, with one ring per hop, while everything else is faded."></canvas>
+      <canvas id="blast" role="img" aria-label="A sample Rust workspace drawn as nested circles of packages, modules and types. The method Socket::connect is selected; the eleven symbols that depend on it are named and pulled toward it, with rings spreading out around it, while everything else is faded."></canvas>
       <figcaption class="viewport-foot">
         <span><b>net::socket::Socket::connect</b></span>
         <span id="reach">dependents: 11 symbols in 4 files</span>
-        <span class="legend" aria-hidden="true">
-          <span>hop</span>
-          <span><i style="background:var(--r1)"></i>1</span>
-          <span><i style="background:var(--r2)"></i>2</span>
-          <span><i style="background:var(--r3)"></i>3</span>
-        </span>
       </figcaption>
     </figure>
   </div>
@@ -392,7 +380,6 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   <div class="catalog-head">
     <div>
       <h2>Everything in Blast Radius</h2>
-      <p id="tally">Every feature, grouped by what you're trying to do.</p>
     </div>
   </div>
   <nav class="jump" id="jump" aria-label="Feature areas"></nav>
@@ -401,12 +388,12 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
     <h2 class="hl-title" id="hl-h">Highlights</h2>
     <div class="hl-grid">
       <div class="hl">
-        <span class="fig">1 to 12 hops</span>
+        <span class="fig">dependents or dependencies</span>
         <h3>See the blast before you make the change</h3>
-        <p>Select a symbol and everything that depends on it lights up on shockwave rings by hop distance. Flip to dependencies with one key.</p>
+        <p>Select a symbol and everything that depends on it lights up on shockwave rings around it, or flip it to see what the symbol relies on.</p>
       </div>
       <div class="hl">
-        <span class="fig">Alt+G</span>
+        <span class="fig">staged, unstaged, untracked</span>
         <h3>Blast your working tree</h3>
         <p>Seed a blast from your uncommitted changes and see what your branch reaches before you push it.</p>
       </div>
@@ -445,18 +432,17 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 
   <section class="cat" id="node-graph">
     <div class="cat-label">
-      <h2>Node Graph</h2>
+      <h2>Symbol Node Graph</h2>
       <p>Your workspace drawn the way Rust nests it. Pick a symbol and see everything a change to it would reach.</p>
       <span class="count"></span>
     </div>
     <ul class="feats">
-      <li class="feat"><h3>Shockwave rings</h3><p>Select a symbol and its dependents light up on concentric rings, hot at the epicenter and cooling with each hop. Lines trace the path the blast travels.</p></li>
-      <li class="feat"><h3>Reach in either direction</h3><p>Widen or narrow the blast from direct dependents out to twelve hops, or flip it to see what a symbol relies on instead of what relies on it.</p><div class="keys"><kbd>[</kbd><kbd>]</kbd><kbd>D</kbd></div></li>
-      <li class="feat"><h3>Connections pane <span class="tag">right sidebar</span></h3><p>Everything the blast reaches, in hop order with ring-colored badges, counted in symbols and in files. Click a row to fly there while the selection stays pinned at the top.</p><div class="keys"><kbd>C</kbd></div></li>
-      <li class="feat"><h3>Nested circles</h3><p>Packages hold modules, modules hold types, and types hold their own fields, variants and methods, with impl blocks folded into the type they implement. Every symbol keeps its dot at every zoom, and none ever covers another.</p></li>
-      <li class="feat"><h3>Spring and gravity arrangements</h3><p>Spring solves a tidy layout that keeps every symbol in its module. Gravity lets references pull, so code organized one way and used another shows the difference.</p><div class="keys"><kbd>Shift+A</kbd></div></li>
-      <li class="feat"><h3>Three blast shapes</h3><p>Off leaves the map still. Pull tows dependents toward the selection without leaving their modules. Radial seats modules on rings by hop.</p><div class="keys"><kbd>Shift+P</kbd></div></li>
-      <li class="feat"><h3>Fast at scale</h3><p>Gravity uses the fast multipole method: 16 ms per step for 16,000 bodies, where a direct sum takes 310 ms. Both arrangements solve off the main thread.</p></li>
+      <li class="feat"><h3>Shockwave Rings</h3><p>Select a symbol and its dependents light up on concentric rings, hot at the epicenter and cooling as the blast spreads outward. Lines trace the path the blast travels.</p></li>
+      <li class="feat"><h3>View Dependencies</h3><p>Flip between what breaks if this symbol changes and what it relies on.</p></li>
+      <li class="feat"><h3>Connections Pane <span class="tag">right sidebar</span></h3><p>Everything the blast reaches, nearest first, counted in symbols and in files. Click a row to fly there while the selection stays pinned at the top.</p></li>
+      <li class="feat"><h3>Nested Circles</h3><p>Packages hold modules, modules hold types, and types hold their own fields, variants and methods, with impl blocks folded into the type they implement. Every symbol keeps its dot at every zoom, and none ever covers another.</p></li>
+      <li class="feat"><h3>Spring and Gravity Arrangements</h3><p>Spring solves a tidy layout that keeps every symbol in its module. Gravity lets references pull, so code organized one way and used another shows the difference.</p></li>
+      <li class="feat"><h3>Three Blast Shapes</h3><p>Off leaves the map still. Pull tows dependents toward the selection without leaving their modules. Radial seats modules on rings around the selection.</p></li>
     </ul>
   </section>
 
@@ -467,22 +453,21 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       <span class="count"></span>
     </div>
     <ul class="feats">
-      <li class="feat"><h3>Heat on the graph</h3><p>The thermal view colors each function from cold to hot by inclusive time, and thickens call edges by the samples that crossed them.</p><div class="keys"><kbd>Shift+V</kbd></div></li>
-      <li class="feat"><h3>Profile in one click</h3><p>Profile runs add debug info to release builds without touching <code>Cargo.toml</code>, then sample the call stack 8,000 times a second through ETW. Windows asks for administrator access once per run.</p></li>
-      <li class="feat"><h3>Profile pane <span class="tag">right sidebar</span></h3><p>The hottest functions ranked by share of the run. Pick one for its self and inclusive time and its top callers and callees. Every capture is saved here, and saved profiles survive re-indexing.</p><div class="keys"><kbd>P</kbd></div></li>
+      <li class="feat"><h3>Heat on the Graph</h3><p>The thermal view colors each function from cold to hot by inclusive time, and thickens call edges by the samples that crossed them.</p></li>
+      <li class="feat"><h3>Profile in One Click</h3><p>Profile runs add debug info to release builds without touching <code>Cargo.toml</code>, then sample the call stack 8,000 times a second through ETW. Windows asks for administrator access once per run.</p></li>
+      <li class="feat"><h3>Profile Pane <span class="tag">right sidebar</span></h3><p>The hottest functions ranked by share of the run. Pick one for its self and inclusive time and its top callers and callees. Every capture is saved here, and saved profiles survive re-indexing.</p></li>
     </ul>
   </section>
 
   <section class="cat" id="flow">
     <div class="cat-label">
-      <h2>Flow Graph</h2>
+      <h2>Function Flow Graph</h2>
       <p>Read what a function calls as an outline of cards.</p>
       <span class="count"></span>
     </div>
     <ul class="feats">
-      <li class="feat"><h3>Call outline</h3><p>A function's callees as indented cards, opening on the selected function or your program's <code>main</code>. Every type in a signature is a chip: hover for its full path, click to select it.</p><div class="keys"><kbd>V</kbd></div></li>
-      <li class="feat"><h3>Jump along an arrow</h3><p>Hover an arrow and a control rides along it, naming the card at the far end. Click to fly there.</p></li>
-      <li class="feat"><h3>Open the call site</h3><p>Right-click an arrow to open each of its call sites in your editor.</p></li>
+      <li class="feat"><h3>Call Outline</h3><p>A function's callees as indented cards, opening on the selected function or your program's <code>main</code>. Every type in a signature is a chip: hover for its full path, click to select it.</p></li>
+      <li class="feat"><h3>Jump Along an Arrow</h3><p>Hover an arrow and a control rides along it, naming the card at the far end. Click to fly there.</p></li>
     </ul>
   </section>
 
@@ -493,27 +478,26 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       <span class="count"></span>
     </div>
     <ul class="feats">
-      <li class="feat"><h3>Blast your working tree</h3><p>Seed a blast from your uncommitted changes. Staged, unstaged and untracked edits all count, matched to the symbols whose bodies they touch, and the diff tab lists every one.</p><div class="keys"><kbd>Alt+G</kbd></div></li>
-      <li class="feat"><h3>Dead code by reachability</h3><p>Walks out from <code>main</code>, tests and trait impls and flags everything never reached, including chains of dead code that only call each other. A separate list shows every symbol nothing references.</p></li>
-      <li class="feat"><h3>Reports without the window</h3><p><code>--diff</code> prints your working tree's blast radius, <code>--stats</code> counts kinds and the most-referenced symbols, and <code>--svg</code> renders the layout. Run them from a script or CI.</p></li>
+      <li class="feat"><h3>Blast Your Working Tree</h3><p>Seed a blast from your uncommitted changes. Staged, unstaged and untracked edits all count, matched to the symbols whose bodies they touch, and the diff tab lists every one.</p></li>
+      <li class="feat"><h3>Dead Code by Reachability</h3><p>Walks out from <code>main</code>, tests and trait impls and flags everything never reached, including chains of dead code that only call each other. A separate list shows every symbol nothing references.</p></li>
+      <li class="feat"><h3>Reports Without the Window</h3><p><code>--diff</code> prints your working tree's blast radius, <code>--stats</code> counts kinds and the most-referenced symbols, and <code>--svg</code> renders the layout. Run them from a script or CI.</p></li>
     </ul>
   </section>
 
   <section class="cat" id="refactoring">
     <div class="cat-label">
-      <h2>Refactoring</h2>
+      <h2>Restructure</h2>
       <p>Structural edits from the graph. Each one shows you its plan before a file is written.</p>
       <span class="count"></span>
     </div>
     <ul class="feats">
-      <li class="feat"><h3>Rename across the workspace</h3><p>Rename a symbol everywhere it's used, including trait methods with their impls, field shorthand, intra-doc links, and a module's file or folder. Every keystroke is checked for clashes.</p></li>
-      <li class="feat"><h3>Move a module</h3><p>Choose Move, click the destination circle and read the plan. Paths keep their style, <code>use</code> groups split where needed, and visibility widens only as far as it must.</p></li>
-      <li class="feat"><h3>Plan first, then write</h3><p>Every check runs before the first write. Writes are atomic, rustfmt only touches files that were already formatted, and the graph re-indexes when the edit lands.</p></li>
-      <li class="feat"><h3>Promote to a crate</h3><p>Turn a module into its own crate, with a manifest that inherits from the workspace and entries in <code>members</code> and <code>[workspace.dependencies]</code>.</p></li>
-      <li class="feat"><h3>Demote to a module</h3><p>Fold a library crate into another as a module. Its bins, tests, examples and benches come along, its dependencies and features merge in, and you decide what happens to its other folders.</p></li>
-      <li class="feat"><h3>Knows when to refuse</h3><p>Moves that would create a dependency cycle or break the orphan rule are refused with the reason, and so is any file that changed since the last index.</p></li>
-      <li class="feat"><h3>Dissolve a module</h3><p>Move a module's contents into its parent and remove the empty module.</p></li>
-      <li class="feat"><h3>Rename folders</h3><p>Rename a folder and the manifest paths, <code>include!</code> paths and <code>#[path]</code> attributes that point into it follow.</p></li>
+      <li class="feat"><h3>Rename Symbols</h3><p>Rename a symbol everywhere it's used, including trait methods with their impls, field shorthand, intra-doc links, and a module's file or folder. Every keystroke is checked for clashes.</p></li>
+      <li class="feat"><h3>Move Modules</h3><p>Choose Move, click the destination circle and read the plan. Paths keep their style, <code>use</code> groups split where needed, and visibility widens only as far as it must.</p></li>
+      <li class="feat"><h3>Promote Modules to Crates</h3><p>Turn a module into its own crate, with a manifest that inherits from the workspace and entries in <code>members</code> and <code>[workspace.dependencies]</code>.</p></li>
+      <li class="feat"><h3>Demote Crates to Modules</h3><p>Fold a library crate into another as a module. Its bins, tests, examples and benches come along, its dependencies and features merge in, and you decide what happens to its other folders.</p></li>
+      <li class="feat"><h3>Dissolve Modules</h3><p>Move a module's contents into its parent and remove the empty module.</p></li>
+      <li class="feat"><h3>Rename Folders</h3><p>Rename a folder and the manifest paths, <code>include!</code> paths and <code>#[path]</code> attributes that point into it follow.</p></li>
+      <li class="feat"><h3>Knows When to Refuse</h3><p>Moves that would create a dependency cycle or break the orphan rule are refused with the reason, and so is any file that changed since the last index.</p></li>
     </ul>
   </section>
 
@@ -524,11 +508,10 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       <span class="count"></span>
     </div>
     <ul class="feats">
-      <li class="feat"><h3>One axis in and out</h3><p>Right always goes one level further in and left always backs out, while the camera flies to whatever the cursor names: a container at its circle's scale, a symbol at its own.</p><div class="keys"><kbd>→</kbd><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd></div></li>
-      <li class="feat"><h3>Tour a blast</h3><p>With a symbol selected, the arrows step through its connections and the camera flies to each one. Right makes the highlighted symbol the new selection.</p></li>
-      <li class="feat"><h3>History pane <span class="tag">right sidebar</span></h3><p>Step back and forward through the places you looked, with the view, direction and hop count restored. The history pane shows the whole trail.</p><div class="keys"><kbd>Alt+←</kbd><kbd>Alt+→</kbd><kbd>H</kbd></div></li>
-      <li class="feat"><h3>209 themes</h3><p>Every Helix theme with colors of its own, plus built-in dark and light. Adjust any of 16 colors and save the result as your own.</p></li>
-      <li class="feat"><h3>Symbols pane <span class="tag">right sidebar</span></h3><p>Every symbol kind in your workspace with its count, a switch and a color. Switch a kind off and the layout packs closed around what's left, or Shift+click to show it alone.</p><div class="keys"><kbd>S</kbd></div></li>
+      <li class="feat"><h3>Keyboard-First Navigation</h3><p>Right always goes one level further in and left always backs out, while the camera flies to whatever the cursor names: a container at its circle's scale, a symbol at its own.</p></li>
+      <li class="feat"><h3>History Pane <span class="tag">right sidebar</span></h3><p>Step back and forward through the places you looked, with the view and direction restored. The history pane shows the whole trail.</p></li>
+      <li class="feat"><h3>209 Themes</h3><p>Every Helix theme with colors of its own, plus built-in dark and light. Adjust any of 16 colors and save the result as your own.</p></li>
+      <li class="feat"><h3>Symbols Pane <span class="tag">right sidebar</span></h3><p>Every symbol kind in your workspace with its count, a switch and a color. Switch a kind off and the layout packs closed around what's left, or show one kind on its own.</p></li>
     </ul>
   </section>
 </main>
@@ -603,15 +586,11 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
     jump.append(a);
   };
   link('highlights', 'Highlights', hls.length);
-  let total = 0;
   for (const cat of cats) {
     const n = cat.querySelectorAll('.feat').length;
-    total += n;
     cat.querySelector('.count').textContent = n + ' features';
     link(cat.id, cat.querySelector('h2').textContent, n);
   }
-  document.getElementById('tally').textContent =
-    hls.length + ' highlights, then ' + total + ' features in ' + cats.length + ' areas.';
 })();
 
 /* ---------- hero: the node graph, drawn the way the app draws a selection ---------- */
