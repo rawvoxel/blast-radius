@@ -237,25 +237,6 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   padding: 1px 6px; margin-left: 6px;
   vertical-align: 2px; white-space: nowrap;
 }
-/* Six features per category until its button opens the rest. Only sections the script marks
-   collapsible hide anything, so without the script every feature shows. */
-.feats-wrap { display: grid; gap: 26px; align-content: start; min-width: 0; }
-.collapsible:not(.open) .feat:nth-child(n+7) { display: none; }
-.more {
-  justify-self: start;
-  display: inline-flex; align-items: center; gap: 8px;
-  font: 500 14px var(--body);
-  color: var(--bright);
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 14px;
-  cursor: pointer;
-}
-.more:hover { border-color: var(--heat); }
-.more svg { width: 14px; height: 14px; transition: transform 0.2s; }
-.collapsible.open .more svg { transform: rotate(180deg); }
-@media (prefers-reduced-motion: reduce) { .more svg { transition: none; } }
 
 /* ---------- spec sheet ---------- */
 .spec { padding-block: 40px 72px; border-top: 1px solid var(--border); }
@@ -440,9 +421,9 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <p>No build scripts, no proc-macro servers, no <code>cargo build</code>. Point it at a repo you haven't vetted, and opt into rust-analyzer when you want full type inference.</p>
       </div>
       <div class="hl">
-        <span class="fig">cached by content</span>
-        <h3>Stays current</h3>
-        <p>Indexes are keyed on your files' contents and stored outside your project, so reopening is instant. Edits mark the graph out of date, and auto re-index picks them up after a quiet moment.</p>
+        <span class="fig">reachability, not counts</span>
+        <h3>Finds dead code by reachability</h3>
+        <p>Walks out from <code>main</code>, tests and trait impls and flags everything never reached, including chains of dead code that only call each other.</p>
       </div>
       <div class="hl">
         <span class="fig">6 structural edits</span>
@@ -470,23 +451,12 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
     </div>
     <ul class="feats">
       <li class="feat"><h3>Shockwave rings</h3><p>Select a symbol and its dependents light up on concentric rings, hot at the epicenter and cooling with each hop. Lines trace the path the blast travels.</p></li>
-      <li class="feat"><h3>Dependents or dependencies</h3><p>Flip between what breaks if this changes and what this symbol relies on.</p><div class="keys"><kbd>D</kbd></div></li>
-      <li class="feat"><h3>Adjustable reach</h3><p>Widen or narrow the blast one hop at a time, from direct dependents out to twelve hops.</p><div class="keys"><kbd>[</kbd><kbd>]</kbd></div></li>
+      <li class="feat"><h3>Reach in either direction</h3><p>Widen or narrow the blast from direct dependents out to twelve hops, or flip it to see what a symbol relies on instead of what relies on it.</p><div class="keys"><kbd>[</kbd><kbd>]</kbd><kbd>D</kbd></div></li>
       <li class="feat"><h3>Connections pane <span class="tag">right sidebar</span></h3><p>Everything the blast reaches, in hop order with ring-colored badges, counted in symbols and in files. Click a row to fly there while the selection stays pinned at the top.</p><div class="keys"><kbd>C</kbd></div></li>
-      <li class="feat"><h3>Nested circles</h3><p>Packages hold modules, modules hold types, and types hold their own fields, variants and methods. Impl blocks fold into the type they implement.</p></li>
+      <li class="feat"><h3>Nested circles</h3><p>Packages hold modules, modules hold types, and types hold their own fields, variants and methods, with impl blocks folded into the type they implement. Every symbol keeps its dot at every zoom, and none ever covers another.</p></li>
       <li class="feat"><h3>Spring and gravity arrangements</h3><p>Spring solves a tidy layout that keeps every symbol in its module. Gravity lets references pull, so code organized one way and used another shows the difference.</p><div class="keys"><kbd>Shift+A</kbd></div></li>
       <li class="feat"><h3>Three blast shapes</h3><p>Off leaves the map still. Pull tows dependents toward the selection without leaving their modules. Radial seats modules on rings by hop.</p><div class="keys"><kbd>Shift+P</kbd></div></li>
-      <li class="feat"><h3>Context stays on screen</h3><p>Code outside the blast dims, so the shape of the workspace stays behind the answer. Or hide it and let what's left pack closed.</p></li>
-      <li class="feat"><h3>Every symbol, at every zoom</h3><p>Nothing collapses into a summary and no symbol covers another. Each keeps its dot at every zoom; only the names fade in as you get closer.</p></li>
-      <li class="feat"><h3>Group by modules or files</h3><p>Switch between the module tree and the folder tree instantly, with no re-index. Crates that share a folder pack side by side.</p><div class="keys"><kbd>G</kbd></div></li>
       <li class="feat"><h3>Fast at scale</h3><p>Gravity uses the fast multipole method: 16 ms per step for 16,000 bodies, where a direct sum takes 310 ms. Both arrangements solve off the main thread.</p></li>
-      <li class="feat"><h3>Colored by kind</h3><p>Functions, methods, structs, fields, enums, variants, traits, trait methods, type aliases, consts, statics, macros and modules each have their own color and icon.</p></li>
-      <li class="feat"><h3>Names that stay readable</h3><p>Labels carry their kind icon and slide apart instead of overlapping. Name every symbol, or only the ones you're looking at.</p><div class="keys"><kbd>Shift+L</kbd></div></li>
-      <li class="feat"><h3>Freeze</h3><p>Hold either arrangement still with one switch. Dragging still works while frozen.</p><div class="keys"><kbd>Shift+F</kbd></div></li>
-      <li class="feat"><h3>Drag anything</h3><p>Drag a dot to move one symbol, or a circle's rim to move its whole subtree. The layout keeps settling around what you hold.</p></li>
-      <li class="feat"><h3>View a container in isolation</h3><p>Open any circle's menu to show it on its own. One click on the toolbar brings the rest back.</p></li>
-      <li class="feat"><h3>Hidden pane <span class="tag">right sidebar</span></h3><p>Hide any circle from its menu. Hidden circles are listed here with their paths, one click from coming back.</p><div class="keys"><kbd>N</kbd></div></li>
-      <li class="feat"><h3>Animated filtering</h3><p>Filtered symbols swell and shrink away, so you can see what left and why the layout moved.</p></li>
     </ul>
   </section>
 
@@ -499,9 +469,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
     <ul class="feats">
       <li class="feat"><h3>Heat on the graph</h3><p>The thermal view colors each function from cold to hot by inclusive time, and thickens call edges by the samples that crossed them.</p><div class="keys"><kbd>Shift+V</kbd></div></li>
       <li class="feat"><h3>Profile in one click</h3><p>Profile runs add debug info to release builds without touching <code>Cargo.toml</code>, then sample the call stack 8,000 times a second through ETW. Windows asks for administrator access once per run.</p></li>
-      <li class="feat"><h3>Profile pane <span class="tag">right sidebar</span></h3><p>The hottest functions ranked by share of the run. Pick one to see its self and inclusive time and its top callers and callees, and to fly the camera to it.</p><div class="keys"><kbd>P</kbd></div></li>
-      <li class="feat"><h3>Saved profiles</h3><p>Every capture is saved to the profile pane. Recall, rename or delete it later. Profiles survive re-indexing.</p></li>
-      <li class="feat"><h3>Run from the toolbar</h3><p>Build and run any binary in release or debug, through <code>cargo run</code> or the executable directly.</p></li>
+      <li class="feat"><h3>Profile pane <span class="tag">right sidebar</span></h3><p>The hottest functions ranked by share of the run. Pick one for its self and inclusive time and its top callers and callees. Every capture is saved here, and saved profiles survive re-indexing.</p><div class="keys"><kbd>P</kbd></div></li>
     </ul>
   </section>
 
@@ -512,14 +480,9 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       <span class="count"></span>
     </div>
     <ul class="feats">
-      <li class="feat"><h3>Call outline</h3><p>A function's callees as indented cards, one level per step. It opens on the selected function, or on your program's <code>main</code>.</p></li>
+      <li class="feat"><h3>Call outline</h3><p>A function's callees as indented cards, opening on the selected function or your program's <code>main</code>. Every type in a signature is a chip: hover for its full path, click to select it.</p><div class="keys"><kbd>V</kbd></div></li>
       <li class="feat"><h3>Jump along an arrow</h3><p>Hover an arrow and a control rides along it, naming the card at the far end. Click to fly there.</p></li>
-      <li class="feat"><h3>Unfold as you go</h3><p>A new flow shows the function and its direct callees. Unfold one level at a time, or everything at once.</p><div class="keys"><kbd>X</kbd><kbd>Z</kbd></div></li>
-      <li class="feat"><h3>Signatures with type chips</h3><p>Each card shows its owner and signature. Hover a type for its full path; click it to select it.</p></li>
       <li class="feat"><h3>Open the call site</h3><p>Right-click an arrow to open each of its call sites in your editor.</p></li>
-      <li class="feat"><h3>Wires that stay clear</h3><p>Arrows run in their own colored lanes, and cards move down so no wire crosses one. Recursion shows as a dimmer back edge.</p></li>
-      <li class="feat"><h3>Re-root anywhere</h3><p>Choose Show in Flow Graph from any function's menu, or click a function chip to make it the subject.</p></li>
-      <li class="feat"><h3>Export to SVG</h3><p>Write the current flow to <code>flow.svg</code> with one key.</p><div class="keys"><kbd>E</kbd></div></li>
     </ul>
   </section>
 
@@ -530,14 +493,9 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       <span class="count"></span>
     </div>
     <ul class="feats">
-      <li class="feat"><h3>Blast your working tree</h3><p>Seed a blast from your uncommitted changes. Staged, unstaged and untracked edits all count, matched to the symbols whose bodies they touch.</p><div class="keys"><kbd>Alt+G</kbd></div></li>
-      <li class="feat"><h3>Dead code</h3><p>Walks out from <code>main</code>, tests and trait impls and flags everything never reached, including chains of dead code that only call each other.</p></li>
-      <li class="feat"><h3>Unreferenced symbols</h3><p>The browser's unreferenced tab lists workspace symbols nothing references, and says how many of them are tests, benches or examples.</p><div class="keys"><kbd>2</kbd></div></li>
-      <li class="feat"><h3>Working-tree diff</h3><p>The browser's diff tab lists the symbols your uncommitted changes touch, refreshed each time you open it.</p><div class="keys"><kbd>3</kbd></div></li>
+      <li class="feat"><h3>Blast your working tree</h3><p>Seed a blast from your uncommitted changes. Staged, unstaged and untracked edits all count, matched to the symbols whose bodies they touch, and the diff tab lists every one.</p><div class="keys"><kbd>Alt+G</kbd></div></li>
+      <li class="feat"><h3>Dead code by reachability</h3><p>Walks out from <code>main</code>, tests and trait impls and flags everything never reached, including chains of dead code that only call each other. A separate list shows every symbol nothing references.</p></li>
       <li class="feat"><h3>Reports without the window</h3><p><code>--diff</code> prints your working tree's blast radius, <code>--stats</code> counts kinds and the most-referenced symbols, and <code>--svg</code> renders the layout. Run them from a script or CI.</p></li>
-      <li class="feat"><h3>Filters for every view</h3><p>Show only unreferenced code or only dead code, in the graph and the lists. The filter is remembered between sessions.</p></li>
-      <li class="feat"><h3>Tests kept out of the way</h3><p>Tests, benches and examples are read from source (<code>#[test]</code>, <code>#[tokio::test]</code>, <code>#[cfg(test)]</code>, <code>tests/</code>, <code>benches/</code>, <code>examples/</code>) and hidden until you want them.</p><div class="keys"><kbd>Shift+T</kbd><kbd>Shift+B</kbd><kbd>Shift+E</kbd></div></li>
-      <li class="feat"><h3>Notices log</h3><p>Indexing failures, config problems and every warning collect behind the bell at the foot of the right rail, with repeats folded and a copy button on each message.</p></li>
     </ul>
   </section>
 
@@ -556,48 +514,21 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       <li class="feat"><h3>Knows when to refuse</h3><p>Moves that would create a dependency cycle or break the orphan rule are refused with the reason, and so is any file that changed since the last index.</p></li>
       <li class="feat"><h3>Dissolve a module</h3><p>Move a module's contents into its parent and remove the empty module.</p></li>
       <li class="feat"><h3>Rename folders</h3><p>Rename a folder and the manifest paths, <code>include!</code> paths and <code>#[path]</code> attributes that point into it follow.</p></li>
-      <li class="feat"><h3>Create from the graph</h3><p>Start new projects (a package or a workspace, with git), crates, modules in either file layout, and plain files, each declared where it belongs.</p></li>
     </ul>
   </section>
 
-  <section class="cat" id="keyboard">
+  <section class="cat" id="workflow">
     <div class="cat-label">
-      <h2>Keyboard First</h2>
-      <p>Every command has a key, and the camera follows wherever you go.</p>
+      <h2>Workflow</h2>
+      <p>Walk the codebase from the keyboard, in colors you choose.</p>
       <span class="count"></span>
     </div>
     <ul class="feats">
-      <li class="feat"><h3>One axis in and out</h3><p>Right always goes one level further in. Left always backs out. Up and down move within a level.</p><div class="keys"><kbd>→</kbd><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd></div></li>
-      <li class="feat"><h3>Browser <span class="tag">left sidebar</span></h3><p>A tree of packages, modules, types and symbols, with tabs for unreferenced code, your working-tree diff and your projects. Chains of single-child folders fold into one row.</p><div class="keys"><kbd>Tab</kbd><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd></div></li>
-      <li class="feat"><h3>The camera follows</h3><p>Walking the tree flies the camera to each row, framing a container at its circle's scale and a symbol at its own.</p></li>
-      <li class="feat"><h3>Fuzzy search</h3><p>Type a few letters of any symbol. Word starts and consecutive letters rank first.</p><div class="keys"><kbd>/</kbd></div></li>
-      <li class="feat"><h3>History pane <span class="tag">right sidebar</span></h3><p>Step back and forward through the places you looked, with the view, direction and hop count restored. The history pane shows the whole trail.</p><div class="keys"><kbd>Alt+←</kbd><kbd>Alt+→</kbd><kbd>H</kbd></div></li>
-      <li class="feat"><h3>Open in your editor</h3><p>Jump to the definition in VS Code, VSCodium, Cursor, Zed, Sublime Text, Helix, Neovim, Vim, IntelliJ IDEA, RustRover or Emacs, or any command you configure.</p><div class="keys"><kbd>O</kbd></div></li>
+      <li class="feat"><h3>One axis in and out</h3><p>Right always goes one level further in and left always backs out, while the camera flies to whatever the cursor names: a container at its circle's scale, a symbol at its own.</p><div class="keys"><kbd>→</kbd><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd></div></li>
       <li class="feat"><h3>Tour a blast</h3><p>With a symbol selected, the arrows step through its connections and the camera flies to each one. Right makes the highlighted symbol the new selection.</p></li>
-      <li class="feat"><h3>Rebind every key</h3><p>Bind any command to a key or a Ctrl, Alt or Shift chord. Tooltips show the live binding, and a key that's taken is refused with its current command named.</p><div class="keys"><kbd>Ctrl+,</kbd></div></li>
-      <li class="feat"><h3>Frame anything</h3><p>Fit the blast or the whole graph. Double-click a circle to frame it, or empty canvas to see everything.</p><div class="keys"><kbd>F</kbd></div></li>
-      <li class="feat"><h3>Switch views</h3><p>Move between the Node Graph and the Flow Graph. Your selection comes with you.</p><div class="keys"><kbd>V</kbd></div></li>
-      <li class="feat"><h3>A key for every pane</h3><p>The browser, connections, symbols, history, hidden and profile panes each open with one key. Shift+Tab hides the right sidebar or brings back its last pane.</p><div class="keys"><kbd>Tab</kbd><kbd>C</kbd><kbd>S</kbd><kbd>H</kbd><kbd>N</kbd><kbd>P</kbd><kbd>Shift+Tab</kbd></div></li>
-      <li class="feat"><h3>Escape unwinds one layer</h3><p>Escape closes the topmost thing first: a popup, then a pane, then settings, then the selection.</p><div class="keys"><kbd>Esc</kbd></div></li>
-    </ul>
-  </section>
-
-  <section class="cat" id="customization">
-    <div class="cat-label">
-      <h2>Customization</h2>
-      <p>Make it look and behave the way you work.</p>
-      <span class="count"></span>
-    </div>
-    <ul class="feats">
-      <li class="feat"><h3>209 themes</h3><p>Every Helix theme with colors of its own, plus built-in dark and light. Filter by dark, light, vivid, pastel, muted, warm, cool or mono, or search by name.</p></li>
-      <li class="feat"><h3>Symbols pane <span class="tag">right sidebar</span></h3><p>Every symbol kind in your workspace with its count, a switch and a color. Recolor a kind everywhere it appears, switch it off and let the layout pack closed, or Shift+click to show it alone.</p><div class="keys"><kbd>S</kbd></div></li>
-      <li class="feat"><h3>Edit and save themes</h3><p>Adjust any of 16 colors with an HSL picker or a hex value, and save the result as your own theme.</p></li>
-      <li class="feat"><h3>Fonts and text size</h3><p>Use any installed font, size each of nine text roles, and step all text larger or smaller from the keyboard.</p><div class="keys"><kbd>Ctrl+=</kbd><kbd>Ctrl+-</kbd><kbd>Ctrl+0</kbd></div></li>
-      <li class="feat"><h3>Smooth on high-refresh displays</h3><p>Vsync is off by default, so a 240 Hz display isn't held to 60 frames a second. When nothing is changing, the app sleeps.</p></li>
-      <li class="feat"><h3>A config file you can edit</h3><p>Settings save to <code>config.toml</code> as you change them. Your comments and key order are kept, and new keys arrive with a description.</p></li>
-      <li class="feat"><h3>Background image</h3><p>Put an image behind the graph, with its own opacity and blend mode.</p></li>
-      <li class="feat"><h3>Resizable sidebars</h3><p>Drag either sidebar to the width you want. It's remembered.</p></li>
-      <li class="feat"><h3>Searchable settings</h3><p>One search box across every settings tab, matching names and descriptions.</p></li>
+      <li class="feat"><h3>History pane <span class="tag">right sidebar</span></h3><p>Step back and forward through the places you looked, with the view, direction and hop count restored. The history pane shows the whole trail.</p><div class="keys"><kbd>Alt+←</kbd><kbd>Alt+→</kbd><kbd>H</kbd></div></li>
+      <li class="feat"><h3>209 themes</h3><p>Every Helix theme with colors of its own, plus built-in dark and light. Adjust any of 16 colors and save the result as your own.</p></li>
+      <li class="feat"><h3>Symbols pane <span class="tag">right sidebar</span></h3><p>Every symbol kind in your workspace with its count, a switch and a color. Switch a kind off and the layout packs closed around what's left, or Shift+click to show it alone.</p><div class="keys"><kbd>S</kbd></div></li>
     </ul>
   </section>
 </main>
@@ -681,46 +612,6 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   }
   document.getElementById('tally').textContent =
     hls.length + ' highlights, then ' + total + ' features in ' + cats.length + ' areas.';
-
-  // Each category opens on its six most important features, with a button under them for the rest.
-  // A category of six or fewer shows everything and gets no button.
-  const SHOWN = 6;
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-  for (const cat of cats) {
-    const list = cat.querySelector('.feats');
-    const n = list.children.length;
-    if (n <= SHOWN) continue;
-    const wrap = document.createElement('div');
-    wrap.className = 'feats-wrap';
-    list.before(wrap);
-    wrap.append(list);
-    list.id = cat.id + '-list';
-    const name = cat.querySelector('h2').textContent;
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'more';
-    button.setAttribute('aria-controls', list.id);
-    const label = document.createElement('span');
-    button.append(label);
-    button.insertAdjacentHTML('beforeend',
-      '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>');
-    const sync = () => {
-      const open = cat.classList.contains('open');
-      button.setAttribute('aria-expanded', String(open));
-      label.textContent = open ? 'Show fewer' : 'Show all ' + n + ' ' + name + ' features';
-    };
-    button.addEventListener('click', () => {
-      cat.classList.toggle('open');
-      sync();
-      // Folding a long list away can leave the reader below the section; bring its heading back.
-      if (!cat.classList.contains('open') && cat.getBoundingClientRect().top < 0) {
-        cat.scrollIntoView({ block: 'start', behavior: still.matches ? 'auto' : 'smooth' });
-      }
-    });
-    wrap.append(button);
-    cat.classList.add('collapsible');
-    sync();
-  }
 })();
 
 /* ---------- hero: the node graph, drawn the way the app draws a selection ---------- */
