@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blast Radius · Impact analysis for Rust</title>
+<meta name="description" content="Blast Radius draws your Rust workspace as nested circles. Pick any symbol and everything that depends on it lights up, ring by ring, one hop at a time.">
+<meta name="theme-color" content="#e7eaef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0f14" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Blast Radius · Impact analysis for Rust">
+<meta property="og:description" content="See everything a change to your Rust code would reach before you make it.">
+<meta property="og:url" content="https://rawvoxel.github.io/blast-radius/">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rawvoxel.github.io/blast-radius/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,750&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the app's own window colors; a live blast as the hero; then a catalog where each
+   category is a sticky label beside a two-column list of features, closing on a spec sheet. */
+:root {
+  --bg: #e7eaef;
+  --surface: #f6f7fa;
+  --raised: #dde1e8;
+  --border: #c3cad6;
+  --text: #2b3240;
+  --dim: #5d6779;
+  --bright: #0c1017;
+  --link: #2f6cb5;
+  --heat: #b4561a;
+  --h0: #e8c21c; --h1: #f08a2c; --h2: #e0533f; --h3: #b84679; --h4: #7d4aa3;
+  --canvas: #f6f7fa;
+  --canvas-line: #b3bcca;
+  --pkg: #1f4f8f; --mod: #3a6aa5; --ty: #6b4a94;
+  --s-fn: #1d7a4c; --s-method: #186340; --s-struct: #1f5f9e; --s-field: #4a5c70; --s-enum: #5a3f9c;
+  --s-trait: #9a5f10; --s-const: #a33b3b; --s-macro: #8e3a8e; --s-alias: #17706a;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --buy-bg: #b4561a; --buy-fg: #ffffff;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0f14; --surface: #131820; --raised: #1c2330; --border: #2a3444;
+    --text: #b8c9e0; --dim: #8599b8; --bright: #ebf2ff; --link: #8fb3ef; --heat: #ffa84d;
+    --h0: #fff28c; --h1: #ffa84d; --h2: #f57059; --h3: #c75c8c; --h4: #8c59ad;
+    --canvas: #0d0f14; --canvas-line: #334052;
+    --pkg: #b8d1fa; --mod: #94b3db; --ty: #ad94cc;
+    --s-fn: #6fd3a0; --s-method: #54b98a; --s-struct: #6fa8dc; --s-field: #8fa3b8; --s-enum: #8e7cc3;
+    --s-trait: #e0a45e; --s-const: #d78a8a; --s-macro: #d6a3d6; --s-alias: #76c7c0;
+    --buy-bg: #ffa84d; --buy-fg: #0d0f14;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; }
+a { color: var(--link); }
+:focus-visible { outline: 2px solid var(--heat); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--display); color: var(--bright); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+kbd {
+  font-family: var(--mono);
+  font-size: 0.78em;
+  font-weight: 500;
+  color: var(--bright);
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 0.05em 0.42em;
+  white-space: nowrap;
+}
+code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--heat);
+}
+
+/* ---------- hero ---------- */
+.hero { padding-block: 56px 40px; }
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 48px;
+  align-items: center;
+}
+.hero h1 {
+  font-size: clamp(40px, 6.2vw, 74px);
+  font-weight: 750;
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  font-variation-settings: "opsz" 96;
+  margin-block: 14px 22px;
+}
+.hero h1 .hot { color: var(--heat); }
+.lede { font-size: 19px; color: var(--text); max-width: 34em; }
+.hero-meta {
+  display: flex; flex-wrap: wrap; gap: 8px 20px;
+  margin-top: 26px;
+  font-family: var(--mono); font-size: 13px; color: var(--dim);
+}
+.hero-meta span::before { content: "◦ "; color: var(--heat); }
+
+.viewport {
+  background: var(--canvas);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  min-width: 0;
+}
+.viewport canvas { display: block; width: 100%; height: clamp(300px, 44vw, 470px); }
+.viewport-foot {
+  display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center;
+  border-top: 1px solid var(--border);
+  padding: 9px 14px;
+  font-family: var(--mono); font-size: 12px; color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+.viewport-foot b { color: var(--bright); font-weight: 500; }
+.legend { display: flex; gap: 10px; margin-left: auto; }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+
+/* ---------- highlights ---------- */
+.highlights { padding-block: 38px; border-top: 1px solid var(--border); scroll-margin-top: 12px; }
+.hl-title { font-size: 26px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.1; margin-bottom: 18px; }
+.hl-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.hl {
+  display: grid; gap: 8px; align-content: start; min-width: 0;
+  padding: 20px 22px 26px;
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+}
+.hl:nth-child(4n+1) { padding-left: 0; border-left: 0; }
+.hl h3 { font-size: 21px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; }
+.hl p { color: var(--dim); font-size: 15px; }
+.hl .fig { font-family: var(--mono); font-size: 13px; color: var(--heat); }
+
+/* ---------- catalog ---------- */
+.catalog-head {
+  display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: end; justify-content: space-between;
+  padding-block: 8px 20px;
+}
+.catalog-head h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+.catalog-head p { color: var(--dim); max-width: 40em; margin-top: 8px; }
+.jump {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding-block: 4px 34px;
+}
+.jump a {
+  font-size: 14px; text-decoration: none; color: var(--text);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 5px 12px;
+  background: var(--surface);
+}
+.jump a:hover { color: var(--bright); border-color: var(--heat); }
+.jump a span { font-family: var(--mono); font-size: 12px; color: var(--dim); margin-left: 6px; }
+
+.cat {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+  gap: 40px;
+  padding-block: 38px;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 12px;
+}
+.cat-label { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); align-self: start; }
+.cat-label h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.1; }
+.cat-label p { color: var(--dim); font-size: 15px; margin-top: 10px; }
+.cat-label .count { font-family: var(--mono); font-size: 12px; color: var(--heat); margin-top: 12px; display: block; }
+.feats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px 40px;
+  list-style: none; margin: 0; padding: 0;
+}
+.feat { display: grid; gap: 5px; align-content: start; min-width: 0; }
+.feat h3 { font-family: var(--body); font-size: 16.5px; font-weight: 600; color: var(--bright); line-height: 1.3; }
+.feat p { font-size: 15px; color: var(--dim); }
+.feat .keys { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
+.tag {
+  font-family: var(--mono); font-size: 11px; font-weight: 400; letter-spacing: 0.04em;
+  color: var(--dim);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 1px 6px; margin-left: 6px;
+  vertical-align: 2px; white-space: nowrap;
+}
+
+/* ---------- spec sheet ---------- */
+.spec { padding-block: 40px 72px; border-top: 1px solid var(--border); }
+.spec h2 { font-size: 26px; font-weight: 700; margin-bottom: 18px; }
+.spec dl {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 40px; margin: 0;
+}
+.spec .row { padding-block: 12px; border-bottom: 1px solid var(--border); min-width: 0; }
+.spec dt { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); }
+.spec dd { margin: 4px 0 0; color: var(--bright); }
+
+/* ---------- top bar, buy buttons, closing call, footer ---------- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-block: 18px;
+  border-bottom: 1px solid var(--border);
+}
+.brand {
+  display: inline-flex; align-items: center; gap: 10px;
+  font: 700 18px var(--display); letter-spacing: -0.01em;
+  color: var(--bright); text-decoration: none;
+}
+.brand svg { width: 26px; height: 26px; flex: none; }
+.topnav { display: flex; align-items: center; gap: 22px; font-size: 15px; }
+.topnav a:not(.buy) { color: var(--text); text-decoration: none; }
+.topnav a:not(.buy):hover { color: var(--bright); }
+.buy {
+  display: inline-block;
+  font: 600 15px var(--body);
+  color: var(--buy-fg);
+  background: var(--buy-bg);
+  border-radius: 8px;
+  padding: 10px 18px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.buy:hover { filter: brightness(1.08); }
+.topnav .buy { padding: 7px 14px; font-size: 14px; }
+.ghost {
+  display: inline-block;
+  font: 500 15px var(--body);
+  color: var(--bright);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 17px;
+  text-decoration: none;
+}
+.ghost:hover { border-color: var(--heat); }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.closing { padding-block: 56px 64px; border-top: 1px solid var(--border); text-align: left; }
+.closing h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 750; letter-spacing: -0.02em; line-height: 1.05; }
+.closing p { color: var(--dim); font-size: 17px; max-width: 36em; margin-block: 12px 26px; }
+.foot {
+  display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between;
+  padding-block: 22px 32px;
+  border-top: 1px solid var(--border);
+  font-size: 14px; color: var(--dim);
+}
+.foot a { color: var(--dim); }
+
+@media (max-width: 960px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .hl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hl:nth-child(2n+1) { padding-left: 0; border-left: 0; }
+  .cat { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .cat-label { position: static; }
+  .spec dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+  .hero { padding-block: 32px 28px; }
+  .lede { font-size: 17px; }
+  .hl-grid { grid-template-columns: minmax(0, 1fr); }
+  .hl { padding-inline: 0; border-left: 0; }
+  .feats { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .spec dl { grid-template-columns: minmax(0, 1fr); }
+  .legend { margin-left: 0; }
+  .topnav a:not(.buy) { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap topbar">
+  <a class="brand" href="./">
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <circle cx="16" cy="16" r="14" style="fill:none;stroke:var(--h3);stroke-width:2"/>
+      <circle cx="16" cy="16" r="9.5" style="fill:none;stroke:var(--h2);stroke-width:2"/>
+      <circle cx="16" cy="16" r="5" style="fill:none;stroke:var(--h1);stroke-width:2"/>
+      <circle cx="16" cy="16" r="2.2" style="fill:var(--h0)"/>
+    </svg>
+    Blast Radius
+  </a>
+  <nav class="topnav" aria-label="Site">
+    <a href="#features">Features</a>
+    <a href="#specs">Specs</a>
+    <!-- TODO-GUMROAD: replace #TODO-GUMROAD with your Gumroad product URL (three places on this page) -->
+    <a class="buy" href="#TODO-GUMROAD">Buy on Gumroad</a>
+  </nav>
+</div>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Impact analysis for Rust</div>
+      <h1>If I change this, <span class="hot">what breaks?</span></h1>
+      <p class="lede">Blast Radius draws your Rust workspace as nested circles, from packages down to the fields of a struct. Pick any symbol and everything that depends on it lights up, ring by ring, one hop at a time.</p>
+      <div class="hero-actions">
+        <a class="buy" href="#TODO-GUMROAD">Buy on Gumroad</a>
+        <a class="ghost" href="#features">See every feature</a>
+      </div>
+      <div class="hero-meta">
+        <span>indexes in about 0.5 s</span>
+        <span>never runs your code</span>
+        <span>keyboard-first</span>
+        <span>209 themes</span>
+      </div>
+    </div>
+    <figure class="viewport" style="margin:0">
+      <canvas id="blast" role="img" aria-label="A workspace drawn as nested circles. One selected function sits at the center of three concentric rings, and the symbols that depend on it are lit in heat colors by hop distance while the rest are dimmed."></canvas>
+      <figcaption class="viewport-foot">
+        <span><b>net::Socket::connect</b></span>
+        <span>dependents · 3 hops · <span id="reach">symbols in files</span></span>
+        <span class="legend" aria-hidden="true">
+          <span><i style="background:var(--h0)"></i>epicenter</span>
+          <span><i style="background:var(--h1)"></i>1</span>
+          <span><i style="background:var(--h2)"></i>2</span>
+          <span><i style="background:var(--h3)"></i>3</span>
+        </span>
+      </figcaption>
+    </figure>
+  </div>
+</header>
+
+<main class="wrap" id="features">
+  <div class="catalog-head">
+    <div>
+      <h2>Everything in Blast Radius</h2>
+      <p id="tally">Every feature, grouped by what you're trying to do.</p>
+    </div>
+  </div>
+  <nav class="jump" id="jump" aria-label="Feature areas"></nav>
+
+  <section class="highlights" id="highlights" aria-labelledby="hl-h">
+    <h2 class="hl-title" id="hl-h">Highlights</h2>
+    <div class="hl-grid">
+      <div class="hl">
+        <span class="fig">1 to 12 hops</span>
+        <h3>See the blast before you make the change</h3>
+        <p>Select a symbol and everything that depends on it lights up on shockwave rings by hop distance. Flip to dependencies with one key.</p>
+      </div>
+      <div class="hl">
+        <span class="fig">Alt+G</span>
+        <h3>Blast your working tree</h3>
+        <p>Seed a blast from your uncommitted changes and see what your branch reaches before you push it.</p>
+      </div>
+      <div class="hl">
+        <span class="fig">~0.5 s cold index</span>
+        <h3>Indexes in about half a second</h3>
+        <p>The native indexer reads your source with syn, expands your <code>macro_rules!</code>, and finds 97% of the symbols rust-analyzer does. rust-analyzer takes 40 to 60 seconds on the same code.</p>
+      </div>
+      <div class="hl">
+        <span class="fig">cargo metadata only</span>
+        <h3>Never runs your code</h3>
+        <p>No build scripts, no proc-macro servers, no <code>cargo build</code>. Point it at a repo you haven't vetted, and opt into rust-analyzer when you want full type inference.</p>
+      </div>
+      <div class="hl">
+        <span class="fig">cached by content</span>
+        <h3>Stays current</h3>
+        <p>Indexes are keyed on your files' contents and stored outside your project, so reopening is instant. Edits mark the graph out of date, and auto re-index picks them up after a quiet moment.</p>
+      </div>
+      <div class="hl">
+        <span class="fig">6 structural edits</span>
+        <h3>Refactor from the map</h3>
+        <p>Rename, move, promote, demote and dissolve modules and crates. Paths, <code>use</code> groups, visibility and manifests are rewritten for you.</p>
+      </div>
+      <div class="hl">
+        <span class="fig">8 kHz sampling</span>
+        <h3>Thermal vision</h3>
+        <p>Run your program under a sampling profiler and color the same map by where the time goes.</p>
+      </div>
+      <div class="hl">
+        <span class="fig">every key rebindable</span>
+        <h3>Keyboard-first</h3>
+        <p>Walk the whole codebase with the arrow keys while the camera follows. Every command has a key you can change.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat" id="node-graph">
+    <div class="cat-label">
+      <h2>Node Graph</h2>
+      <p>Your workspace drawn the way Rust nests it. Pick a symbol and see everything a change to it would reach.</p>
+      <span class="count"></span>
+    </div>
+    <ul class="feats">
+      <li class="feat"><h3>Shockwave rings</h3><p>Select a symbol and its dependents light up on concentric rings, hot at the epicenter and cooling with each hop. Lines trace the path the blast travels.</p></li>
+      <li class="feat"><h3>Adjustable reach</h3><p>Widen or narrow the blast one hop at a time, from direct dependents out to twelve hops.</p><div class="keys"><kbd>[</kbd><kbd>]</kbd></div></li>
+      <li class="feat"><h3>Dependents or dependencies</h3><p>Flip between what breaks if this changes and what this symbol relies on.</p><div class="keys"><kbd>D</kbd></div></li>
+      <li class="feat"><h3>Three blast shapes</h3><p>Off leaves the map still. Pull tows dependents toward the selection without leaving their modules. Radial seats modules on rings by hop.</p><div class="keys"><kbd>Shift+P</kbd></div></li>
+      <li class="feat"><h3>Context stays on screen</h3><p>Code outside the blast dims, so the shape of the workspace stays behind the answer. Or hide it and let what's left pack closed.</p></li>
+      <li class="feat"><h3>Connections pane <span class="tag">right sidebar</span></h3><p>Everything the blast reaches, in hop order with ring-colored badges, counted in symbols and in files. Click a row to fly there while the selection stays pinned at the top.</p><div class="keys"><kbd>C</kbd></div></li>
+      <li class="feat"><h3>Nested circles</h3><p>Packages hold modules, modules hold types, and types hold their own fields, variants and methods. Impl blocks fold into the type they implement.</p></li>
+      <li class="feat"><h3>Every symbol, at every zoom</h3><p>Nothing collapses into a summary and no symbol covers another. Each keeps its dot at every zoom; only the names fade in as you get closer.</p></li>
+      <li class="feat"><h3>Group by modules or files</h3><p>Switch between the module tree and the folder tree instantly, with no re-index. Crates that share a folder pack side by side.</p><div class="keys"><kbd>G</kbd></div></li>
+      <li class="feat"><h3>Colored by kind</h3><p>Functions, methods, structs, fields, enums, variants, traits, trait methods, type aliases, consts, statics, macros and modules each have their own color and icon.</p></li>
+      <li class="feat"><h3>Names that stay readable</h3><p>Labels carry their kind icon and slide apart instead of overlapping. Name every symbol, or only the ones you're looking at.</p><div class="keys"><kbd>Shift+L</kbd></div></li>
+      <li class="feat"><h3>Spring and gravity arrangements</h3><p>Spring solves a tidy layout that keeps every symbol in its module. Gravity lets references pull, so code organized one way and used another shows the difference.</p><div class="keys"><kbd>Shift+A</kbd></div></li>
+      <li class="feat"><h3>Fast at scale</h3><p>Gravity uses the fast multipole method: 16 ms per step for 16,000 bodies, where a direct sum takes 310 ms. Both arrangements solve off the main thread.</p></li>
+      <li class="feat"><h3>Freeze</h3><p>Hold either arrangement still with one switch. Dragging still works while frozen.</p><div class="keys"><kbd>Shift+F</kbd></div></li>
+      <li class="feat"><h3>Drag anything</h3><p>Drag a dot to move one symbol, or a circle's rim to move its whole subtree. The layout keeps settling around what you hold.</p></li>
+      <li class="feat"><h3>View a container in isolation</h3><p>Open any circle's menu to show it on its own. One click on the toolbar brings the rest back.</p></li>
+      <li class="feat"><h3>Hidden pane <span class="tag">right sidebar</span></h3><p>Hide any circle from its menu. Hidden circles are listed here with their paths, one click from coming back.</p><div class="keys"><kbd>N</kbd></div></li>
+      <li class="feat"><h3>Animated filtering</h3><p>Filtered symbols swell and shrink away, so you can see what left and why the layout moved.</p></li>
+    </ul>
+  </section>
+
+  <section class="cat" id="thermal">
+    <div class="cat-label">
+      <h2>Thermal Vision Profiler</h2>
+      <p>Run your program under a sampling profiler and color the map by where the time goes. Windows 8 or later.</p>
+      <span class="count"></span>
+    </div>
+    <ul class="feats">
+      <li class="feat"><h3>Run from the toolbar</h3><p>Build and run any binary in release or debug, through <code>cargo run</code> or the executable directly.</p></li>
+      <li class="feat"><h3>Profile in one click</h3><p>Profile runs add debug info to release builds without touching <code>Cargo.toml</code>, then sample the call stack 8,000 times a second through ETW. Windows asks for administrator access once per run.</p></li>
+      <li class="feat"><h3>Heat on the graph</h3><p>The thermal view colors each function from cold to hot by inclusive time, and thickens call edges by the samples that crossed them.</p><div class="keys"><kbd>Shift+V</kbd></div></li>
+      <li class="feat"><h3>Profile pane <span class="tag">right sidebar</span></h3><p>The hottest functions ranked by share of the run. Pick one to see its self and inclusive time and its top callers and callees, and to fly the camera to it.</p><div class="keys"><kbd>P</kbd></div></li>
+      <li class="feat"><h3>Saved profiles</h3><p>Every capture is saved to the profile pane. Recall, rename or delete it later. Profiles survive re-indexing.</p></li>
+    </ul>
+  </section>
+
+  <section class="cat" id="flow">
+    <div class="cat-label">
+      <h2>Flow Graph</h2>
+      <p>Read what a function calls as an outline of cards.</p>
+      <span class="count"></span>
+    </div>
+    <ul class="feats">
+      <li class="feat"><h3>Call outline</h3><p>A function's callees as indented cards, one level per step. It opens on the selected function, or on your program's <code>main</code>.</p></li>
+      <li class="feat"><h3>Signatures with type chips</h3><p>Each card shows its owner and signature. Hover a type for its full path; click it to select it.</p></li>
+      <li class="feat"><h3>Unfold as you go</h3><p>A new flow shows the function and its direct callees. Unfold one level at a time, or everything at once.</p><div class="keys"><kbd>X</kbd><kbd>Z</kbd></div></li>
+      <li class="feat"><h3>Wires that stay clear</h3><p>Arrows run in their own colored lanes, and cards move down so no wire crosses one. Recursion shows as a dimmer back edge.</p></li>
+      <li class="feat"><h3>Jump along an arrow</h3><p>Hover an arrow and a control rides along it, naming the card at the far end. Click to fly there.</p></li>
+      <li class="feat"><h3>Open the call site</h3><p>Right-click an arrow to open each of its call sites in your editor.</p></li>
+      <li class="feat"><h3>Re-root anywhere</h3><p>Choose Show in Flow Graph from any function's menu, or click a function chip to make it the subject.</p></li>
+      <li class="feat"><h3>Export to SVG</h3><p>Write the current flow to <code>flow.svg</code> with one key.</p><div class="keys"><kbd>E</kbd></div></li>
+    </ul>
+  </section>
+
+  <section class="cat" id="health">
+    <div class="cat-label">
+      <h2>Code Health</h2>
+      <p>Find the code nothing uses, and see what your changes reach.</p>
+      <span class="count"></span>
+    </div>
+    <ul class="feats">
+      <li class="feat"><h3>Unreferenced symbols</h3><p>The browser's unreferenced tab lists workspace symbols nothing references, and says how many of them are tests, benches or examples.</p><div class="keys"><kbd>2</kbd></div></li>
+      <li class="feat"><h3>Dead code</h3><p>Walks out from <code>main</code>, tests and trait impls and flags everything never reached, including chains of dead code that only call each other.</p></li>
+      <li class="feat"><h3>Filters for every view</h3><p>Show only unreferenced code or only dead code, in the graph and the lists. The filter is remembered between sessions.</p></li>
+      <li class="feat"><h3>Blast your working tree</h3><p>Seed a blast from your uncommitted changes. Staged, unstaged and untracked edits all count, matched to the symbols whose bodies they touch.</p><div class="keys"><kbd>Alt+G</kbd></div></li>
+      <li class="feat"><h3>Working-tree diff</h3><p>The browser's diff tab lists the symbols your uncommitted changes touch, refreshed each time you open it.</p><div class="keys"><kbd>3</kbd></div></li>
+      <li class="feat"><h3>Tests kept out of the way</h3><p>Tests, benches and examples are read from source (<code>#[test]</code>, <code>#[tokio::test]</code>, <code>#[cfg(test)]</code>, <code>tests/</code>, <code>benches/</code>, <code>examples/</code>) and hidden until you want them.</p><div class="keys"><kbd>Shift+T</kbd><kbd>Shift+B</kbd><kbd>Shift+E</kbd></div></li>
+      <li class="feat"><h3>Reports without the window</h3><p><code>--diff</code> prints your working tree's blast radius, <code>--stats</code> counts kinds and the most-referenced symbols, and <code>--svg</code> renders the layout. Run them from a script or CI.</p></li>
+      <li class="feat"><h3>Notices log</h3><p>Indexing failures, config problems and every warning collect behind the bell at the foot of the right rail, with repeats folded and a copy button on each message.</p></li>
+    </ul>
+  </section>
+
+  <section class="cat" id="refactoring">
+    <div class="cat-label">
+      <h2>Refactoring</h2>
+      <p>Structural edits from the graph. Each one shows you its plan before a file is written.</p>
+      <span class="count"></span>
+    </div>
+    <ul class="feats">
+      <li class="feat"><h3>Rename across the workspace</h3><p>Rename a symbol everywhere it's used, including trait methods with their impls, field shorthand, intra-doc links, and a module's file or folder. Every keystroke is checked for clashes.</p></li>
+      <li class="feat"><h3>Move a module</h3><p>Choose Move, click the destination circle and read the plan. Paths keep their style, <code>use</code> groups split where needed, and visibility widens only as far as it must.</p></li>
+      <li class="feat"><h3>Promote to a crate</h3><p>Turn a module into its own crate, with a manifest that inherits from the workspace and entries in <code>members</code> and <code>[workspace.dependencies]</code>.</p></li>
+      <li class="feat"><h3>Demote to a module</h3><p>Fold a library crate into another as a module. Its bins, tests, examples and benches come along, its dependencies and features merge in, and you decide what happens to its other folders.</p></li>
+      <li class="feat"><h3>Dissolve a module</h3><p>Move a module's contents into its parent and remove the empty module.</p></li>
+      <li class="feat"><h3>Rename folders</h3><p>Rename a folder and the manifest paths, <code>include!</code> paths and <code>#[path]</code> attributes that point into it follow.</p></li>
+      <li class="feat"><h3>Plan first, then write</h3><p>Every check runs before the first write. Writes are atomic, rustfmt only touches files that were already formatted, and the graph re-indexes when the edit lands.</p></li>
+      <li class="feat"><h3>Knows when to refuse</h3><p>Moves that would create a dependency cycle or break the orphan rule are refused with the reason, and so is any file that changed since the last index.</p></li>
+      <li class="feat"><h3>Create from the graph</h3><p>Start new projects (a package or a workspace, with git), crates, modules in either file layout, and plain files, each declared where it belongs.</p></li>
+    </ul>
+  </section>
+
+  <section class="cat" id="keyboard">
+    <div class="cat-label">
+      <h2>Keyboard First</h2>
+      <p>Every command has a key, and the camera follows wherever you go.</p>
+      <span class="count"></span>
+    </div>
+    <ul class="feats">
+      <li class="feat"><h3>One axis in and out</h3><p>Right always goes one level further in. Left always backs out. Up and down move within a level.</p><div class="keys"><kbd>→</kbd><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd></div></li>
+      <li class="feat"><h3>Browser <span class="tag">left sidebar</span></h3><p>A tree of packages, modules, types and symbols, with tabs for unreferenced code, your working-tree diff and your projects. Chains of single-child folders fold into one row.</p><div class="keys"><kbd>Tab</kbd><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd></div></li>
+      <li class="feat"><h3>The camera follows</h3><p>Walking the tree flies the camera to each row, framing a container at its circle's scale and a symbol at its own.</p></li>
+      <li class="feat"><h3>Fuzzy search</h3><p>Type a few letters of any symbol. Word starts and consecutive letters rank first.</p><div class="keys"><kbd>/</kbd></div></li>
+      <li class="feat"><h3>Tour a blast</h3><p>With a symbol selected, the arrows step through its connections and the camera flies to each one. Right makes the highlighted symbol the new selection.</p></li>
+      <li class="feat"><h3>History pane <span class="tag">right sidebar</span></h3><p>Step back and forward through the places you looked, with the view, direction and hop count restored. The history pane shows the whole trail.</p><div class="keys"><kbd>Alt+←</kbd><kbd>Alt+→</kbd><kbd>H</kbd></div></li>
+      <li class="feat"><h3>Frame anything</h3><p>Fit the blast or the whole graph. Double-click a circle to frame it, or empty canvas to see everything.</p><div class="keys"><kbd>F</kbd></div></li>
+      <li class="feat"><h3>Open in your editor</h3><p>Jump to the definition in VS Code, VSCodium, Cursor, Zed, Sublime Text, Helix, Neovim, Vim, IntelliJ IDEA, RustRover or Emacs, or any command you configure.</p><div class="keys"><kbd>O</kbd></div></li>
+      <li class="feat"><h3>Switch views</h3><p>Move between the Node Graph and the Flow Graph. Your selection comes with you.</p><div class="keys"><kbd>V</kbd></div></li>
+      <li class="feat"><h3>A key for every pane</h3><p>The browser, connections, symbols, history, hidden and profile panes each open with one key. Shift+Tab hides the right sidebar or brings back its last pane.</p><div class="keys"><kbd>Tab</kbd><kbd>C</kbd><kbd>S</kbd><kbd>H</kbd><kbd>N</kbd><kbd>P</kbd><kbd>Shift+Tab</kbd></div></li>
+      <li class="feat"><h3>Escape unwinds one layer</h3><p>Escape closes the topmost thing first: a popup, then a pane, then settings, then the selection.</p><div class="keys"><kbd>Esc</kbd></div></li>
+      <li class="feat"><h3>Rebind every key</h3><p>Bind any command to a key or a Ctrl, Alt or Shift chord. Tooltips show the live binding, and a key that's taken is refused with its current command named.</p><div class="keys"><kbd>Ctrl+,</kbd></div></li>
+    </ul>
+  </section>
+
+  <section class="cat" id="customization">
+    <div class="cat-label">
+      <h2>Customization</h2>
+      <p>Make it look and behave the way you work.</p>
+      <span class="count"></span>
+    </div>
+    <ul class="feats">
+      <li class="feat"><h3>209 themes</h3><p>Every Helix theme with colors of its own, plus built-in dark and light. Filter by dark, light, vivid, pastel, muted, warm, cool or mono, or search by name.</p></li>
+      <li class="feat"><h3>Edit and save themes</h3><p>Adjust any of 16 colors with an HSL picker or a hex value, and save the result as your own theme.</p></li>
+      <li class="feat"><h3>Symbols pane <span class="tag">right sidebar</span></h3><p>Every symbol kind in your workspace with its count, a switch and a color. Recolor a kind everywhere it appears, switch it off and let the layout pack closed, or Shift+click to show it alone.</p><div class="keys"><kbd>S</kbd></div></li>
+      <li class="feat"><h3>Fonts and text size</h3><p>Use any installed font, size each of nine text roles, and step all text larger or smaller from the keyboard.</p><div class="keys"><kbd>Ctrl+=</kbd><kbd>Ctrl+-</kbd><kbd>Ctrl+0</kbd></div></li>
+      <li class="feat"><h3>Background image</h3><p>Put an image behind the graph, with its own opacity and blend mode.</p></li>
+      <li class="feat"><h3>Resizable sidebars</h3><p>Drag either sidebar to the width you want. It's remembered.</p></li>
+      <li class="feat"><h3>Searchable settings</h3><p>One search box across every settings tab, matching names and descriptions.</p></li>
+      <li class="feat"><h3>Smooth on high-refresh displays</h3><p>Vsync is off by default, so a 240 Hz display isn't held to 60 frames a second. When nothing is changing, the app sleeps.</p></li>
+      <li class="feat"><h3>A config file you can edit</h3><p>Settings save to <code>config.toml</code> as you change them. Your comments and key order are kept, and new keys arrive with a description.</p></li>
+    </ul>
+  </section>
+</main>
+
+<section class="wrap spec" id="specs" aria-labelledby="spec-h">
+  <h2 id="spec-h">Specifications</h2>
+  <dl>
+    <div class="row"><dt>Platform</dt><dd>Windows</dd></div>
+    <div class="row"><dt>Language</dt><dd>Rust, Cargo packages and workspaces</dd></div>
+    <div class="row"><dt>Requires</dt><dd>Cargo on your <code>PATH</code></dd></div>
+    <div class="row"><dt>Default indexer</dt><dd>Native (syn), runs only <code>cargo metadata</code></dd></div>
+    <div class="row"><dt>Other indexers</dt><dd>rust-analyzer SCIP, or any <code>.scip</code> file</dd></div>
+    <div class="row"><dt>Profiler</dt><dd>Windows 8 or later, ETW sampling</dd></div>
+    <div class="row"><dt>Editors</dt><dd>11 built in, plus a custom command</dd></div>
+    <div class="row"><dt>Themes</dt><dd>207 from Helix, plus dark and light</dd></div>
+    <div class="row"><dt>Built with</dt><dd>Rust and Bevy</dd></div>
+  </dl>
+</section>
+
+<section class="wrap closing" aria-labelledby="closing-h">
+  <h2 id="closing-h">Know what a change reaches before you make it.</h2>
+  <p>Point Blast Radius at any Cargo workspace. It indexes in about half a second and never runs your code.</p>
+  <a class="buy" href="#TODO-GUMROAD">Buy on Gumroad</a>
+</section>
+
+<footer class="wrap foot">
+  <span>© 2026 rawvoxel</span>
+  <span>Blast Radius · Impact analysis for Rust</span>
+</footer>
+
+<script>
+/* ---------- catalog: jump links and counts ---------- */
+(() => {
+  const cats = [...document.querySelectorAll('.cat')];
+  const highlights = document.getElementById('highlights');
+  const hls = [...highlights.querySelectorAll('.hl')];
+  const jump = document.getElementById('jump');
+  const link = (id, name, n) => {
+    const a = document.createElement('a');
+    a.href = '#' + id;
+    a.textContent = name;
+    const c = document.createElement('span');
+    c.textContent = n;
+    a.append(c);
+    jump.append(a);
+  };
+  link('highlights', 'Highlights', hls.length);
+  let total = 0;
+  for (const cat of cats) {
+    const n = cat.querySelectorAll('.feat').length;
+    total += n;
+    cat.querySelector('.count').textContent = n + ' features';
+    link(cat.id, cat.querySelector('h2').textContent, n);
+  }
+  document.getElementById('tally').textContent =
+    hls.length + ' highlights, then ' + total + ' features in ' + cats.length + ' areas.';
+
+})();
+
+/* ---------- hero: a packed workspace with one symbol's blast ---------- */
+(() => {
+  const canvas = document.getElementById('blast');
+  const ctx = canvas.getContext('2d');
+  const W = 1000, H = 640;
+
+  let seed = 11;
+  const rand = () => {
+    seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+
+  const crates = [
+    { name: 'net', x: 300, y: 330, r: 236, mods: [16, 12, 10, 9, 7], modNames: ['socket', 'frame', 'session', 'tls', 'retry'] },
+    { name: 'proto', x: 700, y: 205, r: 170, mods: [11, 9, 6], modNames: ['codec', 'message', 'schema'] },
+    { name: 'cli', x: 790, y: 505, r: 128, mods: [8, 6], modNames: ['args', 'commands'] },
+    { name: 'util', x: 535, y: 565, r: 66, mods: [5], modNames: ['buf'] },
+  ];
+
+  function packInto(parent, radii) {
+    const n = radii.length;
+    const pts = radii.map((r, i) => {
+      const a = i * 2.39996 + 0.7, d = parent.r * 0.45 * Math.sqrt((i + 0.5) / n);
+      return { x: parent.x + Math.cos(a) * d, y: parent.y + Math.sin(a) * d, r };
+    });
+    for (let it = 0; it < 400; it++) {
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+        const a = pts[i], b = pts[j];
+        let dx = b.x - a.x, dy = b.y - a.y;
+        const d = Math.hypot(dx, dy) || 0.01, min = a.r + b.r + 6;
+        if (d < min) {
+          const push = (min - d) / 2;
+          dx /= d; dy /= d;
+          a.x -= dx * push; a.y -= dy * push; b.x += dx * push; b.y += dy * push;
+        }
+      }
+      for (const p of pts) {
+        const dx = p.x - parent.x, dy = p.y - parent.y;
+        const d = Math.hypot(dx, dy) || 0.01, max = parent.r - p.r - 8;
+        if (d > max) { p.x = parent.x + dx / d * max; p.y = parent.y + dy / d * max; }
+      }
+    }
+    return pts;
+  }
+
+  const KINDS = [['s-fn', 30], ['s-method', 20], ['s-struct', 12], ['s-field', 14], ['s-enum', 6], ['s-trait', 6], ['s-const', 5], ['s-macro', 3], ['s-alias', 4]];
+  const KIND_SUM = KINDS.reduce((s, k) => s + k[1], 0);
+  const pickKind = () => {
+    let x = rand() * KIND_SUM;
+    for (const [k, w] of KINDS) { if ((x -= w) < 0) return k; }
+    return 's-fn';
+  };
+  const NAMES = {
+    's-fn': ['parse_frame', 'spawn_reader', 'dispatch', 'handshake', 'read_exact', 'encode', 'main', 'backoff'],
+    's-method': ['Session::send', 'Frame::decode', 'Listener::accept', 'Codec::write', 'Args::parse'],
+    's-struct': ['Session', 'Frame', 'Listener', 'Config', 'Header'],
+    's-field': ['addr', 'timeout', 'buf', 'peer'],
+    's-enum': ['State', 'Error'],
+    's-trait': ['Transport', 'Codec'],
+    's-const': ['MAX_FRAME', 'PORT'],
+    's-macro': ['impl_codec!'],
+    's-alias': ['Result'],
+  };
+
+  const mods = [], dots = [];
+  for (const c of crates) {
+    const sum = c.mods.reduce((a, b) => a + b, 0);
+    const k = c.r * Math.sqrt(0.42 / sum);
+    const placed = packInto(c, c.mods.map(n => k * Math.sqrt(n)));
+    placed.forEach((m, i) => {
+      const mod = { x: m.x, y: m.y, r: m.r, name: c.modNames[i], id: mods.length };
+      mods.push(mod);
+      const n = c.mods[i], step = (m.r - 10) / Math.sqrt(n);
+      const turn = rand() * 6.28;
+      for (let j = 0; j < n; j++) {
+        const rr = step * Math.sqrt(j + 0.5), a = j * 2.39996 + turn;
+        dots.push({ x: m.x + Math.cos(a) * rr, y: m.y + Math.sin(a) * rr, kind: pickKind(), mod: mod.id, hop: -1 });
+      }
+    });
+  }
+
+  // The selection: the symbol nearest a point a little right of the big crate's center.
+  let sel = dots[0];
+  for (const d of dots) if (Math.hypot(d.x - 395, d.y - 300) < Math.hypot(sel.x - 395, sel.y - 300)) sel = d;
+  sel.hop = 0;
+  sel.kind = 's-method';
+  sel.label = 'Socket::connect';
+
+  const rest = dots.filter(d => d !== sel).map(d => ({
+    d, score: Math.hypot(d.x - sel.x, d.y - sel.y) * (0.55 + rand() * 0.9) - (d.mod === sel.mod ? 40 : 0),
+  })).sort((a, b) => a.score - b.score);
+  const sizes = [6, 11, 18];
+  let at = 0;
+  const hops = [[sel]];
+  sizes.forEach((n, i) => {
+    const group = rest.slice(at, at + n).map(r => r.d);
+    group.forEach(d => { d.hop = i + 1; });
+    hops.push(group);
+    at += n;
+  });
+  const ringR = [0];
+  for (let h = 1; h <= 3; h++) {
+    const far = Math.max(...hops[h].map(d => Math.hypot(d.x - sel.x, d.y - sel.y)));
+    ringR.push(Math.max(far + 10, ringR[h - 1] + 34));
+  }
+  const edges = [];
+  for (let h = 1; h <= 3; h++) {
+    for (const d of hops[h]) {
+      let best = hops[h - 1][0];
+      for (const p of hops[h - 1]) if (Math.hypot(p.x - d.x, p.y - d.y) < Math.hypot(best.x - d.x, best.y - d.y)) best = p;
+      edges.push({ a: best, b: d, hop: h });
+    }
+  }
+  const used = new Set();
+  const nameFor = d => {
+    const pool = NAMES[d.kind];
+    for (const n of pool) if (!used.has(n)) { used.add(n); return n; }
+    return null;
+  };
+  hops[1].forEach(d => { d.label = nameFor(d); });
+  hops[2].slice(0, 4).forEach(d => { d.label = nameFor(d); });
+
+  const reached = hops[1].length + hops[2].length + hops[3].length;
+  const files = new Set([...hops[1], ...hops[2], ...hops[3]].map(d => d.mod)).size;
+  document.getElementById('reach').textContent = reached + ' symbols in ' + files + ' files';
+
+  // Colors come from the page tokens, re-read when the theme changes.
+  let C = {};
+  const readColors = () => {
+    const cs = getComputedStyle(document.documentElement);
+    const names = ['canvas', 'canvas-line', 'text', 'dim', 'bright', 'pkg', 'mod', 'h0', 'h1', 'h2', 'h3', 'h4',
+      's-fn', 's-method', 's-struct', 's-field', 's-enum', 's-trait', 's-const', 's-macro', 's-alias'];
+    C = {};
+    for (const n of names) C[n] = cs.getPropertyValue('--' + n).trim();
+  };
+  readColors();
+
+  let cw = 0, ch = 0, dpr = 1, s = 1, ox = 0, oy = 0;
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cw = canvas.clientWidth; ch = canvas.clientHeight;
+    canvas.width = Math.round(cw * dpr); canvas.height = Math.round(ch * dpr);
+    s = Math.min(cw / W * 1.1, ch / H);
+    ox = (cw - W * s) / 2; oy = (ch - H * s) / 2;
+  }
+
+  function circle(x, y, r) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); }
+
+  function draw(wave) {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = C.canvas;
+    ctx.fillRect(0, 0, cw, ch);
+    ctx.save();
+    ctx.translate(ox, oy);
+    const X = v => v * s;
+    const dotR = Math.max(2.2, 5 * s);
+    const showNames = s >= 0.55;
+
+    // Containers: packages, then modules.
+    for (const c of crates) {
+      circle(X(c.x), X(c.y), X(c.r));
+      ctx.globalAlpha = 0.05; ctx.fillStyle = C.pkg; ctx.fill();
+      ctx.globalAlpha = 0.45; ctx.strokeStyle = C.pkg; ctx.lineWidth = 1; ctx.stroke();
+    }
+    for (const m of mods) {
+      circle(X(m.x), X(m.y), X(m.r));
+      ctx.globalAlpha = 0.05; ctx.fillStyle = C.mod; ctx.fill();
+      ctx.globalAlpha = 0.3; ctx.strokeStyle = C.mod; ctx.stroke();
+    }
+
+    // Rings, epicenter outward.
+    for (let h = 3; h >= 1; h--) {
+      circle(X(sel.x), X(sel.y), X(ringR[h]));
+      ctx.globalAlpha = 0.75; ctx.strokeStyle = C['h' + h]; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+    if (wave !== null) {
+      const r = ringR[3] * wave;
+      circle(X(sel.x), X(sel.y), X(r));
+      ctx.globalAlpha = 0.55 * (1 - wave); ctx.strokeStyle = C.h0; ctx.lineWidth = 2.5; ctx.stroke();
+    }
+
+    // Propagation edges under the dots.
+    ctx.lineWidth = Math.max(1, 1.4 * s);
+    for (const e of edges) {
+      ctx.beginPath(); ctx.moveTo(X(e.a.x), X(e.a.y)); ctx.lineTo(X(e.b.x), X(e.b.y));
+      ctx.globalAlpha = 0.6; ctx.strokeStyle = C['h' + e.hop]; ctx.stroke();
+    }
+
+    // Symbols: dimmed outside the blast.
+    for (const d of dots) {
+      if (d === sel) continue;
+      circle(X(d.x), X(d.y), dotR);
+      ctx.globalAlpha = d.hop < 0 ? 0.22 : 1;
+      ctx.fillStyle = C[d.kind]; ctx.fill();
+      if (wave !== null && d.hop > 0) {
+        const near = 1 - Math.abs(Math.hypot(d.x - sel.x, d.y - sel.y) - ringR[3] * wave) / 28;
+        if (near > 0) {
+          circle(X(d.x), X(d.y), dotR + 4 * near);
+          ctx.globalAlpha = 0.5 * near; ctx.strokeStyle = C['h' + d.hop]; ctx.lineWidth = 1.5; ctx.stroke();
+        }
+      }
+    }
+    circle(X(sel.x), X(sel.y), dotR * 2.6);
+    ctx.globalAlpha = 0.28; ctx.fillStyle = C.h0; ctx.fill();
+    circle(X(sel.x), X(sel.y), dotR * 1.35);
+    ctx.globalAlpha = 1; ctx.fillStyle = C.h0; ctx.fill();
+
+    // Names.
+    ctx.textBaseline = 'middle';
+    ctx.lineJoin = 'round';
+    // A left-aligned name is drawn only where it covers no name already placed.
+    const placed = [];
+    const label = (txt, x, y, color, font, alpha) => {
+      ctx.font = font;
+      if (ctx.textAlign === 'left') {
+        const w = ctx.measureText(txt).width + 4, h = 15, top = y - h / 2;
+        for (const b of placed) if (x < b.x + b.w && x + w > b.x && top < b.y + b.h && top + h > b.y) return;
+        placed.push({ x, y: top, w, h });
+      }
+      ctx.globalAlpha = alpha;
+      ctx.lineWidth = 3.5; ctx.strokeStyle = C.canvas; ctx.strokeText(txt, x, y);
+      ctx.fillStyle = color; ctx.fillText(txt, x, y);
+    };
+    ctx.textAlign = 'center';
+    for (const c of crates) label(c.name, X(c.x), X(c.y - c.r) + 14, C.pkg, '600 12px "IBM Plex Sans", system-ui, sans-serif', 0.95);
+    if (showNames) for (const m of mods) label(m.name, X(m.x), X(m.y - m.r) + 11, C.mod, '400 10.5px "JetBrains Mono", monospace', 0.75);
+    ctx.textAlign = 'left';
+    label(sel.label, X(sel.x) + dotR * 2.6 + 4, X(sel.y), C.bright, '500 12.5px "JetBrains Mono", monospace', 1);
+    if (showNames) {
+      for (const d of dots) {
+        if (!d.label || d === sel) continue;
+        label(d.label, X(d.x) + dotR + 5, X(d.y), C.text, '400 11px "JetBrains Mono", monospace', 0.92);
+      }
+    }
+    ctx.restore();
+  }
+
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const PERIOD = 3600;
+  let visible = true, raf = 0;
+  const frame = t => {
+    draw((t % PERIOD) / PERIOD);
+    raf = visible && !still.matches ? requestAnimationFrame(frame) : 0;
+  };
+  const restart = () => {
+    cancelAnimationFrame(raf); raf = 0;
+    if (still.matches || !visible) draw(null);
+    else raf = requestAnimationFrame(frame);
+  };
+
+  resize();
+  draw(null);
+  new ResizeObserver(() => { resize(); restart(); }).observe(canvas);
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; restart(); }).observe(canvas);
+  still.addEventListener('change', restart);
+  const themeChanged = () => { readColors(); restart(); };
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', themeChanged);
+  if (document.fonts) document.fonts.ready.then(restart);
+})();
+</script>
+</body>
+</html>
