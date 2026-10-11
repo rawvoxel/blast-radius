@@ -13,10 +13,19 @@
 <meta property="og:url" content="https://rawvoxel.github.io/blast-radius/">
 <meta name="twitter:card" content="summary">
 <link rel="canonical" href="https://rawvoxel.github.io/blast-radius/">
+<script>
+  // Apply a theme picked with the header switch before the first paint, so the page never shows
+  // the other one first. Without a pick, the system setting decides.
+  try {
+    const picked = localStorage.getItem('theme');
+    if (picked === 'light' || picked === 'dark') document.documentElement.dataset.theme = picked;
+  } catch (e) {}
+</script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,750&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,1,0&icon_names=auto_awesome,data_object,extension,folder,functions,inventory,link,list_alt,lock,radio_button_checked,rule,subdirectory_arrow_right,tag&display=block">
 <style>
 /* Layout: the app's own window colors; a live blast as the hero; then a catalog where each
    category is a sticky label beside a two-column list of features, closing on a spec sheet. */
@@ -31,9 +40,14 @@
   --link: #2f6cb5;
   --heat: #b4561a;
   --h0: #e8c21c; --h1: #f08a2c; --h2: #e0533f; --h3: #b84679; --h4: #7d4aa3;
-  --canvas: #f6f7fa;
-  --canvas-line: #b3bcca;
+  /* The graph's own colors, as the app derives them from its light theme. */
+  --canvas: #e7eaef;
   --pkg: #1f4f8f; --mod: #3a6aa5; --ty: #6b4a94;
+  --c-ws: #dde1e8; --c-pkg: #000000; --c-mod: #000000; --c-ty: #000000;
+  --chip: #ccd2dc; --hl: #0c1017;
+  --s-variant: #6d55b0; --s-tmethod: #8a530b;
+  /* Ring colors are a fixed heat scale in the app, the same over every theme. */
+  --r1: #ffa84d; --r2: #f57059; --r3: #c75c8c;
   --s-fn: #1d7a4c; --s-method: #186340; --s-struct: #1f5f9e; --s-field: #4a5c70; --s-enum: #5a3f9c;
   --s-trait: #9a5f10; --s-const: #a33b3b; --s-macro: #8e3a8e; --s-alias: #17706a;
   --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
@@ -42,18 +56,37 @@
   --buy-bg: #b4561a; --buy-fg: #ffffff;
   color-scheme: light;
 }
+/* Dark follows the system unless the header switch picked light; the switch picking dark wins
+   over a light system. The two blocks carry the same values. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #0d0f14; --surface: #131820; --raised: #1c2330; --border: #2a3444;
     --text: #b8c9e0; --dim: #8599b8; --bright: #ebf2ff; --link: #8fb3ef; --heat: #ffa84d;
     --h0: #fff28c; --h1: #ffa84d; --h2: #f57059; --h3: #c75c8c; --h4: #8c59ad;
-    --canvas: #0d0f14; --canvas-line: #334052;
+    --canvas: #0d0f14;
     --pkg: #b8d1fa; --mod: #94b3db; --ty: #ad94cc;
+    --c-ws: #242b38; --c-pkg: #97acce; --c-mod: #6b82a0; --c-ty: #7b6992;
+    --chip: #293345; --hl: #ebf2ff;
+    --s-variant: #b4a7d6; --s-tmethod: #d99b4f;
     --s-fn: #6fd3a0; --s-method: #54b98a; --s-struct: #6fa8dc; --s-field: #8fa3b8; --s-enum: #8e7cc3;
     --s-trait: #e0a45e; --s-const: #d78a8a; --s-macro: #d6a3d6; --s-alias: #76c7c0;
     --buy-bg: #ffa84d; --buy-fg: #0d0f14;
     color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #0d0f14; --surface: #131820; --raised: #1c2330; --border: #2a3444;
+  --text: #b8c9e0; --dim: #8599b8; --bright: #ebf2ff; --link: #8fb3ef; --heat: #ffa84d;
+  --h0: #fff28c; --h1: #ffa84d; --h2: #f57059; --h3: #c75c8c; --h4: #8c59ad;
+  --canvas: #0d0f14;
+  --pkg: #b8d1fa; --mod: #94b3db; --ty: #ad94cc;
+  --c-ws: #242b38; --c-pkg: #97acce; --c-mod: #6b82a0; --c-ty: #7b6992;
+  --chip: #293345; --hl: #ebf2ff;
+  --s-variant: #b4a7d6; --s-tmethod: #d99b4f;
+  --s-fn: #6fd3a0; --s-method: #54b98a; --s-struct: #6fa8dc; --s-field: #8fa3b8; --s-enum: #8e7cc3;
+  --s-trait: #e0a45e; --s-const: #d78a8a; --s-macro: #d6a3d6; --s-alias: #76c7c0;
+  --buy-bg: #ffa84d; --buy-fg: #0d0f14;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -243,6 +276,19 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 }
 .buy:hover { filter: brightness(1.08); }
 .topnav .buy { padding: 7px 14px; font-size: 14px; }
+.theme-toggle {
+  display: inline-grid; place-items: center;
+  width: 34px; height: 34px; padding: 0;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.theme-toggle:hover { color: var(--bright); border-color: var(--heat); }
+.theme-toggle svg { width: 18px; height: 18px; }
+.theme-toggle .sun, .theme-toggle[data-mode="dark"] .moon { display: none; }
+.theme-toggle[data-mode="dark"] .sun { display: block; }
 .ghost {
   display: inline-block;
   font: 500 15px var(--body);
@@ -300,6 +346,10 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   <nav class="topnav" aria-label="Site">
     <a href="#features">Features</a>
     <a href="#specs">Specs</a>
+    <button class="theme-toggle" id="theme-toggle" type="button" hidden>
+      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
     <!-- TODO-GUMROAD: replace #TODO-GUMROAD with your Gumroad product URL (three places on this page) -->
     <a class="buy" href="#TODO-GUMROAD">Buy on Gumroad</a>
   </nav>
@@ -323,15 +373,15 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       </div>
     </div>
     <figure class="viewport" style="margin:0">
-      <canvas id="blast" role="img" aria-label="A workspace drawn as nested circles. One selected function sits at the center of three concentric rings, and the symbols that depend on it are lit in heat colors by hop distance while the rest are dimmed."></canvas>
+      <canvas id="blast" role="img" aria-label="A sample Rust workspace drawn as nested circles of packages, modules and types. The method Socket::connect is selected; the eleven symbols that depend on it are named and pulled toward it, with one ring per hop, while everything else is faded."></canvas>
       <figcaption class="viewport-foot">
-        <span><b>net::Socket::connect</b></span>
-        <span>dependents · 3 hops · <span id="reach">symbols in files</span></span>
+        <span><b>net::socket::Socket::connect</b></span>
+        <span id="reach">dependents: 11 symbols in 4 files</span>
         <span class="legend" aria-hidden="true">
-          <span><i style="background:var(--h0)"></i>epicenter</span>
-          <span><i style="background:var(--h1)"></i>1</span>
-          <span><i style="background:var(--h2)"></i>2</span>
-          <span><i style="background:var(--h3)"></i>3</span>
+          <span>hop</span>
+          <span><i style="background:var(--r1)"></i>1</span>
+          <span><i style="background:var(--r2)"></i>2</span>
+          <span><i style="background:var(--r3)"></i>3</span>
         </span>
       </figcaption>
     </figure>
@@ -560,6 +610,33 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 </footer>
 
 <script>
+/* ---------- header: the dark/light switch ---------- */
+(() => {
+  const button = document.getElementById('theme-toggle');
+  const root = document.documentElement;
+  const system = window.matchMedia('(prefers-color-scheme: dark)');
+  const current = () => root.dataset.theme || (system.matches ? 'dark' : 'light');
+  const sync = () => {
+    const dark = current() === 'dark';
+    const label = dark ? 'Switch to light theme' : 'Switch to dark theme';
+    button.dataset.mode = dark ? 'dark' : 'light';
+    button.setAttribute('aria-label', label);
+    button.title = label;
+    for (const meta of document.querySelectorAll('meta[name="theme-color"]')) {
+      meta.content = dark ? '#0d0f14' : '#e7eaef';
+    }
+  };
+  button.addEventListener('click', () => {
+    const next = current() === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    sync();
+  });
+  system.addEventListener('change', sync);
+  sync();
+  button.hidden = false;
+})();
+
 /* ---------- catalog: jump links and counts ---------- */
 (() => {
   const cats = [...document.querySelectorAll('.cat')];
@@ -588,267 +665,433 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 
 })();
 
-/* ---------- hero: a packed workspace with one symbol's blast ---------- */
+/* ---------- hero: the node graph, drawn the way the app draws a selection ---------- */
+// A small sample workspace, packed and colored as Blast Radius does it: filled circles for
+// packages, modules and types; one dot per symbol, sized 4 + 2.2·√(dependents); the selection's
+// dependents pulled toward it without leaving their circles; a ring per hop and an edge per
+// reference, colored by hop; everything else faded and shrunk; and names as chips centered on
+// their dots, moved aside only when something is already there, and left out when nowhere is free.
 (() => {
   const canvas = document.getElementById('blast');
   const ctx = canvas.getContext('2d');
-  const W = 1000, H = 640;
 
-  let seed = 11;
-  const rand = () => {
-    seed = (seed + 0x6D2B79F5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  // The app's own numbers.
+  const SIBLING_PAD = 3, CONTAINER_PAD = 10, UNLINKED_SCALE = 0.6, DEFOCUS = 0.12, FILL = 0.2;
+  // Screen radii over which a container's name fades in, per container type.
+  const NAME_BAND = { package: [38, 70], module: [50, 85], type: [30, 55] };
+  const ICON = {
+    fn: 'functions', method: 'subdirectory_arrow_right', struct: 'data_object', field: 'tag',
+    enum: 'list_alt', variant: 'radio_button_checked', trait: 'extension', tmethod: 'rule',
+    alias: 'link', const: 'lock', macro: 'auto_awesome',
+    package: 'inventory', module: 'folder', type: 'data_object',
   };
 
-  const crates = [
-    { name: 'net', x: 300, y: 330, r: 236, mods: [16, 12, 10, 9, 7], modNames: ['socket', 'frame', 'session', 'tls', 'retry'] },
-    { name: 'proto', x: 700, y: 205, r: 170, mods: [11, 9, 6], modNames: ['codec', 'message', 'schema'] },
-    { name: 'cli', x: 790, y: 505, r: 128, mods: [8, 6], modNames: ['args', 'commands'] },
-    { name: 'util', x: 535, y: 565, r: 66, mods: [5], modNames: ['buf'] },
+  // ---- the sample workspace ----
+  const S = (name, kind, weight = 0) => ({ name, kind, weight });
+  const T = (name, kind, weight, members) => ({ name, type: 'type', self: S(name, kind, weight), children: members });
+  const M = (name, children) => ({ name, type: 'module', children });
+  const P = (name, children) => ({ name, type: 'package', children });
+  const root = { name: 'relay', type: 'workspace', children: [
+    P('net', [
+      M('socket', [
+        T('Socket', 'struct', 6, [S('addr', 'field'), S('timeout', 'field'), S('peer', 'field'),
+          S('connect', 'method', 2), S('open', 'method', 2), S('reconnect', 'method', 2), S('close', 'method', 1)]),
+        S('resolve', 'fn', 3), S('DEFAULT_PORT', 'const', 2), S('dial', 'fn', 1), S('bind', 'fn', 1),
+      ]),
+      M('session', [
+        T('Session', 'struct', 5, [S('socket', 'field'), S('state', 'field'), S('start', 'method', 3),
+          S('resume', 'method', 0), S('send', 'method', 1), S('recv', 'method', 1)]),
+        T('State', 'enum', 3, [S('Idle', 'variant'), S('Open', 'variant'), S('Closed', 'variant')]),
+        S('spawn_reader', 'fn', 1),
+      ]),
+      M('retry', [
+        T('Policy', 'struct', 2, [S('attempts', 'field'), S('delay', 'field')]),
+        S('with_retry', 'fn', 1), S('backoff', 'fn', 2), S('MAX_TRIES', 'const', 1),
+      ]),
+      M('tls', [
+        T('TlsConfig', 'struct', 1, [S('cert', 'field'), S('key', 'field')]),
+        S('handshake', 'fn', 1), S('verify', 'fn', 1),
+      ]),
+      M('frame', [
+        T('Frame', 'struct', 4, [S('header', 'field'), S('payload', 'field'), S('decode', 'method', 2), S('encode', 'method', 2)]),
+        T('Kind', 'enum', 2, [S('Data', 'variant'), S('Ping', 'variant'), S('Close', 'variant')]),
+        S('checksum', 'fn', 1), S('MAX_FRAME', 'const', 2),
+      ]),
+    ]),
+    P('proto', [
+      M('codec', [
+        T('Codec', 'trait', 4, [S('write', 'tmethod', 2), S('read', 'tmethod', 2)]),
+        S('encode_frame', 'fn', 2), S('decode_frame', 'fn', 2), S('impl_codec', 'macro', 3),
+      ]),
+      M('message', [
+        T('Message', 'struct', 3, [S('id', 'field'), S('body', 'field'), S('new', 'method', 2), S('to_bytes', 'method', 1)]),
+        T('Body', 'enum', 1, [S('Text', 'variant'), S('Bin', 'variant')]),
+      ]),
+      M('schema', [S('Result', 'alias', 4), S('validate', 'fn', 1), S('VERSION', 'const', 1)]),
+    ]),
+    P('cli', [
+      S('main', 'fn', 0),
+      M('args', [T('Args', 'struct', 2, [S('host', 'field'), S('port', 'field'), S('verbose', 'field'), S('parse', 'method', 1)])]),
+      M('commands', [S('connect_cmd', 'fn', 1), S('send_cmd', 'fn', 1), S('ping_cmd', 'fn', 1), S('dispatch', 'fn', 2)]),
+    ]),
+    P('util', [
+      M('buf', [T('Buf', 'struct', 3, [S('data', 'field'), S('pos', 'field'), S('push', 'method', 2), S('take', 'method', 1)]),
+        S('hexdump', 'fn', 1)]),
+    ]),
+  ]};
+
+  // What depends on Socket::connect, hop by hop, and which symbol of the hop before each one uses.
+  const SELECTED = 'net/socket/Socket/connect';
+  const BLAST = [
+    ['net/socket/Socket/open', 1, [SELECTED]],
+    ['net/socket/Socket/reconnect', 1, [SELECTED]],
+    ['net/socket/dial', 2, ['net/socket/Socket/open']],
+    ['net/session/Session/start', 2, ['net/socket/Socket/open']],
+    ['net/session/Session/resume', 2, ['net/socket/Socket/reconnect']],
+    ['net/retry/with_retry', 2, ['net/socket/Socket/reconnect']],
+    ['net/session/Session/send', 3, ['net/session/Session/start']],
+    ['net/session/spawn_reader', 3, ['net/session/Session/start']],
+    ['net/tls/handshake', 3, ['net/retry/with_retry']],
+    ['cli/commands/connect_cmd', 3, ['net/session/Session/start']],
+    ['cli/commands/ping_cmd', 3, ['net/socket/dial']],
   ];
 
-  function packInto(parent, radii) {
-    const n = radii.length;
-    const pts = radii.map((r, i) => {
-      const a = i * 2.39996 + 0.7, d = parent.r * 0.45 * Math.sqrt((i + 0.5) / n);
-      return { x: parent.x + Math.cos(a) * d, y: parent.y + Math.sin(a) * d, r };
-    });
-    for (let it = 0; it < 400; it++) {
-      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
-        const a = pts[i], b = pts[j];
-        let dx = b.x - a.x, dy = b.y - a.y;
-        const d = Math.hypot(dx, dy) || 0.01, min = a.r + b.r + 6;
-        if (d < min) {
-          const push = (min - d) / 2;
-          dx /= d; dy /= d;
-          a.x -= dx * push; a.y -= dy * push; b.x += dx * push; b.y += dy * push;
-        }
-      }
-      for (const p of pts) {
-        const dx = p.x - parent.x, dy = p.y - parent.y;
-        const d = Math.hypot(dx, dy) || 0.01, max = parent.r - p.r - 8;
-        if (d > max) { p.x = parent.x + dx / d * max; p.y = parent.y + dy / d * max; }
-      }
+  // ---- index the tree ----
+  const containers = [], symbols = [], byPath = new Map();
+  (function walk(node, parent) {
+    node.parent = parent;
+    node.path = !parent ? '' : parent.path ? parent.path + '/' + node.name : node.name;
+    node.x = node.y = 0;
+    if (node.type) {
+      node.kids = node.self ? [node.self, ...node.children] : node.children;
+      node.depth = parent ? parent.depth + 1 : 0;
+      containers.push(node);
+      for (const kid of node.kids) walk(kid, node);
+    } else {
+      node.r = 4 + 2.2 * Math.sqrt(node.weight);
+      symbols.push(node);
     }
-    return pts;
-  }
+    byPath.set(node.path, node);
+  })(root, null);
 
-  const KINDS = [['s-fn', 30], ['s-method', 20], ['s-struct', 12], ['s-field', 14], ['s-enum', 6], ['s-trait', 6], ['s-const', 5], ['s-macro', 3], ['s-alias', 4]];
-  const KIND_SUM = KINDS.reduce((s, k) => s + k[1], 0);
-  const pickKind = () => {
-    let x = rand() * KIND_SUM;
-    for (const [k, w] of KINDS) { if ((x -= w) < 0) return k; }
-    return 's-fn';
-  };
-  const NAMES = {
-    's-fn': ['parse_frame', 'spawn_reader', 'dispatch', 'handshake', 'read_exact', 'encode', 'main', 'backoff'],
-    's-method': ['Session::send', 'Frame::decode', 'Listener::accept', 'Codec::write', 'Args::parse'],
-    's-struct': ['Session', 'Frame', 'Listener', 'Config', 'Header'],
-    's-field': ['addr', 'timeout', 'buf', 'peer'],
-    's-enum': ['State', 'Error'],
-    's-trait': ['Transport', 'Codec'],
-    's-const': ['MAX_FRAME', 'PORT'],
-    's-macro': ['impl_codec!'],
-    's-alias': ['Result'],
-  };
-
-  const mods = [], dots = [];
-  for (const c of crates) {
-    const sum = c.mods.reduce((a, b) => a + b, 0);
-    const k = c.r * Math.sqrt(0.42 / sum);
-    const placed = packInto(c, c.mods.map(n => k * Math.sqrt(n)));
-    placed.forEach((m, i) => {
-      const mod = { x: m.x, y: m.y, r: m.r, name: c.modNames[i], id: mods.length };
-      mods.push(mod);
-      const n = c.mods[i], step = (m.r - 10) / Math.sqrt(n);
-      const turn = rand() * 6.28;
-      for (let j = 0; j < n; j++) {
-        const rr = step * Math.sqrt(j + 0.5), a = j * 2.39996 + turn;
-        dots.push({ x: m.x + Math.cos(a) * rr, y: m.y + Math.sin(a) * rr, kind: pickKind(), mod: mod.id, hop: -1 });
-      }
-    });
-  }
-
-  // The selection: the symbol nearest a point a little right of the big crate's center.
-  let sel = dots[0];
-  for (const d of dots) if (Math.hypot(d.x - 395, d.y - 300) < Math.hypot(sel.x - 395, sel.y - 300)) sel = d;
-  sel.hop = 0;
-  sel.kind = 's-method';
-  sel.label = 'Socket::connect';
-
-  const rest = dots.filter(d => d !== sel).map(d => ({
-    d, score: Math.hypot(d.x - sel.x, d.y - sel.y) * (0.55 + rand() * 0.9) - (d.mod === sel.mod ? 40 : 0),
-  })).sort((a, b) => a.score - b.score);
-  const sizes = [6, 11, 18];
-  let at = 0;
-  const hops = [[sel]];
-  sizes.forEach((n, i) => {
-    const group = rest.slice(at, at + n).map(r => r.d);
-    group.forEach(d => { d.hop = i + 1; });
-    hops.push(group);
-    at += n;
-  });
-  const ringR = [0];
-  for (let h = 1; h <= 3; h++) {
-    const far = Math.max(...hops[h].map(d => Math.hypot(d.x - sel.x, d.y - sel.y)));
-    ringR.push(Math.max(far + 10, ringR[h - 1] + 34));
-  }
+  const epi = byPath.get(SELECTED);
+  const hopOf = new Map([[epi, 0]]);
   const edges = [];
-  for (let h = 1; h <= 3; h++) {
-    for (const d of hops[h]) {
-      let best = hops[h - 1][0];
-      for (const p of hops[h - 1]) if (Math.hypot(p.x - d.x, p.y - d.y) < Math.hypot(best.x - d.x, best.y - d.y)) best = p;
-      edges.push({ a: best, b: d, hop: h });
+  for (const [path, hop, from] of BLAST) {
+    const node = byPath.get(path);
+    hopOf.set(node, hop);
+    for (const f of from) edges.push([node, byPath.get(f), hop]);
+  }
+  for (const node of hopOf.keys()) for (let c = node.parent; c; c = c.parent) c.holdsReached = true;
+  for (let c = epi.parent; c; c = c.parent) c.holdsEpi = true;
+  const files = new Set([...hopOf.keys()].filter(n => n !== epi).map(n => {
+    let c = n.parent;
+    while (c.type !== 'module' && c.type !== 'package') c = c.parent;
+    return c;
+  }));
+  document.getElementById('reach').textContent =
+    'dependents: ' + (hopOf.size - 1) + ' symbols in ' + files.size + ' files';
+
+  // ---- pack: sunflower seeding, then overlaps relaxed apart, innermost circles first ----
+  const GOLDEN = Math.PI * (3 - Math.sqrt(5));
+  function separate(items, bound) {
+    for (let i = 0; i < items.length; i++) {
+      for (let j = i + 1; j < items.length; j++) {
+        const a = items[i], b = items[j];
+        let dx = b.x - a.x, dy = b.y - a.y;
+        const d = Math.hypot(dx, dy) || 1e-3, over = a.r + b.r + SIBLING_PAD - d;
+        if (over <= 0) continue;
+        dx /= d; dy /= d;
+        const wa = a.pinned ? 0 : b.pinned ? 1 : 0.5, wb = b.pinned ? 0 : a.pinned ? 1 : 0.5;
+        a.x -= dx * over * wa; a.y -= dy * over * wa;
+        b.x += dx * over * wb; b.y += dy * over * wb;
+      }
+    }
+    if (!bound) return;
+    for (const a of items) {
+      if (a.pinned) continue;
+      const d = Math.hypot(a.x, a.y), max = bound - a.r - CONTAINER_PAD;
+      if (d > max && d > 0) { a.x *= max / d; a.y *= max / d; }
     }
   }
-  const used = new Set();
-  const nameFor = d => {
-    const pool = NAMES[d.kind];
-    for (const n of pool) if (!used.has(n)) { used.add(n); return n; }
-    return null;
-  };
-  hops[1].forEach(d => { d.label = nameFor(d); });
-  hops[2].slice(0, 4).forEach(d => { d.label = nameFor(d); });
+  function enclose(node) {
+    node.r = Math.max(...node.kids.map(k => Math.hypot(k.x, k.y) + k.r)) + CONTAINER_PAD;
+  }
+  (function pack(node) {
+    if (!node.type) return;
+    node.kids.forEach(pack);
+    const order = node.kids.slice().sort((a, b) => b.r - a.r);
+    const step = 1.7 * order.reduce((sum, k) => sum + k.r, 0) / order.length;
+    order.forEach((k, i) => {
+      const d = step * Math.sqrt(i);
+      k.x = Math.cos(i * GOLDEN) * d;
+      k.y = Math.sin(i * GOLDEN) * d;
+    });
+    for (let it = 0; it < 240; it++) {
+      for (const k of order) { k.x *= 0.98; k.y *= 0.98; }
+      separate(order, 0);
+    }
+    for (let it = 0; it < 40; it++) separate(order, 0);
+    const xs = order.map(k => k.x), ys = order.map(k => k.y);
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+    for (const k of order) { k.x -= cx; k.y -= cy; }
+    enclose(node);
+  })(root);
 
-  const reached = hops[1].length + hops[2].length + hops[3].length;
-  const files = new Set([...hops[1], ...hops[2], ...hops[3]].map(d => d.mod)).size;
-  document.getElementById('reach').textContent = reached + ' symbols in ' + files + ' files';
+  function place(node, ox, oy) {
+    node.ax = ox + node.x;
+    node.ay = oy + node.y;
+    if (node.type) for (const kid of node.kids) place(kid, node.ax, node.ay);
+  }
+  const nodes = [...containers, ...symbols];
+  for (const n of nodes) { n.hx = n.x; n.hy = n.y; }
 
-  // Colors come from the page tokens, re-read when the theme changes.
-  let C = {};
+  // ---- the pull: whatever holds part of the answer is towed toward the selection, top down,
+  // never leaving its own circle; the selection and the circles around it hold still ----
+  for (const c of containers) {
+    place(root, 0, 0);
+    const tx = epi.ax - c.ax, ty = epi.ay - c.ay;
+    const movers = c.kids.filter(k => k !== epi && !k.holdsEpi && (k.type ? k.holdsReached : hopOf.has(k)));
+    if (!movers.length) continue;
+    for (const k of c.kids) k.pinned = k === epi || !!k.holdsEpi;
+    const bound = c === root ? 0 : c.r;
+    for (let it = 0; it < 160; it++) {
+      for (const k of movers) { k.x += (tx - k.x) * 0.05; k.y += (ty - k.y) * 0.05; }
+      separate(c.kids, bound);
+    }
+    for (let it = 0; it < 40; it++) separate(c.kids, bound);
+    for (const k of c.kids) k.pinned = false;
+  }
+  enclose(root);
+  for (const n of nodes) { n.px = n.x; n.py = n.y; }
+  place(root, 0, 0);
+
+  // One ring per hop, sized to that hop's members as the app sizes it.
+  const ringR = [0, 0, 0, 0];
+  for (const [node, hop] of hopOf) {
+    if (hop > 0) ringR[hop] = Math.max(ringR[hop], Math.hypot(node.ax - epi.ax, node.ay - epi.ay) + node.r + 4);
+  }
+  const reach = Math.max(...ringR);
+
+  // ---- colors, read from the page's tokens so both themes follow ----
+  let COLOR = {};
   const readColors = () => {
     const cs = getComputedStyle(document.documentElement);
-    const names = ['canvas', 'canvas-line', 'text', 'dim', 'bright', 'pkg', 'mod', 'h0', 'h1', 'h2', 'h3', 'h4',
-      's-fn', 's-method', 's-struct', 's-field', 's-enum', 's-trait', 's-const', 's-macro', 's-alias'];
-    C = {};
-    for (const n of names) C[n] = cs.getPropertyValue('--' + n).trim();
+    const v = n => cs.getPropertyValue('--' + n).trim();
+    COLOR = {
+      canvas: v('canvas'), chip: v('chip'), hl: v('hl'),
+      fill: { workspace: v('c-ws'), package: v('c-pkg'), module: v('c-mod'), type: v('c-ty') },
+      name: { package: v('pkg'), module: v('mod'), type: v('ty') },
+      ring: [v('r1'), v('r1'), v('r2'), v('r3')],
+      kind: {
+        fn: v('s-fn'), method: v('s-method'), struct: v('s-struct'), field: v('s-field'),
+        enum: v('s-enum'), variant: v('s-variant'), trait: v('s-trait'), tmethod: v('s-tmethod'),
+        alias: v('s-alias'), const: v('s-const'), macro: v('s-macro'),
+      },
+    };
   };
   readColors();
 
-  let cw = 0, ch = 0, dpr = 1, s = 1, ox = 0, oy = 0;
+  // ---- the icon font: chips carry their kind's glyph once it has loaded ----
+  const LABEL_FONT = '12px "Segoe UI", system-ui, -apple-system, sans-serif';
+  const ICON_FONT = '13px "Material Symbols Outlined"';
+  let icons = false;
+  const checkIcons = () => {
+    ctx.font = ICON_FONT;
+    // A ligature draws as one glyph; a missing font spells the word out.
+    icons = document.fonts.check(ICON_FONT, 'functions') && ctx.measureText('functions').width < 24;
+  };
+
+  // ---- view ----
+  let cw = 0, ch = 0, dpr = 1;
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
-    cw = canvas.clientWidth; ch = canvas.clientHeight;
-    canvas.width = Math.round(cw * dpr); canvas.height = Math.round(ch * dpr);
-    s = Math.min(cw / W * 1.1, ch / H);
-    ox = (cw - W * s) / 2; oy = (ch - H * s) / 2;
+    cw = canvas.clientWidth;
+    ch = canvas.clientHeight;
+    canvas.width = Math.round(cw * dpr);
+    canvas.height = Math.round(ch * dpr);
   }
+  // The whole workspace before the click; the outermost ring after it, as the app frames a blast.
+  const cameras = () => [
+    { x: 0, y: 0, s: Math.min(cw, ch) / (2 * root.r * 1.04) },
+    { x: epi.ax, y: epi.ay, s: Math.min(cw / (2 * reach * 1.12), ch / (2 * reach * 1.12)) },
+  ];
 
-  function circle(x, y, r) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); }
+  const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const mix = (a, b, t) => a + (b - a) * t;
+  const clamp01 = t => Math.min(1, Math.max(0, t));
 
-  function draw(wave) {
+  function circle(x, y, r) { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, Math.PI * 2); }
+
+  // Candidate spots around an anchor, nearest first; a step's push away from the name's own circle
+  // breaks ties, the way the app moves a crowded name outward.
+  const STEPS = [];
+  for (let gx = -4; gx <= 4; gx++) for (let gy = -4; gy <= 4; gy++) STEPS.push([gx, gy]);
+
+  function draw(t) {
+    const e = ease(t);
+    // The selection lands at once; the pull and the camera ease toward the answer together.
+    const sel = clamp01(t * 6);
+    for (const n of nodes) { n.x = mix(n.hx, n.px, e); n.y = mix(n.hy, n.py, e); }
+    place(root, 0, 0);
+    const [from, to] = cameras();
+    const s = Math.exp(mix(Math.log(from.s), Math.log(to.s), e));
+    const camX = mix(from.x, to.x, e), camY = mix(from.y, to.y, e);
+    const X = x => (x - camX) * s + cw / 2;
+    const Y = y => (y - camY) * s + ch / 2;
+
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.globalAlpha = 1;
-    ctx.fillStyle = C.canvas;
+    ctx.fillStyle = COLOR.canvas;
     ctx.fillRect(0, 0, cw, ch);
-    ctx.save();
-    ctx.translate(ox, oy);
-    const X = v => v * s;
-    const dotR = Math.max(2.2, 5 * s);
-    const showNames = s >= 0.55;
 
-    // Containers: packages, then modules.
-    for (const c of crates) {
-      circle(X(c.x), X(c.y), X(c.r));
-      ctx.globalAlpha = 0.05; ctx.fillStyle = C.pkg; ctx.fill();
-      ctx.globalAlpha = 0.45; ctx.strokeStyle = C.pkg; ctx.lineWidth = 1; ctx.stroke();
-    }
-    for (const m of mods) {
-      circle(X(m.x), X(m.y), X(m.r));
-      ctx.globalAlpha = 0.05; ctx.fillStyle = C.mod; ctx.fill();
-      ctx.globalAlpha = 0.3; ctx.strokeStyle = C.mod; ctx.stroke();
+    // Circles: filled, deeper ones over shallower; a circle holding none of the answer fades.
+    const byDepth = containers.slice().sort((a, b) => a.depth - b.depth);
+    for (const c of byDepth) {
+      circle(X(c.ax), Y(c.ay), c.r * s);
+      ctx.globalAlpha = FILL * (c.holdsReached ? 1 : mix(1, DEFOCUS, sel));
+      ctx.fillStyle = COLOR.fill[c.type];
+      ctx.fill();
     }
 
-    // Rings, epicenter outward.
-    for (let h = 3; h >= 1; h--) {
-      circle(X(sel.x), X(sel.y), X(ringR[h]));
-      ctx.globalAlpha = 0.75; ctx.strokeStyle = C['h' + h]; ctx.lineWidth = 1.5; ctx.stroke();
-    }
-    if (wave !== null) {
-      const r = ringR[3] * wave;
-      circle(X(sel.x), X(sel.y), X(r));
-      ctx.globalAlpha = 0.55 * (1 - wave); ctx.strokeStyle = C.h0; ctx.lineWidth = 2.5; ctx.stroke();
-    }
-
-    // Propagation edges under the dots.
-    ctx.lineWidth = Math.max(1, 1.4 * s);
-    for (const e of edges) {
-      ctx.beginPath(); ctx.moveTo(X(e.a.x), X(e.a.y)); ctx.lineTo(X(e.b.x), X(e.b.y));
-      ctx.globalAlpha = 0.6; ctx.strokeStyle = C['h' + e.hop]; ctx.stroke();
+    // Edges beneath the dots, one per reference, in the color of the hop they arrive at.
+    ctx.lineWidth = 1.5;
+    for (const [a, b, hop] of edges) {
+      ctx.beginPath();
+      ctx.moveTo(X(a.ax), Y(a.ay));
+      ctx.lineTo(X(b.ax), Y(b.ay));
+      ctx.globalAlpha = 0.5 * sel;
+      ctx.strokeStyle = COLOR.ring[hop];
+      ctx.stroke();
     }
 
-    // Symbols: dimmed outside the blast.
-    for (const d of dots) {
-      if (d === sel) continue;
-      circle(X(d.x), X(d.y), dotR);
-      ctx.globalAlpha = d.hop < 0 ? 0.22 : 1;
-      ctx.fillStyle = C[d.kind]; ctx.fill();
-      if (wave !== null && d.hop > 0) {
-        const near = 1 - Math.abs(Math.hypot(d.x - sel.x, d.y - sel.y) - ringR[3] * wave) / 28;
-        if (near > 0) {
-          circle(X(d.x), X(d.y), dotR + 4 * near);
-          ctx.globalAlpha = 0.5 * near; ctx.strokeStyle = C['h' + d.hop]; ctx.lineWidth = 1.5; ctx.stroke();
+    // Dots: the answer at full size; everything else faded and drawn smaller.
+    for (const n of symbols) {
+      const inBlast = hopOf.has(n);
+      circle(X(n.ax), Y(n.ay), n.r * s * (inBlast ? 1 : mix(1, UNLINKED_SCALE, sel)));
+      ctx.globalAlpha = inBlast ? 1 : mix(1, DEFOCUS, sel);
+      ctx.fillStyle = COLOR.kind[n.kind];
+      ctx.fill();
+    }
+
+    // A ring per hop about the selection, and the selection's own outline, over the dots.
+    ctx.lineWidth = 1.5;
+    for (let hop = 1; hop <= 3; hop++) {
+      circle(X(epi.ax), Y(epi.ay), ringR[hop] * s);
+      ctx.globalAlpha = 0.55 * sel;
+      ctx.strokeStyle = COLOR.ring[hop];
+      ctx.stroke();
+    }
+    circle(X(epi.ax), Y(epi.ay), epi.r * s + 2);
+    ctx.globalAlpha = sel;
+    ctx.strokeStyle = COLOR.hl;
+    ctx.stroke();
+
+    // Names. The selection first and where it stands; then what it reaches, nearest hop first;
+    // then the circles, outermost first. Each sits on its anchor if that is clear, else on the
+    // nearest clear spot, and is left out if there is none.
+    const items = [];
+    const named = [...hopOf.keys()].sort((a, b) => hopOf.get(a) - hopOf.get(b));
+    for (const n of named) {
+      items.push({ x: X(n.ax), y: Y(n.ay), text: n.name, icon: ICON[n.kind], color: COLOR.kind[n.kind],
+        alpha: sel, fixed: n === epi, ox: X(n.parent.ax), oy: Y(n.parent.ay) });
+    }
+    for (const c of byDepth) {
+      const band = NAME_BAND[c.type];
+      if (!band) continue;
+      const alpha = Math.pow(clamp01((c.r * s - band[0]) / (band[1] - band[0])), 2.5);
+      if (alpha < 0.02) continue;
+      const parent = c.parent;
+      items.push({ x: X(c.ax), y: Y(c.ay - c.r), text: c.name, icon: ICON[c.type], color: COLOR.name[c.type],
+        alpha, ox: X(parent.ax), oy: Y(parent.ay) });
+    }
+
+    ctx.font = LABEL_FONT;
+    ctx.textBaseline = 'middle';
+    const H = 18, GAP = 4, PADX = 8, ICON_W = icons ? 13 : 0;
+    const placed = [];
+    const clear = (x, y, w) =>
+      x - w / 2 >= 3 && x + w / 2 <= cw - 3 && y - H / 2 >= 3 && y + H / 2 <= ch - 3 &&
+      placed.every(b => Math.abs(b.x - x) * 2 >= b.w + w + 6 || Math.abs(b.y - y) * 2 >= 2 * H + 4);
+    for (const it of items) {
+      if (it.alpha < 0.02) continue;
+      ctx.font = LABEL_FONT;
+      const w = PADX * 2 + ctx.measureText(it.text).width + (icons ? ICON_W + GAP : 0);
+      let spot = null;
+      if (it.fixed) {
+        spot = [it.x, it.y];
+      } else {
+        let ux = it.x - it.ox, uy = it.y - it.oy;
+        const len = Math.hypot(ux, uy) || 1;
+        ux /= len; uy /= len;
+        let best = Infinity;
+        for (const [gx, gy] of STEPS) {
+          const dx = gx * 26, dy = gy * (H + 4);
+          const score = Math.hypot(dx, dy) - 0.35 * (dx * ux + dy * uy);
+          if (score < best && clear(it.x + dx, it.y + dy, w)) { best = score; spot = [it.x + dx, it.y + dy]; }
         }
       }
-    }
-    circle(X(sel.x), X(sel.y), dotR * 2.6);
-    ctx.globalAlpha = 0.28; ctx.fillStyle = C.h0; ctx.fill();
-    circle(X(sel.x), X(sel.y), dotR * 1.35);
-    ctx.globalAlpha = 1; ctx.fillStyle = C.h0; ctx.fill();
-
-    // Names.
-    ctx.textBaseline = 'middle';
-    ctx.lineJoin = 'round';
-    // A left-aligned name is drawn only where it covers no name already placed.
-    const placed = [];
-    const label = (txt, x, y, color, font, alpha) => {
-      ctx.font = font;
-      if (ctx.textAlign === 'left') {
-        const w = ctx.measureText(txt).width + 4, h = 15, top = y - h / 2;
-        for (const b of placed) if (x < b.x + b.w && x + w > b.x && top < b.y + b.h && top + h > b.y) return;
-        placed.push({ x, y: top, w, h });
+      if (!spot) continue;
+      placed.push({ x: spot[0], y: spot[1], w });
+      const [x, y] = spot;
+      ctx.globalAlpha = it.alpha;
+      ctx.fillStyle = COLOR.chip;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(x - w / 2, y - H / 2, w, H, 4);
+      else ctx.rect(x - w / 2, y - H / 2, w, H);
+      ctx.fill();
+      ctx.fillStyle = it.color;
+      let cursor = x - w / 2 + PADX;
+      if (icons) {
+        ctx.font = ICON_FONT;
+        ctx.fillText(it.icon, cursor - 1, y + 0.5);
+        cursor += ICON_W + GAP;
+        ctx.font = LABEL_FONT;
       }
-      ctx.globalAlpha = alpha;
-      ctx.lineWidth = 3.5; ctx.strokeStyle = C.canvas; ctx.strokeText(txt, x, y);
-      ctx.fillStyle = color; ctx.fillText(txt, x, y);
-    };
-    ctx.textAlign = 'center';
-    for (const c of crates) label(c.name, X(c.x), X(c.y - c.r) + 14, C.pkg, '600 12px "IBM Plex Sans", system-ui, sans-serif', 0.95);
-    if (showNames) for (const m of mods) label(m.name, X(m.x), X(m.y - m.r) + 11, C.mod, '400 10.5px "JetBrains Mono", monospace', 0.75);
-    ctx.textAlign = 'left';
-    label(sel.label, X(sel.x) + dotR * 2.6 + 4, X(sel.y), C.bright, '500 12.5px "JetBrains Mono", monospace', 1);
-    if (showNames) {
-      for (const d of dots) {
-        if (!d.label || d === sel) continue;
-        label(d.label, X(d.x) + dotR + 5, X(d.y), C.text, '400 11px "JetBrains Mono", monospace', 0.92);
-      }
+      ctx.fillText(it.text, cursor, y + 0.5);
     }
-    ctx.restore();
   }
 
+  // ---- motion: a moment on the whole workspace, then the click lands and the camera flies to
+  // what it reaches; drawn once at rest when motion is reduced ----
   const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const PERIOD = 3600;
-  let visible = true, raf = 0;
-  const frame = t => {
-    draw((t % PERIOD) / PERIOD);
-    raf = visible && !still.matches ? requestAnimationFrame(frame) : 0;
+  const HOLD = 700, RUN = 1800;
+  let t = still.matches ? 1 : 0, started = 0, raf = 0;
+  const frame = now => {
+    if (!started) started = now;
+    t = clamp01((now - started - HOLD) / RUN);
+    draw(t);
+    raf = t < 1 ? requestAnimationFrame(frame) : 0;
   };
-  const restart = () => {
-    cancelAnimationFrame(raf); raf = 0;
-    if (still.matches || !visible) draw(null);
-    else raf = requestAnimationFrame(frame);
+  const begin = () => {
+    if (still.matches || t >= 1 || raf) return;
+    raf = requestAnimationFrame(frame);
   };
 
   resize();
-  draw(null);
-  new ResizeObserver(() => { resize(); restart(); }).observe(canvas);
-  new IntersectionObserver(es => { visible = es[0].isIntersecting; restart(); }).observe(canvas);
-  still.addEventListener('change', restart);
-  const themeChanged = () => { readColors(); restart(); };
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', themeChanged);
-  if (document.fonts) document.fonts.ready.then(restart);
+  draw(t);
+  // Wait for the icon font, but never long: without it the chips simply go without icons.
+  const ready = document.fonts
+    ? Promise.race([
+        Promise.all([document.fonts.load(ICON_FONT, 'functions'), document.fonts.ready]).catch(() => {}),
+        new Promise(resolve => setTimeout(resolve, 1500)),
+      ])
+    : Promise.resolve();
+  ready.then(() => {
+    if (document.fonts) checkIcons();
+    draw(t);
+    new IntersectionObserver((entries, observer) => {
+      if (entries[0].isIntersecting) { begin(); observer.disconnect(); }
+    }).observe(canvas);
+  });
+  // An icon font that arrives after the wait still reaches the chips.
+  if (document.fonts) document.fonts.addEventListener('loadingdone', () => { checkIcons(); if (!raf) draw(t); });
+  new ResizeObserver(() => { resize(); draw(t); }).observe(canvas);
+  still.addEventListener('change', () => { if (still.matches) { cancelAnimationFrame(raf); raf = 0; t = 1; draw(t); } });
+  // Redraw in the new colors when the system theme changes or the header switch flips it.
+  const recolor = () => { readColors(); if (!raf) draw(t); };
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', recolor);
+  new MutationObserver(recolor).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 })();
 </script>
 </body>
