@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,750&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,1,0&icon_names=auto_awesome,data_object,extension,folder,functions,inventory,link,list_alt,lock,radio_button_checked,rule,subdirectory_arrow_right,tag&display=block">
 <style>
-/* Layout: the app's own window colors; a live blast as the hero; then a catalog where each
+/* Layout: the app's own window colors; the node graph with a selection as the hero; then a catalog where each
    category is a sticky label beside a two-column list of features, closing on a buy section. */
 :root {
   --bg: #e7eaef;
@@ -359,13 +359,13 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
     <div class="hl-grid">
       <div class="hl">
         <span class="fig">dependents or dependencies</span>
-        <h3>See the blast before you make the change</h3>
-        <p>Select a symbol and everything that depends on it lights up on shockwave rings around it, or flip it to see what the symbol relies on.</p>
+        <h3>See what a change reaches before you make it</h3>
+        <p>Select a symbol and everything that depends on it, directly or through other code, lights up in rings around it. Flip it to see what the symbol relies on instead.</p>
       </div>
       <div class="hl">
         <span class="fig">staged, unstaged, untracked</span>
-        <h3>Blast your working tree</h3>
-        <p>Seed a blast from your uncommitted changes and see what your branch reaches before you push it.</p>
+        <h3>Check your uncommitted changes</h3>
+        <p>See everything your uncommitted changes affect, across the whole workspace, before you push them.</p>
       </div>
       <div class="hl">
         <span class="fig">~0.5 s cold index</span>
@@ -406,12 +406,12 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       <p>Your workspace drawn the way Rust nests it. Pick a symbol and see everything a change to it would reach.</p>
     </div>
     <ul class="feats">
-      <li class="feat"><h3>Shockwave Rings</h3><p>Select a symbol and its dependents light up on concentric rings, hot at the epicenter and cooling as the blast spreads outward. Lines trace the path the blast travels.</p></li>
+      <li class="feat"><h3>Dependency Rings</h3><p>Select a symbol and everything that depends on it lights up on rings around it: direct users on the innermost ring, their users on the next, and so on outward. Lines trace each dependency back to the selection.</p></li>
       <li class="feat"><h3>View Dependencies</h3><p>Flip between what breaks if this symbol changes and what it relies on.</p></li>
-      <li class="feat"><h3>Connections Pane <span class="tag">right sidebar</span></h3><p>Everything the blast reaches, nearest first, counted in symbols and in files. Click a row to fly there while the selection stays pinned at the top.</p></li>
+      <li class="feat"><h3>Connections Pane <span class="tag">right sidebar</span></h3><p>Every symbol a change to the selection would affect, nearest first, counted in symbols and in files. Click a row to fly there while the selection stays pinned at the top.</p></li>
       <li class="feat"><h3>Nested Circles</h3><p>Packages hold modules, modules hold types, and types hold their own fields, variants and methods, with impl blocks folded into the type they implement. Every symbol keeps its dot at every zoom, and none ever covers another.</p></li>
       <li class="feat"><h3>Spring and Gravity Arrangements</h3><p>Spring solves a tidy layout that keeps every symbol in its module. Gravity lets references pull, so code organized one way and used another shows the difference.</p></li>
-      <li class="feat"><h3>Three Blast Shapes</h3><p>Off leaves the map still. Pull tows dependents toward the selection without leaving their modules. Radial seats modules on rings around the selection.</p></li>
+      <li class="feat"><h3>Pull Dependents Close</h3><p>Affected symbols can stay where they are, move toward the selected symbol without leaving their modules, or gather on rings around it.</p></li>
     </ul>
   </section>
 
@@ -444,7 +444,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       <p>Find the code nothing uses, and see what your changes reach.</p>
     </div>
     <ul class="feats">
-      <li class="feat"><h3>Blast Your Working Tree</h3><p>Seed a blast from your uncommitted changes. Staged, unstaged and untracked edits all count, matched to the symbols whose bodies they touch, and the diff tab lists every one.</p></li>
+      <li class="feat"><h3>Impact of Uncommitted Changes</h3><p>Select every symbol your uncommitted changes touch and see everything that depends on them. Staged, unstaged and untracked edits all count, and the diff tab lists each changed symbol.</p></li>
       <li class="feat"><h3>Dead Code by Reachability</h3><p>Walks out from <code>main</code>, tests and trait impls and flags everything never reached, including chains of dead code that only call each other. A separate list shows every symbol nothing references.</p></li>
     </ul>
   </section>
