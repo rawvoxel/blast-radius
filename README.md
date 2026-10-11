@@ -21,3 +21,15 @@ Open `index.html` in a browser, or serve the folder:
 ```bash
 python -m http.server 8000
 ```
+
+## Swapping in screenshots
+
+Each feature section's graphic is drawn on a `<canvas data-graphic="…">` inside a
+`<figure class="shot">`. To use a real screenshot instead, replace the canvas with an image:
+
+```html
+<figure class="shot"><img src="shots/node-graph.png" alt="…"></figure>
+```
+
+The frame is 16:10 and the image is cropped to cover it, so capture at 16:10 (for example
+1600×1000) to keep everything in view. The hero graph is separate and stays drawn.
