@@ -47,7 +47,7 @@
   --chip: #ccd2dc; --hl: #0c1017; --pane: #f6f7fa;
   --s-variant: #6d55b0; --s-tmethod: #8a530b;
   /* Ring colors are a fixed heat scale in the app, the same over every theme. */
-  --r1: #ffa84d; --r2: #f57059; --r3: #c75c8c;
+  --r1: #ffa84d; --r2: #f57059; --r3: #c75c8c; --r4: #8c59ad;
   --s-fn: #1d7a4c; --s-method: #186340; --s-struct: #1f5f9e; --s-field: #4a5c70; --s-enum: #5a3f9c;
   --s-trait: #9a5f10; --s-const: #a33b3b; --s-macro: #8e3a8e; --s-alias: #17706a;
   --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
@@ -325,10 +325,10 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       </div>
     </div>
     <figure class="viewport" style="margin:0">
-      <canvas id="blast" role="img" aria-label="A sample Rust workspace drawn as nested circles of packages, modules and types. The method Socket::connect is selected; the eleven symbols that depend on it are named and pulled toward it, with rings spreading out around it, while everything else is faded."></canvas>
+      <canvas id="blast" role="img" aria-label="A generated workspace of sixteen crates, packed as nested circles. Graph::insert is selected, and everything that depends on it gathers on four rings around it, crate by crate, while the rest fades away."></canvas>
       <figcaption class="viewport-foot">
-        <span><b>net::socket::Socket::connect</b></span>
-        <span id="reach">dependents: 11 symbols in 4 files</span>
+        <span><b id="selection">core::graph::Graph::insert</b></span>
+        <span id="reach">dependents</span>
       </figcaption>
     </figure>
   </div>
@@ -497,7 +497,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   }
 })();
 
-/* ---------- graphics: one sample workspace, drawn by the hero and by every section ---------- */
+/* ---------- graphics: one sample workspace, drawn by every feature section ---------- */
 // The sample is packed once, the way Blast Radius packs a workspace: filled circles for packages,
 // modules and types, and one dot per symbol sized 4 + 2.2·√(dependents). Selecting a symbol pulls
 // what depends on it toward it without leaving its circles. Each graphic draws that one model in a
@@ -788,7 +788,7 @@ const Graphics = (() => {
       text: v('text'), dim: v('dim'), bright: v('bright'), heat: v('heat'),
       fill: { workspace: v('c-ws'), package: v('c-pkg'), module: v('c-mod'), type: v('c-ty') },
       name: { package: v('pkg'), module: v('mod'), type: v('ty') },
-      ring: [v('r1'), v('r1'), v('r2'), v('r3')],
+      ring: [v('r1'), v('r1'), v('r2'), v('r3'), v('r4')],
       kind: {
         fn: v('s-fn'), method: v('s-method'), struct: v('s-struct'), field: v('s-field'),
         enum: v('s-enum'), variant: v('s-variant'), trait: v('s-trait'), tmethod: v('s-tmethod'),
@@ -1430,15 +1430,477 @@ const Graphics = (() => {
     draw(ctx, { x: 0, y: 0, w, h }, pagePalette());
   }
 
-  // The hero: the whole workspace, then the click lands and the camera flies to what it reaches.
-  function drawHero(ctx, r, pal, t) {
+  return { render, pagePalette, checkIcons, placeChips, ICON, NAME_BAND };
+})();
+
+/* ---------- hero: a larger workspace, and a selection laid out on rings ---------- */
+// The hero opens on a whole workspace of a few hundred symbols, packed as the app packs one. Then
+// a symbol is selected and the app's radial layout takes over: the selection sits at the center
+// and everything that depends on it gathers on rings around it, one ring per step of distance.
+// Modules are the slots on a ring, packed around the symbols they show and turned so their
+// nearest dependents face the selection; crates are drawn around their modules; what the selection
+// doesn't reach fades away, as it does by default in the app.
+const Hero = (() => {
+  const SIBLING_PAD = 3, CONTAINER_PAD = 10, FILL = 0.2;
+  const RING_GAP = 16, PACKAGE_GAP = 34;
+
+  // A fixed seed, so every visitor sees the same workspace.
+  let seed = 0x5eed2610;
+  const rand = () => {
+    seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const pick = list => list[Math.floor(rand() * list.length)];
+  const between = (lo, hi) => lo + Math.floor(rand() * (hi - lo + 1));
+
+  // ---- the workspace: sixteen crates of generated, plausible Rust ----
+  const PACKAGES = [
+    ['core', ['graph', 'layout', 'index']],
+    ['query', ['plan', 'exec', 'cost']],
+    ['model', ['schema', 'types']],
+    ['cache', ['lru', 'disk']],
+    ['sync', ['lock', 'chan']],
+    ['store', ['db', 'txn', 'migrate']],
+    ['app', ['state', 'ui', 'config']],
+    ['input', ['keys', 'mouse']],
+    ['log', ['fmt', 'sink']],
+    ['plugin', ['host', 'api']],
+    ['render', ['scene', 'mesh', 'camera']],
+    ['text', ['font', 'shape']],
+    ['cli', ['args', 'commands', 'report']],
+    ['net', ['socket', 'session', 'tls']],
+    ['util', ['buf', 'hash', 'time']],
+    ['ffi', ['bind', 'abi']],
+  ];
+  const VERBS = ['load', 'parse', 'build', 'resolve', 'flush', 'spawn', 'apply', 'merge', 'encode', 'decode',
+    'fetch', 'sync', 'update', 'validate', 'emit', 'collect', 'walk', 'pack', 'split', 'scan'];
+  const NOUNS = ['frame', 'node', 'edge', 'batch', 'entry', 'path', 'layout', 'query', 'token', 'span',
+    'chunk', 'row', 'key', 'page', 'event'];
+  const TYPE_NAMES = ['Frame', 'Node', 'Edge', 'Batch', 'Entry', 'Index', 'Layout', 'Query', 'Token', 'Span',
+    'Chunk', 'Session', 'Cache', 'Scene', 'Mesh', 'Camera', 'Config', 'State', 'Handle', 'Store', 'Table',
+    'Plan', 'Cursor', 'Buffer'];
+  const METHODS = ['new', 'get', 'insert', 'remove', 'apply', 'build', 'len', 'iter', 'flush', 'push', 'find', 'merge'];
+  const FIELDS = ['id', 'len', 'data', 'pos', 'kind', 'next', 'root', 'size', 'cap', 'meta'];
+  const VARIANTS = ['Empty', 'Full', 'Open', 'Closed', 'Ready', 'Done', 'Pending'];
+  const CONSTS = ['MAX_DEPTH', 'DEFAULT_SIZE', 'VERSION', 'LIMIT', 'TIMEOUT', 'CAPACITY'];
+
+  const sym = (name, kind) => ({ name, kind, weight: Math.floor(Math.pow(rand(), 2.2) * 9) });
+  function generateModule(name, forced) {
+    const used = new Set();
+    const fresh = make => {
+      for (let i = 0; i < 12; i++) {
+        const n = make();
+        if (!used.has(n)) { used.add(n); return n; }
+      }
+      return make() + '_' + used.size;
+    };
+    const kids = forced ? [forced] : [];
+    if (forced) used.add(forced.name);
+    for (let i = between(0, 2); i > 0; i--) {
+      const kind = pick(['struct', 'struct', 'struct', 'enum', 'trait']);
+      const typeName = fresh(() => pick(TYPE_NAMES));
+      const members = [];
+      const memberUsed = new Set();
+      const add = (pool, k) => {
+        const n = pick(pool);
+        if (memberUsed.has(n)) return;
+        memberUsed.add(n);
+        members.push(sym(n, k));
+      };
+      if (kind === 'struct') {
+        for (let j = between(1, 3); j > 0; j--) add(FIELDS, 'field');
+        for (let j = between(1, 4); j > 0; j--) add(METHODS, 'method');
+      } else if (kind === 'enum') {
+        for (let j = between(2, 4); j > 0; j--) add(VARIANTS, 'variant');
+        for (let j = between(0, 2); j > 0; j--) add(METHODS, 'method');
+      } else {
+        for (let j = between(1, 3); j > 0; j--) add(METHODS, 'tmethod');
+      }
+      kids.push({ name: typeName, type: 'type', self: sym(typeName, kind), children: members });
+    }
+    for (let i = between(2, 5); i > 0; i--) kids.push(sym(fresh(() => pick(VERBS) + '_' + pick(NOUNS)), 'fn'));
+    if (rand() < 0.5) kids.push(sym(fresh(() => pick(CONSTS)), 'const'));
+    if (rand() < 0.15) kids.push(sym(fresh(() => pick(NOUNS) + '_impl'), 'macro'));
+    if (rand() < 0.2) kids.push(sym(fresh(() => pick(TYPE_NAMES) + 'Id'), 'alias'));
+    return { name, type: 'module', children: kids };
+  }
+  // The selection: Graph::insert, in core's graph module.
+  const GRAPH_TYPE = { name: 'Graph', type: 'type', self: { name: 'Graph', kind: 'struct', weight: 8 }, children: [
+    { name: 'nodes', kind: 'field', weight: 2 }, { name: 'edges', kind: 'field', weight: 2 },
+    { name: 'new', kind: 'method', weight: 5 }, { name: 'insert', kind: 'method', weight: 6 },
+    { name: 'remove', kind: 'method', weight: 2 }, { name: 'neighbors', kind: 'method', weight: 4 },
+  ] };
+  const root = { name: 'workspace', type: 'workspace', children: PACKAGES.map(([pkg, mods]) => ({
+    name: pkg, type: 'package',
+    children: mods.map(m => generateModule(m, pkg === 'core' && m === 'graph' ? GRAPH_TYPE : null)),
+  })) };
+
+  // ---- index ----
+  const containers = [], symbols = [], byPath = new Map();
+  (function walk(n, parent) {
+    n.parent = parent;
+    n.path = !parent ? '' : parent.path ? parent.path + '/' + n.name : n.name;
+    if (n.type) {
+      n.kids = n.self ? [n.self, ...n.children] : n.children;
+      n.depth = parent ? parent.depth + 1 : 0;
+      containers.push(n);
+      for (const kid of n.kids) walk(kid, n);
+    } else {
+      n.r = 4 + 2.2 * Math.sqrt(n.weight);
+      symbols.push(n);
+    }
+    if (!byPath.has(n.path)) byPath.set(n.path, n);
+  })(root, null);
+  const byDepth = containers.slice().sort((a, b) => a.depth - b.depth);
+  const moduleOf = n => { let c = n.parent; while (c.type !== 'module') c = c.parent; return c; };
+  const packageOf = n => { let c = n.parent; while (c.type !== 'package') c = c.parent; return c; };
+
+  // ---- the selection's dependents: which modules each ring reaches, and how many symbols in each ----
+  const epi = byPath.get('core/graph/Graph/insert');
+  // Each crate sits on one ring, or two neighboring ones, and each ring holds more modules than
+  // the one inside it, so the rings fill evenly and a crate covers a short arc.
+  const RINGS = [
+    [['core/graph', 2], ['core/layout', 3], ['core/index', 2], ['query/plan', 3], ['model/schema', 2]],
+    [['query/exec', 3], ['query/cost', 2], ['model/types', 2], ['cache/lru', 2], ['cache/disk', 2],
+      ['sync/lock', 2], ['sync/chan', 2], ['store/db', 3]],
+    [['store/txn', 2], ['store/migrate', 2], ['app/state', 3], ['app/ui', 3], ['app/config', 2], ['input/keys', 2],
+      ['input/mouse', 2], ['log/fmt', 2], ['log/sink', 2], ['plugin/host', 2], ['plugin/api', 2]],
+    [['render/scene', 3], ['render/mesh', 2], ['render/camera', 2], ['text/font', 2], ['text/shape', 2],
+      ['cli/args', 2], ['cli/commands', 3], ['cli/report', 2], ['net/socket', 2], ['net/session', 2],
+      ['net/tls', 2], ['util/buf', 2], ['util/hash', 2]],
+  ];
+  const hopOf = new Map([[epi, 0]]);
+  const byHop = [[epi]];
+  const edges = [];
+  RINGS.forEach((ring, i) => {
+    const hop = i + 1, these = [];
+    for (const [path, count] of ring) {
+      const mod = byPath.get(path);
+      const pool = [];
+      (function gather(n) { for (const k of n.kids) (k.type ? gather(k) : pool.push(k)); })(mod);
+      // Callables first: they are what calls and gets called.
+      pool.sort((a, b) => (/fn|method/.test(b.kind) ? 1 : 0) - (/fn|method/.test(a.kind) ? 1 : 0) || rand() - 0.5);
+      let taken = 0;
+      for (const n of pool) {
+        if (taken >= count) break;
+        if (hopOf.has(n)) continue;
+        hopOf.set(n, hop);
+        these.push(n);
+        taken++;
+      }
+    }
+    byHop.push(these);
+  });
+  const dependents = [...hopOf.keys()].filter(n => n !== epi);
+  const files = new Set(dependents.map(moduleOf)).size;
+  // Who uses whom, decided once the workspace is packed: see below.
+  const DEPENDENTS_LINE = 'dependents: ' + dependents.length + ' symbols in ' + files + ' files';
+  const SELECTION_PATH = 'core::graph::Graph::insert';
+
+  // ---- packing: sunflower seeding, then overlaps relaxed apart ----
+  const GOLDEN = Math.PI * (3 - Math.sqrt(5));
+  function separate(items) {
+    for (let i = 0; i < items.length; i++) {
+      for (let j = i + 1; j < items.length; j++) {
+        const a = items[i], b = items[j];
+        let dx = b.x - a.x, dy = b.y - a.y;
+        const d = Math.hypot(dx, dy) || 1e-3, over = a.r + b.r + SIBLING_PAD - d;
+        if (over <= 0) continue;
+        dx /= d; dy /= d;
+        a.x -= dx * over / 2; a.y -= dy * over / 2;
+        b.x += dx * over / 2; b.y += dy * over / 2;
+      }
+    }
+  }
+  // Pack circles {r} around the origin; returns the radius that holds them.
+  function packFlat(items) {
+    const order = items.slice().sort((a, b) => b.r - a.r);
+    const step = 1.7 * order.reduce((sum, k) => sum + k.r, 0) / order.length;
+    order.forEach((k, i) => {
+      const d = step * Math.sqrt(i);
+      k.x = Math.cos(i * GOLDEN) * d;
+      k.y = Math.sin(i * GOLDEN) * d;
+    });
+    for (let it = 0; it < 240; it++) {
+      for (const k of order) { k.x *= 0.98; k.y *= 0.98; }
+      separate(order);
+    }
+    for (let it = 0; it < 40; it++) separate(order);
+    const xs = order.map(k => k.x), ys = order.map(k => k.y);
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+    for (const k of order) { k.x -= cx; k.y -= cy; }
+    return Math.max(...order.map(k => Math.hypot(k.x, k.y) + k.r)) + CONTAINER_PAD;
+  }
+  (function pack(n) {
+    if (!n.type) return;
+    n.kids.forEach(pack);
+    n.r = packFlat(n.kids);
+  })(root);
+  root.x = root.y = 0;
+  (function home(n, ox, oy) {
+    n.hx = ox + n.x;
+    n.hy = oy + n.y;
+    n.hr = n.r;
+    if (n.type) for (const k of n.kids) home(k, n.hx, n.hy);
+  })(root, 0, 0);
+
+  // ---- the radial layout ----
+  // Each module holding part of the answer becomes a slot: packed around just the symbols it shows,
+  // a type's shown members packed into the type's circle first.
+  const slots = new Map();
+  for (const n of hopOf.keys()) {
+    const mod = moduleOf(n);
+    if (!slots.has(mod)) slots.set(mod, { mod, members: [], hop: Infinity });
+    const slot = slots.get(mod);
+    slot.members.push(n);
+    slot.hop = Math.min(slot.hop, hopOf.get(n));
+  }
+  for (const slot of slots.values()) {
+    const groups = new Map(), items = [];
+    for (const n of slot.members) {
+      const holder = n.parent.type === 'type' ? n.parent : null;
+      if (!holder) { items.push({ r: n.r, of: [n] }); continue; }
+      if (!groups.has(holder)) groups.set(holder, []);
+      groups.get(holder).push(n);
+    }
+    for (const [type, members] of groups) {
+      const dots = members.map(n => ({ r: n.r, n }));
+      const r = packFlat(dots);
+      items.push({ r, type, dots });
+    }
+    slot.r = packFlat(items);
+    // Each symbol's place within the slot, before the turn.
+    slot.parts = [];
+    for (const it of items) {
+      if (it.type) {
+        slot.parts.push({ type: it.type, x: it.x, y: it.y, r: it.r });
+        for (const d of it.dots) slot.parts.push({ n: d.n, x: it.x + d.x, y: it.y + d.y });
+      } else {
+        slot.parts.push({ n: it.of[0], x: it.x, y: it.y });
+      }
+    }
+    // Where the module sat in the packed workspace, seen from the selection.
+    slot.bearing = Math.atan2(slot.mod.hy - epi.hy, slot.mod.hx - epi.hx);
+    slot.pkg = slot.mod.parent;
+  }
+  const center = slots.get(moduleOf(epi));
+  const rings = [];
+  for (const slot of slots.values()) {
+    if (slot === center) continue;
+    (rings[slot.hop] = rings[slot.hop] || []).push(slot);
+  }
+  const angleDiff = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
+  const circularMean = angles => Math.atan2(angles.reduce((s, a) => s + Math.sin(a), 0), angles.reduce((s, a) => s + Math.cos(a), 0));
+  // Round each ring in container order: a crate's modules side by side, crates in the order of
+  // their bearings, and siblings by bearing.
+  for (const ring of rings) {
+    if (!ring) continue;
+    const pkgBearing = new Map();
+    for (const slot of ring) {
+      if (!pkgBearing.has(slot.pkg)) pkgBearing.set(slot.pkg, circularMean(ring.filter(s => s.pkg === slot.pkg).map(s => s.bearing)));
+    }
+    ring.sort((a, b) => pkgBearing.get(a.pkg) - pkgBearing.get(b.pkg) || a.bearing - b.bearing);
+  }
+  // One step between rings, the largest any ring needs: room round it for its slots and their gaps,
+  // and room between it and the ring inside.
+  const gapAfter = (ring, i) => (ring[i].pkg === ring[(i + 1) % ring.length].pkg ? RING_GAP : PACKAGE_GAP);
+  let step = 0;
+  rings.forEach((ring, hop) => {
+    if (!ring) return;
+    const need = ring.reduce((sum, s, i) => sum + 2 * s.r + gapAfter(ring, i), 0) / (2 * Math.PI);
+    const widest = Math.max(...ring.map(s => s.r));
+    const inner = hop === 1 ? center.r : Math.max(...(rings[hop - 1] || [center]).map(s => s.r));
+    step = Math.max(step, need / hop, widest + inner + RING_GAP);
+  });
+  // Seat each ring's slots round it, a crate's modules side by side and the spare room shared out
+  // between crates, then turn the ring toward the bearings they came from.
+  rings.forEach((ring, hop) => {
+    if (!ring) return;
+    const R = step * hop;
+    const used = ring.reduce((sum, s, i) => sum + 2 * s.r / R + gapAfter(ring, i) / R, 0);
+    const boundaries = ring.filter((s, i) => gapAfter(ring, i) === PACKAGE_GAP).length;
+    const extra = (2 * Math.PI - used) / (boundaries || ring.length);
+    let a = 0;
+    ring.forEach((slot, i) => {
+      slot.theta = a + slot.r / R;
+      const between = !boundaries || gapAfter(ring, i) === PACKAGE_GAP;
+      a += 2 * slot.r / R + gapAfter(ring, i) / R + (between ? extra : 0);
+    });
+    const turn = circularMean(ring.map(s => angleDiff(s.bearing, s.theta)));
+    for (const slot of ring) {
+      slot.cx = Math.cos(slot.theta + turn) * R;
+      slot.cy = Math.sin(slot.theta + turn) * R;
+    }
+  });
+  // Turn each slot so the side holding its nearest ring's symbols faces the selection; the center
+  // slot is placed so the selection itself sits at the center.
+  for (const slot of slots.values()) {
+    const near = slot.parts.filter(p => p.n && hopOf.get(p.n) === slot.hop);
+    const fx = near.reduce((s, p) => s + p.x, 0) / near.length, fy = near.reduce((s, p) => s + p.y, 0) / near.length;
+    let spin = 0;
+    if (slot === center) {
+      const self = slot.parts.find(p => p.n === epi);
+      slot.cx = -self.x;
+      slot.cy = -self.y;
+    } else if (Math.hypot(fx, fy) > 1) {
+      spin = angleDiff(Math.atan2(-slot.cy, -slot.cx), Math.atan2(fy, fx));
+    }
+    const c = Math.cos(spin), s = Math.sin(spin);
+    for (const p of slot.parts) {
+      const x = p.x * c - p.y * s, y = p.x * s + p.y * c;
+      if (p.n) { p.n.fx = slot.cx + x; p.n.fy = slot.cy + y; p.n.fr = p.n.r; }
+      else { p.type.fx = slot.cx + x; p.type.fy = slot.cy + y; p.type.fr = p.r; }
+    }
+    slot.mod.fx = slot.cx;
+    slot.mod.fy = slot.cy;
+    slot.mod.fr = slot.r;
+  }
+  // Each dependent uses one of the symbols a ring in that end up nearest it (now and then a second),
+  // so its edge runs outward to a neighbor rather than across the picture.
+  for (let hop = 1; hop < byHop.length; hop++) {
+    for (const n of byHop[hop]) {
+      const nearest = byHop[hop - 1].slice()
+        .sort((a, b) => Math.hypot(a.fx - n.fx, a.fy - n.fy) - Math.hypot(b.fx - n.fx, b.fy - n.fy));
+      edges.push([n, nearest[Math.floor(rand() * Math.min(2, nearest.length))], hop]);
+      if (rand() < 0.2 && nearest.length > 1) edges.push([n, nearest[Math.floor(rand() * Math.min(3, nearest.length))], hop]);
+    }
+  }
+  // Crates are fitted around their slots, and the workspace around the crates: the smallest circle,
+  // approached a pass at a time and then measured.
+  function enclose(circles) {
+    let x = circles.reduce((s, c) => s + c.x, 0) / circles.length, y = circles.reduce((s, c) => s + c.y, 0) / circles.length;
+    for (let i = 1; i <= 64; i++) {
+      let far = null, worst = -1;
+      for (const c of circles) {
+        const d = Math.hypot(c.x - x, c.y - y) + c.r;
+        if (d > worst) { worst = d; far = c; }
+      }
+      const d = Math.hypot(far.x - x, far.y - y) || 1;
+      const reachX = far.x + (far.x - x) / d * far.r, reachY = far.y + (far.y - y) / d * far.r;
+      x += (reachX - x) / (i + 1);
+      y += (reachY - y) / (i + 1);
+    }
+    return { x, y, r: Math.max(...circles.map(c => Math.hypot(c.x - x, c.y - y) + c.r)) + CONTAINER_PAD };
+  }
+  for (const pkg of root.kids) {
+    const held = [...slots.values()].filter(s => s.pkg === pkg).map(s => ({ x: s.cx, y: s.cy, r: s.r }));
+    if (!held.length) continue;
+    const fit = enclose(held);
+    pkg.fx = fit.x; pkg.fy = fit.y; pkg.fr = fit.r;
+  }
+  {
+    const fit = enclose(root.kids.filter(p => p.fr).map(p => ({ x: p.fx, y: p.fy, r: p.fr })));
+    root.fx = fit.x; root.fy = fit.y; root.fr = fit.r;
+  }
+  // Rings as the app draws them: about the selection, each just clear of its own members.
+  const ringR = [];
+  for (const [n, hop] of hopOf) {
+    if (hop > 0) ringR[hop] = Math.max(ringR[hop] || 0, Math.hypot(n.fx, n.fy) + n.r + 4);
+  }
+  const reach = Math.max(...ringR.filter(Boolean));
+
+  // ---- drawing ----
+  const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const mix = (a, b, t) => a + (b - a) * t;
+  const clamp01 = t => Math.min(1, Math.max(0, t));
+  const circle = (ctx, x, y, r) => { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, Math.PI * 2); };
+  const shown = n => n.fr !== undefined;
+
+  function draw(ctx, rect, pal, t) {
     const e = ease(t);
-    const from = fitWorkspace(r), to = fitSelection(r);
-    const camera = { x: mix(from.x, to.x, e), y: mix(from.y, to.y, e), s: Math.exp(mix(Math.log(from.s), Math.log(to.s), e)) };
-    drawGraph(ctx, r, pal, { mode: 'select', pull: e, sel: clamp01(t * 6), camera });
+    // The click lands at once: what it doesn't reach starts to go, and the rings come in as the
+    // layout settles.
+    const sel = clamp01(t * 4);
+    const at = n => shown(n)
+      ? { x: mix(n.hx, n.fx, e), y: mix(n.hy, n.fy, e), r: mix(n.hr, n.fr, e) }
+      : { x: n.hx, y: n.hy, r: n.hr };
+    const from = { x: 0, y: 0, s: Math.min(rect.w, rect.h) / (2 * root.hr * 1.04) };
+    const to = { x: 0, y: 0, s: Math.min(rect.w, rect.h) / (2 * reach * 1.06) };
+    const cam = { x: mix(from.x, to.x, e), y: mix(from.y, to.y, e), s: Math.exp(mix(Math.log(from.s), Math.log(to.s), e)) };
+    const s = cam.s;
+    const X = x => (x - cam.x) * s + rect.x + rect.w / 2;
+    const Y = y => (y - cam.y) * s + rect.y + rect.h / 2;
+    // A symbol or circle the selection doesn't reach swells a touch, then shrinks away.
+    const going = clamp01(t * 2.5);
+    const leaving = 1 + 0.25 * Math.sin(Math.PI * Math.min(going, 0.5)) - going;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(rect.x, rect.y, rect.w, rect.h);
+    ctx.clip();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = pal.canvas;
+    ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+
+    for (const c of byDepth) {
+      const p = at(c);
+      const keep = shown(c) ? 1 : Math.max(0, 1 - going);
+      if (keep <= 0) continue;
+      circle(ctx, X(p.x), Y(p.y), p.r * s * (shown(c) ? 1 : Math.max(0, leaving)));
+      ctx.globalAlpha = FILL * keep;
+      ctx.fillStyle = pal.fill[c.type];
+      ctx.fill();
+    }
+
+    ctx.lineWidth = 1.5;
+    ctx.lineCap = 'round';
+    for (const [a, b, hop] of edges) {
+      const p = at(a), q = at(b);
+      ctx.beginPath();
+      ctx.moveTo(X(p.x), Y(p.y));
+      ctx.lineTo(X(q.x), Y(q.y));
+      ctx.globalAlpha = 0.5 * sel;
+      ctx.strokeStyle = pal.ring[Math.min(hop, 3)];
+      ctx.stroke();
+    }
+
+    for (const n of symbols) {
+      const p = at(n), inBlast = hopOf.has(n);
+      const scale = inBlast ? 1 : Math.max(0, leaving);
+      if (scale <= 0) continue;
+      circle(ctx, X(p.x), Y(p.y), p.r * s * scale);
+      ctx.globalAlpha = inBlast ? 1 : Math.max(0, 1 - going);
+      ctx.fillStyle = pal.kind[n.kind];
+      ctx.fill();
+    }
+
+    // The rings, once the layout has mostly settled, and the selection's outline.
+    for (let hop = 1; hop < ringR.length; hop++) {
+      if (!ringR[hop]) continue;
+      circle(ctx, X(0), Y(0), ringR[hop] * s * mix(0.6, 1, e));
+      ctx.globalAlpha = 0.55 * clamp01((t - 0.45) * 3);
+      ctx.strokeStyle = pal.ring[Math.min(hop, 3)];
+      ctx.stroke();
+    }
+    const self = at(epi);
+    circle(ctx, X(self.x), Y(self.y), self.r * s + 2);
+    ctx.globalAlpha = sel;
+    ctx.strokeStyle = pal.hl;
+    ctx.stroke();
+
+    // Names: the selection, then the circles large enough to name.
+    const items = [];
+    const chipOf = (n, extra) => {
+      const p = at(n), q = at(n.parent);
+      return { x: X(p.x), y: Y(p.y), text: n.name, icon: Graphics.ICON[n.kind], color: pal.kind[n.kind],
+        alpha: sel, ox: X(q.x), oy: Y(q.y), ...extra };
+    };
+    items.push(chipOf(epi, { fixed: true }));
+    for (const c of byDepth) {
+      const band = Graphics.NAME_BAND[c.type];
+      if (!band || (!shown(c) && going >= 1)) continue;
+      const p = at(c), q = at(c.parent);
+      const alpha = Math.pow(clamp01((p.r * s - band[0]) / (band[1] - band[0])), 2.5) * (shown(c) ? 1 : 1 - going);
+      items.push({ x: X(p.x), y: Y(p.y - p.r), text: c.name, icon: Graphics.ICON[c.type], color: pal.name[c.type],
+        alpha, ox: X(q.x), oy: Y(q.y) });
+    }
+    Graphics.placeChips(ctx, rect, pal, items);
+    ctx.restore();
   }
 
-  return { render, drawHero, pagePalette, checkIcons, DEPENDENTS_LINE };
+  return { draw, DEPENDENTS_LINE, SELECTION_PATH };
 })();
 
 /* ---------- graphics: drawing them, and keeping them current ---------- */
@@ -1446,7 +1908,8 @@ const Graphics = (() => {
   const hero = document.getElementById('blast');
   const heroCtx = hero.getContext('2d');
   const shots = [...document.querySelectorAll('canvas[data-graphic]')];
-  document.getElementById('reach').textContent = Graphics.DEPENDENTS_LINE;
+  document.getElementById('reach').textContent = Hero.DEPENDENTS_LINE;
+  document.getElementById('selection').textContent = Hero.SELECTION_PATH;
 
   let pal = Graphics.pagePalette();
   let dpr = 1, hw = 0, hh = 0;
@@ -1459,13 +1922,13 @@ const Graphics = (() => {
   };
   const drawHero = t => {
     heroCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    Graphics.drawHero(heroCtx, { x: 0, y: 0, w: hw, h: hh }, pal, t);
+    Hero.draw(heroCtx, { x: 0, y: 0, w: hw, h: hh }, pal, t);
   };
   const drawShots = () => shots.forEach(Graphics.render);
 
   // A moment on the whole workspace, then the click lands; at rest when motion is reduced.
   const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const HOLD = 700, RUN = 1800;
+  const HOLD = 700, RUN = 2400;
   let t = still.matches ? 1 : 0, started = 0, raf = 0;
   const frame = now => {
     if (!started) started = now;
