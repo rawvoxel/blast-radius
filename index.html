@@ -177,8 +177,11 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 }
 /* A screenshot is a whole 1920×1080 window shown a third of its size, so a click opens it full
    size. */
-.enlarge { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.enlarge { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
 .enlarge img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* A theme change dissolves the new theme's screenshot in over the old one. */
+.enlarge img.dissolve { position: absolute; inset: 0; opacity: 0; transition: opacity 450ms ease; }
+.enlarge img.dissolve.in { opacity: 1; }
 .zoom {
   padding: 0; border: 1px solid var(--border); border-radius: 10px;
   background: var(--canvas);
@@ -532,15 +535,58 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 
 /* ---------- screenshots: the page's theme picks the set ---------- */
 // Each screenshot is taken in every theme the page offers, under shots/<theme>/<name>.webp, so the
-// app in the pictures always wears the page's colors. An image keeps showing the old theme's frame
-// until the new one has loaded.
+// app in the pictures always wears the page's colors. On a theme change the new screenshot loads
+// on top of the old one, unseen, then dissolves in; only then does it replace the old one beneath.
 (() => {
   const images = [...document.querySelectorAll('img[data-shot]')];
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const fading = new Map();
+
+  const dissolve = (image, src) => {
+    fading.get(image)?.remove();
+    const next = document.createElement('img');
+    next.className = 'dissolve';
+    next.alt = '';
+    next.setAttribute('aria-hidden', 'true');
+    fading.set(image, next);
+    const done = () => {
+      if (fading.get(image) !== next) return;
+      fading.delete(image);
+      image.src = src;
+      // The one beneath has the same picture cached; drop the top one once it is drawn.
+      image.decode().catch(() => {}).then(() => next.remove());
+    };
+    next.addEventListener('transitionend', done, { once: true });
+    next.src = src;
+    image.after(next);
+    next.decode().catch(() => {}).then(() => {
+      if (fading.get(image) !== next) return;
+      next.classList.add('in');
+      // No transition runs if the page is hidden or the frame never paints; finish regardless.
+      setTimeout(done, 600);
+    });
+  };
+
   const show = () => {
     const theme = SiteTheme.current();
     for (const image of images) {
       const src = `shots/${theme}/${image.dataset.shot}.webp`;
-      if (image.getAttribute('src') !== src) image.src = src;
+      // Already showing it: a dissolve toward another theme, if one is running, is called off.
+      if (image.getAttribute('src') === src) {
+        fading.get(image)?.remove();
+        fading.delete(image);
+        continue;
+      }
+      // Only a screenshot already on screen dissolves. One not yet loaded (lazily, below the fold)
+      // just takes the new source, and still waits to load until it is scrolled to.
+      const shown = image.complete && image.naturalWidth > 0;
+      if (!shown || still.matches) {
+        fading.get(image)?.remove();
+        fading.delete(image);
+        image.src = src;
+      } else {
+        dissolve(image, src);
+      }
     }
   };
   show();
