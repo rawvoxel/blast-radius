@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Blast Radius · Impact analysis for Rust</title>
 <meta name="description" content="Blast Radius draws your Rust workspace as nested circles. Pick any symbol and everything that depends on it lights up in rings around it.">
-<meta name="theme-color" content="#e7eaef" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0d0f14" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Blast Radius · Impact analysis for Rust">
 <meta property="og:description" content="See everything a change to your Rust code would reach before you make it.">
@@ -14,17 +14,15 @@
 <meta name="twitter:card" content="summary">
 <link rel="canonical" href="https://rawvoxel.github.io/blast-radius/">
 <script>
-  // The site's theme: the app's built-in dark and light, or one of its shipped themes, each turned
-  // into the page's colors the way the app turns it into the graph's. A remembered pick is applied
-  // here, before the first paint, so the page never shows another theme first; without one, the
-  // system setting chooses between dark and light.
+  // The site's theme: one of the app's shipped themes, turned into the page's colors the way the app
+  // turns it into the graph's. A remembered pick is applied here, before the first paint, so the
+  // page never shows another theme first; without one, the system setting chooses between Beans
+  // and Ayu Light.
   window.SiteTheme = (() => {
-    const THEMES = {"catppuccin-mocha":{"name":"Catppuccin Mocha","dark":true,"swatch":["#1e1e2e","#89b4fa","#f9e2af"],"vars":{"--bg":"#1e1e2e","--surface":"#313244","--raised":"#20202d","--border":"#3a3b4e","--text":"#cdd6f4","--dim":"#9399b2","--bright":"#cdd6f4","--link":"#f5e0dc","--canvas":"#1e1e2e","--pkg":"#cba6f7","--mod":"#f9e2af","--ty":"#f9e2af","--c-ws":"#20202d","--c-pkg":"#987cba","--c-mod":"#d7c396","--c-ty":"#dec99b","--chip":"#181825","--hl":"#cdd6f4","--pane":"#313244","--buy-bg":"#a6e3a1","--buy-fg":"#0d0f14","--s-fn":"#89b4fa","--s-method":"#5d98f8","--s-struct":"#f9e2af","--s-field":"#89b4fa","--s-enum":"#f9e2af","--s-variant":"#94e2d5","--s-trait":"#f9e2af","--s-tmethod":"#f6d384","--s-alias":"#cba6f7","--s-const":"#fab387","--s-macro":"#f5e0dc"}},"catppuccin-latte":{"name":"Catppuccin Latte","dark":false,"swatch":["#eff1f5","#1e66f5","#b17217"],"vars":{"--bg":"#eff1f5","--surface":"#ccd0da","--raised":"#e8ecf1","--border":"#d5d7df","--text":"#4c4f69","--dim":"#686c83","--bright":"#4c4f69","--link":"#4c4f69","--canvas":"#eff1f5","--pkg":"#8839ef","--mod":"#df8e1d","--ty":"#df8e1d","--c-ws":"#e8ecf1","--c-pkg":"#000000","--c-mod":"#8f590f","--c-ty":"#a26612","--chip":"#e6e9ef","--hl":"#4c4f69","--pane":"#ccd0da","--buy-bg":"#40a02b","--buy-fg":"#0d0f14","--s-fn":"#1e66f5","--s-method":"#0a50db","--s-struct":"#b17217","--s-field":"#1e66f5","--s-enum":"#b17217","--s-variant":"#179299","--s-trait":"#b17217","--s-tmethod":"#b67418","--s-alias":"#8839ef","--s-const":"#ef5801","--s-macro":"#d26650"}},"gruvbox":{"name":"Gruvbox","dark":true,"swatch":["#282828","#b8bb26","#fabd2f"],"vars":{"--bg":"#282828","--surface":"#3c3836","--raised":"#494542","--border":"#47453e","--text":"#ebdbb2","--dim":"#a2937f","--bright":"#b8bb26","--link":"#bdae93","--canvas":"#282828","--pkg":"#8ec07c","--mod":"#ebdbb2","--ty":"#fabd2f","--c-ws":"#494542","--c-pkg":"#688e5a","--c-mod":"#c8ba97","--c-ty":"#d39f26","--chip":"#504945","--hl":"#b8bb26","--pane":"#3c3836","--buy-bg":"#b8bb26","--buy-fg":"#0d0f14","--s-fn":"#b8bb26","--s-method":"#92951e","--s-struct":"#fabd2f","--s-field":"#83a598","--s-enum":"#fabd2f","--s-variant":"#fbce66","--s-trait":"#8ec07c","--s-tmethod":"#73b15d","--s-alias":"#eba606","--s-const":"#d3869b","--s-macro":"#83a598"}},"nord":{"name":"Nord","dark":true,"swatch":["#2e3440","#88c0d0","#8fbcbb"],"vars":{"--bg":"#2e3440","--surface":"#3b4252","--raised":"#464e61","--border":"#494f5b","--text":"#d8dee9","--dim":"#949eb0","--bright":"#88c0d0","--link":"#88c0d0","--canvas":"#2e3440","--pkg":"#81a1c1","--mod":"#d8dee9","--ty":"#8fbcbb","--c-ws":"#464e61","--c-pkg":"#4f6378","--c-mod":"#b8bdc7","--c-ty":"#719695","--chip":"#464e61","--hl":"#88c0d0","--pane":"#3b4252","--buy-bg":"#a3be8c","--buy-fg":"#0d0f14","--s-fn":"#88c0d0","--s-method":"#67afc3","--s-struct":"#8fbcbb","--s-field":"#d8dee9","--s-enum":"#8fbcbb","--s-variant":"#b2d1d0","--s-trait":"#81a1c1","--s-tmethod":"#628ab2","--s-alias":"#6ca7a6","--s-const":"#d8dee9","--s-macro":"#81a1c1"}},"tokyo-night":{"name":"Tokyo Night","dark":true,"swatch":["#1a1b26","#7aa2f7","#2ac3de"],"vars":{"--bg":"#1a1b26","--surface":"#16161e","--raised":"#2c2c3c","--border":"#353747","--text":"#c0caf5","--dim":"#7982ac","--bright":"#c0caf5","--link":"#7aa2f7","--canvas":"#1a1b26","--pkg":"#7dcfff","--mod":"#7dcfff","--ty":"#2ac3de","--c-ws":"#2c2c3c","--c-pkg":"#63a6cd","--c-mod":"#63a6cd","--c-ty":"#1f9bb1","--chip":"#000000","--hl":"#c0caf5","--pane":"#16161e","--buy-bg":"#449dab","--buy-fg":"#0d0f14","--s-fn":"#7aa2f7","--s-method":"#4f84f4","--s-struct":"#2ac3de","--s-field":"#73daca","--s-enum":"#2ac3de","--s-variant":"#5bd1e6","--s-trait":"#7dcfff","--s-tmethod":"#4fbeff","--s-alias":"#1c9db4","--s-const":"#ff9e64","--s-macro":"#7dcfff"}},"dracula":{"name":"Dracula","dark":true,"swatch":["#282a36","#50fa7b","#8be9fd"],"vars":{"--bg":"#282a36","--surface":"#191a21","--raised":"#2d303e","--border":"#494b54","--text":"#f8f8f2","--dim":"#8995b8","--bright":"#8be9fd","--link":"#bd93f9","--canvas":"#282a36","--pkg":"#ff79c6","--mod":"#ff79c6","--ty":"#8be9fd","--c-ws":"#2d303e","--c-pkg":"#b05288","--c-mod":"#b05288","--c-ty":"#79cdde","--chip":"#222430","--hl":"#8be9fd","--pane":"#191a21","--buy-bg":"#50fa7b","--buy-fg":"#0d0f14","--s-fn":"#50fa7b","--s-method":"#23f959","--s-struct":"#8be9fd","--s-field":"#f8f8f2","--s-enum":"#8be9fd","--s-variant":"#c2f3fe","--s-trait":"#50fa7b","--s-tmethod":"#7dfb9d","--s-alias":"#54dffc","--s-const":"#bd93f9","--s-macro":"#bd93f9"}},"one-dark":{"name":"One Dark","dark":true,"swatch":["#282c34","#61afef","#e5c07b"],"vars":{"--bg":"#282c34","--surface":"#3e4452","--raised":"#2c323c","--border":"#3d414a","--text":"#abb2bf","--dim":"#8e95a2","--bright":"#abb2bf","--link":"#61afef","--canvas":"#282c34","--pkg":"#e06c75","--mod":"#61afef","--ty":"#e5c07b","--c-ws":"#2c323c","--c-pkg":"#6e3236","--c-mod":"#4179a6","--c-ty":"#c1a166","--chip":"#2c323c","--hl":"#abb2bf","--pane":"#3e4452","--buy-bg":"#98c379","--buy-fg":"#0d0f14","--s-fn":"#61afef","--s-method":"#379aeb","--s-struct":"#e5c07b","--s-field":"#e06c75","--s-enum":"#e5c07b","--s-variant":"#eed6aa","--s-trait":"#e5c07b","--s-tmethod":"#ddae55","--s-alias":"#dcaa4c","--s-const":"#56b6c2","--s-macro":"#c678dd"}},"rose-pine":{"name":"Rosé Pine","dark":true,"swatch":["#191724","#ebbcba","#9ccfd8"],"vars":{"--bg":"#191724","--surface":"#1f1d2e","--raised":"#0b0b10","--border":"#393745","--text":"#e0def4","--dim":"#837f9a","--bright":"#e0def4","--link":"#e0def4","--canvas":"#191724","--pkg":"#31748f","--mod":"#e0def4","--ty":"#9ccfd8","--c-ws":"#0b0b10","--c-pkg":"#000000","--c-mod":"#c0bed1","--c-ty":"#83aeb6","--chip":"#2a273e","--hl":"#e0def4","--pane":"#1f1d2e","--buy-bg":"#9ccfd8","--buy-fg":"#0d0f14","--s-fn":"#ebbcba","--s-method":"#e19996","--s-struct":"#9ccfd8","--s-field":"#9ccfd8","--s-enum":"#9ccfd8","--s-variant":"#c4e3e8","--s-trait":"#c4a7e7","--s-tmethod":"#ac83dd","--s-alias":"#74bbc8","--s-const":"#9ccfd8","--s-macro":"#ebbcba"}},"solarized-light":{"name":"Solarized Light","dark":false,"swatch":["#fdf6e3","#268bd2","#9c7600"],"vars":{"--bg":"#fdf6e3","--surface":"#eee8d5","--raised":"#e0d4b1","--border":"#e1decf","--text":"#4d6066","--dim":"#637478","--bright":"#1e6fa6","--link":"#268bd2","--canvas":"#fdf6e3","--pkg":"#859900","--mod":"#6c71c4","--ty":"#b58900","--c-ws":"#e0d4b1","--c-pkg":"#3e4900","--c-mod":"#000000","--c-ty":"#705400","--chip":"#657b83","--hl":"#1e6fa6","--pane":"#eee8d5","--buy-bg":"#859900","--buy-fg":"#0d0f14","--s-fn":"#268bd2","--s-method":"#1f71ab","--s-struct":"#9c7600","--s-field":"#586e75","--s-enum":"#9c7600","--s-variant":"#a27a00","--s-trait":"#6c71c4","--s-tmethod":"#4b51b7","--s-alias":"#7d5f00","--s-const":"#258d85","--s-macro":"#d33682"}},"kanagawa":{"name":"Kanagawa","dark":true,"swatch":["#1f1f28","#7e9cd8","#7aa89f"],"vars":{"--bg":"#1f1f28","--surface":"#16161d","--raised":"#363646","--border":"#3d3c3f","--text":"#dcd7ba","--dim":"#8a887b","--bright":"#dcd7ba","--link":"#7e9cd8","--canvas":"#1f1f28","--pkg":"#957fb8","--mod":"#ffa066","--ty":"#7aa89f","--c-ws":"#363646","--c-pkg":"#362c44","--c-mod":"#c1784b","--c-ty":"#567871","--chip":"#000000","--hl":"#dcd7ba","--pane":"#16161d","--buy-bg":"#76946a","--buy-fg":"#0d0f14","--s-fn":"#7e9cd8","--s-method":"#5b81cd","--s-struct":"#7aa89f","--s-field":"#e6c384","--s-enum":"#7aa89f","--s-variant":"#9cbeb7","--s-trait":"#e46876","--s-tmethod":"#dd4153","--s-alias":"#7fb4ca","--s-const":"#ffa066","--s-macro":"#e46876"}}};
-    const BUILT_IN = {
-      dark: { name: 'Dark', dark: true, swatch: ['#0d0f14', '#6fd3a0', '#6fa8dc'] },
-      light: { name: 'Light', dark: false, swatch: ['#e7eaef', '#1d7a4c', '#1f5f9e'] },
-    };
-    const ALL = { ...BUILT_IN, ...THEMES };
+    const THEMES = {"beans":{"name":"Beans","dark":true,"swatch":["#111111","#fad07a","#48c6ff"],"vars":{"--bg":"#111111","--surface":"#1c1c1c","--raised":"#292929","--border":"#343431","--text":"#ebebd8","--dim":"#7f7f7c","--bright":"#ffffff","--link":"#ffffff","--canvas":"#111111","--pkg":"#8197bf","--mod":"#be67e1","--ty":"#48c6ff","--c-ws":"#292929","--c-pkg":"#46536b","--c-mod":"#502860","--c-ty":"#39a1d0","--chip":"#292929","--hl":"#ffffff","--pane":"#1c1c1c","--buy-bg":"#5a9f81","--buy-fg":"#0d0f14","--s-fn":"#fad07a","--s-method":"#f8c04e","--s-struct":"#48c6ff","--s-field":"#be67e1","--s-enum":"#48c6ff","--s-variant":"#9243b2","--s-trait":"#ccff00","--s-tmethod":"#a7d100","--s-alias":"#80d7ff","--s-const":"#ff005b","--s-macro":"#ccff00"}},"ayu-light":{"name":"Ayu Light","dark":false,"swatch":["#fafafa","#cc7600","#2293e3"],"vars":{"--bg":"#fafafa","--surface":"#e7eaed","--raised":"#c9d0d7","--border":"#e1e2e2","--text":"#5c6166","--dim":"#6b747c","--bright":"#333538","--link":"#5c6166","--canvas":"#fafafa","--pkg":"#ffaa33","--mod":"#399ee6","--ty":"#399ee6","--c-ws":"#c9d0d7","--c-pkg":"#c68325","--c-mod":"#1c5984","--c-ty":"#236a9c","--chip":"#d8dde2","--hl":"#5c6166","--pane":"#e7eaed","--buy-bg":"#86b300","--buy-fg":"#0d0f14","--s-fn":"#cc7600","--s-method":"#d07a00","--s-struct":"#2293e3","--s-field":"#5c6166","--s-enum":"#2293e3","--s-variant":"#2695e3","--s-trait":"#2293e3","--s-tmethod":"#1b88d6","--s-alias":"#1a82cd","--s-const":"#a37acc","--s-macro":"#cc7600"}},"catppuccin-mocha":{"name":"Catppuccin Mocha","dark":true,"swatch":["#1e1e2e","#89b4fa","#f9e2af"],"vars":{"--bg":"#1e1e2e","--surface":"#313244","--raised":"#20202d","--border":"#3a3b4e","--text":"#cdd6f4","--dim":"#9399b2","--bright":"#e4e8f9","--link":"#f5e0dc","--canvas":"#1e1e2e","--pkg":"#cba6f7","--mod":"#f9e2af","--ty":"#f9e2af","--c-ws":"#20202d","--c-pkg":"#987cba","--c-mod":"#d7c396","--c-ty":"#dec99b","--chip":"#181825","--hl":"#cdd6f4","--pane":"#313244","--buy-bg":"#a6e3a1","--buy-fg":"#0d0f14","--s-fn":"#89b4fa","--s-method":"#5d98f8","--s-struct":"#f9e2af","--s-field":"#89b4fa","--s-enum":"#f9e2af","--s-variant":"#94e2d5","--s-trait":"#f9e2af","--s-tmethod":"#f6d384","--s-alias":"#cba6f7","--s-const":"#fab387","--s-macro":"#f5e0dc"}},"catppuccin-latte":{"name":"Catppuccin Latte","dark":false,"swatch":["#eff1f5","#1e66f5","#b17217"],"vars":{"--bg":"#eff1f5","--surface":"#ccd0da","--raised":"#e8ecf1","--border":"#d5d7df","--text":"#4c4f69","--dim":"#686c83","--bright":"#2a2b3a","--link":"#4c4f69","--canvas":"#eff1f5","--pkg":"#8839ef","--mod":"#df8e1d","--ty":"#df8e1d","--c-ws":"#e8ecf1","--c-pkg":"#000000","--c-mod":"#8f590f","--c-ty":"#a26612","--chip":"#e6e9ef","--hl":"#4c4f69","--pane":"#ccd0da","--buy-bg":"#40a02b","--buy-fg":"#0d0f14","--s-fn":"#1e66f5","--s-method":"#0a50db","--s-struct":"#b17217","--s-field":"#1e66f5","--s-enum":"#b17217","--s-variant":"#179299","--s-trait":"#b17217","--s-tmethod":"#b67418","--s-alias":"#8839ef","--s-const":"#ef5801","--s-macro":"#d26650"}},"gruvbox":{"name":"Gruvbox","dark":true,"swatch":["#282828","#b8bb26","#fabd2f"],"vars":{"--bg":"#282828","--surface":"#3c3836","--raised":"#494542","--border":"#47453e","--text":"#ebdbb2","--dim":"#a2937f","--bright":"#b8bb26","--link":"#bdae93","--canvas":"#282828","--pkg":"#8ec07c","--mod":"#ebdbb2","--ty":"#fabd2f","--c-ws":"#494542","--c-pkg":"#688e5a","--c-mod":"#c8ba97","--c-ty":"#d39f26","--chip":"#504945","--hl":"#b8bb26","--pane":"#3c3836","--buy-bg":"#b8bb26","--buy-fg":"#0d0f14","--s-fn":"#b8bb26","--s-method":"#92951e","--s-struct":"#fabd2f","--s-field":"#83a598","--s-enum":"#fabd2f","--s-variant":"#fbce66","--s-trait":"#8ec07c","--s-tmethod":"#73b15d","--s-alias":"#eba606","--s-const":"#d3869b","--s-macro":"#83a598"}},"nord":{"name":"Nord","dark":true,"swatch":["#2e3440","#88c0d0","#8fbcbb"],"vars":{"--bg":"#2e3440","--surface":"#3b4252","--raised":"#464e61","--border":"#494f5b","--text":"#d8dee9","--dim":"#949eb0","--bright":"#88c0d0","--link":"#88c0d0","--canvas":"#2e3440","--pkg":"#81a1c1","--mod":"#d8dee9","--ty":"#8fbcbb","--c-ws":"#464e61","--c-pkg":"#4f6378","--c-mod":"#b8bdc7","--c-ty":"#719695","--chip":"#464e61","--hl":"#88c0d0","--pane":"#3b4252","--buy-bg":"#a3be8c","--buy-fg":"#0d0f14","--s-fn":"#88c0d0","--s-method":"#67afc3","--s-struct":"#8fbcbb","--s-field":"#d8dee9","--s-enum":"#8fbcbb","--s-variant":"#b2d1d0","--s-trait":"#81a1c1","--s-tmethod":"#628ab2","--s-alias":"#6ca7a6","--s-const":"#d8dee9","--s-macro":"#81a1c1"}},"tokyo-night":{"name":"Tokyo Night","dark":true,"swatch":["#1a1b26","#7aa2f7","#2ac3de"],"vars":{"--bg":"#1a1b26","--surface":"#16161e","--raised":"#2c2c3c","--border":"#353747","--text":"#c0caf5","--dim":"#7982ac","--bright":"#dce2fa","--link":"#7aa2f7","--canvas":"#1a1b26","--pkg":"#7dcfff","--mod":"#7dcfff","--ty":"#2ac3de","--c-ws":"#2c2c3c","--c-pkg":"#63a6cd","--c-mod":"#63a6cd","--c-ty":"#1f9bb1","--chip":"#000000","--hl":"#c0caf5","--pane":"#16161e","--buy-bg":"#449dab","--buy-fg":"#0d0f14","--s-fn":"#7aa2f7","--s-method":"#4f84f4","--s-struct":"#2ac3de","--s-field":"#73daca","--s-enum":"#2ac3de","--s-variant":"#5bd1e6","--s-trait":"#7dcfff","--s-tmethod":"#4fbeff","--s-alias":"#1c9db4","--s-const":"#ff9e64","--s-macro":"#7dcfff"}},"dracula":{"name":"Dracula","dark":true,"swatch":["#282a36","#50fa7b","#8be9fd"],"vars":{"--bg":"#282a36","--surface":"#191a21","--raised":"#2d303e","--border":"#494b54","--text":"#f8f8f2","--dim":"#8995b8","--bright":"#8be9fd","--link":"#bd93f9","--canvas":"#282a36","--pkg":"#ff79c6","--mod":"#ff79c6","--ty":"#8be9fd","--c-ws":"#2d303e","--c-pkg":"#b05288","--c-mod":"#b05288","--c-ty":"#79cdde","--chip":"#222430","--hl":"#8be9fd","--pane":"#191a21","--buy-bg":"#50fa7b","--buy-fg":"#0d0f14","--s-fn":"#50fa7b","--s-method":"#23f959","--s-struct":"#8be9fd","--s-field":"#f8f8f2","--s-enum":"#8be9fd","--s-variant":"#c2f3fe","--s-trait":"#50fa7b","--s-tmethod":"#7dfb9d","--s-alias":"#54dffc","--s-const":"#bd93f9","--s-macro":"#bd93f9"}},"one-dark":{"name":"One Dark","dark":true,"swatch":["#282c34","#61afef","#e5c07b"],"vars":{"--bg":"#282c34","--surface":"#3e4452","--raised":"#2c323c","--border":"#3d414a","--text":"#abb2bf","--dim":"#8e95a2","--bright":"#d1d5dc","--link":"#61afef","--canvas":"#282c34","--pkg":"#e06c75","--mod":"#61afef","--ty":"#e5c07b","--c-ws":"#2c323c","--c-pkg":"#6e3236","--c-mod":"#4179a6","--c-ty":"#c1a166","--chip":"#2c323c","--hl":"#abb2bf","--pane":"#3e4452","--buy-bg":"#98c379","--buy-fg":"#0d0f14","--s-fn":"#61afef","--s-method":"#379aeb","--s-struct":"#e5c07b","--s-field":"#e06c75","--s-enum":"#e5c07b","--s-variant":"#eed6aa","--s-trait":"#e5c07b","--s-tmethod":"#ddae55","--s-alias":"#dcaa4c","--s-const":"#56b6c2","--s-macro":"#c678dd"}},"rose-pine":{"name":"Rosé Pine","dark":true,"swatch":["#191724","#ebbcba","#9ccfd8"],"vars":{"--bg":"#191724","--surface":"#1f1d2e","--raised":"#0b0b10","--border":"#393745","--text":"#e0def4","--dim":"#837f9a","--bright":"#eeedf9","--link":"#e0def4","--canvas":"#191724","--pkg":"#31748f","--mod":"#e0def4","--ty":"#9ccfd8","--c-ws":"#0b0b10","--c-pkg":"#000000","--c-mod":"#c0bed1","--c-ty":"#83aeb6","--chip":"#2a273e","--hl":"#e0def4","--pane":"#1f1d2e","--buy-bg":"#9ccfd8","--buy-fg":"#0d0f14","--s-fn":"#ebbcba","--s-method":"#e19996","--s-struct":"#9ccfd8","--s-field":"#9ccfd8","--s-enum":"#9ccfd8","--s-variant":"#c4e3e8","--s-trait":"#c4a7e7","--s-tmethod":"#ac83dd","--s-alias":"#74bbc8","--s-const":"#9ccfd8","--s-macro":"#ebbcba"}},"solarized-light":{"name":"Solarized Light","dark":false,"swatch":["#fdf6e3","#268bd2","#9c7600"],"vars":{"--bg":"#fdf6e3","--surface":"#eee8d5","--raised":"#e0d4b1","--border":"#e1decf","--text":"#4d6066","--dim":"#637478","--bright":"#1e6fa6","--link":"#268bd2","--canvas":"#fdf6e3","--pkg":"#859900","--mod":"#6c71c4","--ty":"#b58900","--c-ws":"#e0d4b1","--c-pkg":"#3e4900","--c-mod":"#000000","--c-ty":"#705400","--chip":"#657b83","--hl":"#1e6fa6","--pane":"#eee8d5","--buy-bg":"#859900","--buy-fg":"#0d0f14","--s-fn":"#268bd2","--s-method":"#1f71ab","--s-struct":"#9c7600","--s-field":"#586e75","--s-enum":"#9c7600","--s-variant":"#a27a00","--s-trait":"#6c71c4","--s-tmethod":"#4b51b7","--s-alias":"#7d5f00","--s-const":"#258d85","--s-macro":"#d33682"}},"kanagawa":{"name":"Kanagawa","dark":true,"swatch":["#1f1f28","#7e9cd8","#7aa89f"],"vars":{"--bg":"#1f1f28","--surface":"#16161d","--raised":"#363646","--border":"#3d3c3f","--text":"#dcd7ba","--dim":"#8a887b","--bright":"#ece9d9","--link":"#7e9cd8","--canvas":"#1f1f28","--pkg":"#957fb8","--mod":"#ffa066","--ty":"#7aa89f","--c-ws":"#363646","--c-pkg":"#362c44","--c-mod":"#c1784b","--c-ty":"#567871","--chip":"#000000","--hl":"#dcd7ba","--pane":"#16161d","--buy-bg":"#76946a","--buy-fg":"#0d0f14","--s-fn":"#7e9cd8","--s-method":"#5b81cd","--s-struct":"#7aa89f","--s-field":"#e6c384","--s-enum":"#7aa89f","--s-variant":"#9cbeb7","--s-trait":"#e46876","--s-tmethod":"#dd4153","--s-alias":"#7fb4ca","--s-const":"#ffa066","--s-macro":"#e46876"}}};
+    // With no pick, the system setting chooses between these two.
+    const DEFAULT = { dark: 'beans', light: 'ayu-light' };
+    const ALL = THEMES;
     const ORDER = Object.keys(ALL);
     const root = document.documentElement;
     const system = window.matchMedia('(prefers-color-scheme: dark)');
@@ -35,7 +33,7 @@
       if (!theme) return;
       for (const name of set) root.style.removeProperty(name);
       set = [];
-      // A shipped theme sets every color itself; the built-ins are the stylesheet's own.
+      // A picked theme sets every color itself, over the stylesheet's defaults.
       if (theme.vars) {
         for (const [name, value] of Object.entries(theme.vars)) { root.style.setProperty(name, value); set.push(name); }
         root.style.setProperty('color-scheme', theme.dark ? 'dark' : 'light');
@@ -43,7 +41,7 @@
       }
       root.dataset.theme = id;
       for (const meta of document.querySelectorAll('meta[name="theme-color"]')) {
-        meta.content = theme.vars ? theme.vars['--bg'] : theme.dark ? '#0d0f14' : '#e7eaef';
+        meta.content = theme.vars['--bg'];
       }
       if (remember) { try { localStorage.setItem('theme', id); } catch (e) {} }
     }
@@ -51,7 +49,7 @@
       const picked = localStorage.getItem('theme');
       if (ALL[picked]) apply(picked);
     } catch (e) {}
-    return { ALL, ORDER, apply, isDark, system, current: () => root.dataset.theme || (system.matches ? 'dark' : 'light') };
+    return { ALL, ORDER, DEFAULT, apply, isDark, system, current: () => root.dataset.theme || (system.matches ? DEFAULT.dark : DEFAULT.light) };
   })();
 </script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -59,67 +57,91 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,1,0&icon_names=auto_awesome,data_object,extension,folder,functions,inventory,link,list_alt,lock,radio_button_checked,rule,subdirectory_arrow_right,tag&display=block">
 <style>
-/* Layout: the app's own window colors and system font; the node graph with a selection as the hero; then
+/* Layout: the app's own themes (Beans and Ayu Light by default) and system font; the node graph with a selection as the hero; then
    one section per feature area, a graphic beside three points, closing on a buy section. The
    green accent has one job: the buy button. */
 :root {
-  --bg: #e7eaef;
-  --surface: #f6f7fa;
-  --raised: #dde1e8;
-  --border: #c3cad6;
-  --text: #2b3240;
-  --dim: #5d6779;
-  --bright: #0c1017;
-  --link: #2f6cb5;
+  /* Ayu Light: the page's colors when the system is light and no theme is picked. */
+  --bg: #fafafa;
+  --surface: #e7eaed;
+  --raised: #c9d0d7;
+  --border: #e1e2e2;
+  --text: #5c6166;
+  --dim: #6b747c;
+  --bright: #333538;
+  --link: #5c6166;
+  --canvas: #fafafa;
+  --pkg: #ffaa33;
+  --mod: #399ee6;
+  --ty: #399ee6;
+  --c-ws: #c9d0d7;
+  --c-pkg: #c68325;
+  --c-mod: #1c5984;
+  --c-ty: #236a9c;
+  --chip: #d8dde2;
+  --hl: #5c6166;
+  --pane: #e7eaed;
+  --buy-bg: #86b300;
+  --buy-fg: #0d0f14;
+  --s-fn: #cc7600;
+  --s-method: #d07a00;
+  --s-struct: #2293e3;
+  --s-field: #5c6166;
+  --s-enum: #2293e3;
+  --s-variant: #2695e3;
+  --s-trait: #2293e3;
+  --s-tmethod: #1b88d6;
+  --s-alias: #1a82cd;
+  --s-const: #a37acc;
+  --s-macro: #cc7600;
   --h0: #e8c21c; --h1: #f08a2c; --h2: #e0533f; --h3: #b84679; --h4: #7d4aa3;
-  /* The graph's own colors, as the app derives them from its light theme. */
-  --canvas: #e7eaef;
-  --pkg: #1f4f8f; --mod: #3a6aa5; --ty: #6b4a94;
-  --c-ws: #dde1e8; --c-pkg: #000000; --c-mod: #000000; --c-ty: #000000;
-  --chip: #ccd2dc; --hl: #0c1017; --pane: #f6f7fa;
-  --s-variant: #6d55b0; --s-tmethod: #8a530b;
   /* Ring colors are a fixed heat scale in the app, the same over every theme. */
   --r1: #ffa84d; --r2: #f57059; --r3: #c75c8c; --r4: #8c59ad;
-  --s-fn: #1d7a4c; --s-method: #186340; --s-struct: #1f5f9e; --s-field: #4a5c70; --s-enum: #5a3f9c;
-  --s-trait: #9a5f10; --s-const: #a33b3b; --s-macro: #8e3a8e; --s-alias: #17706a;
   --display: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
   --body: var(--display);
   --mono: "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, "SF Mono", Menlo, monospace;
-  --buy-bg: #2f8139; --buy-fg: #ffffff;
   --bar-h: 64px;
   color-scheme: light;
 }
-/* Dark follows the system unless the header switch picked light; the switch picking dark wins
-   over a light system. The two blocks carry the same values. */
+/* Beans: the page's colors when the system is dark and no theme is picked. A picked theme sets
+   every color on the root element itself. */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0d0f14; --surface: #131820; --raised: #1c2330; --border: #2a3444;
-    --text: #b8c9e0; --dim: #8599b8; --bright: #ebf2ff; --link: #8fb3ef;
+  :root:not([data-theme]) {
+    --bg: #111111;
+    --surface: #1c1c1c;
+    --raised: #292929;
+    --border: #343431;
+    --text: #ebebd8;
+    --dim: #7f7f7c;
+    --bright: #ffffff;
+    --link: #ffffff;
+    --canvas: #111111;
+    --pkg: #8197bf;
+    --mod: #be67e1;
+    --ty: #48c6ff;
+    --c-ws: #292929;
+    --c-pkg: #46536b;
+    --c-mod: #502860;
+    --c-ty: #39a1d0;
+    --chip: #292929;
+    --hl: #ffffff;
+    --pane: #1c1c1c;
+    --buy-bg: #5a9f81;
+    --buy-fg: #0d0f14;
+    --s-fn: #fad07a;
+    --s-method: #f8c04e;
+    --s-struct: #48c6ff;
+    --s-field: #be67e1;
+    --s-enum: #48c6ff;
+    --s-variant: #9243b2;
+    --s-trait: #ccff00;
+    --s-tmethod: #a7d100;
+    --s-alias: #80d7ff;
+    --s-const: #ff005b;
+    --s-macro: #ccff00;
     --h0: #fff28c; --h1: #ffa84d; --h2: #f57059; --h3: #c75c8c; --h4: #8c59ad;
-    --canvas: #0d0f14;
-    --pkg: #b8d1fa; --mod: #94b3db; --ty: #ad94cc;
-    --c-ws: #242b38; --c-pkg: #97acce; --c-mod: #6b82a0; --c-ty: #7b6992;
-    --chip: #293345; --hl: #ebf2ff; --pane: #171c24;
-    --s-variant: #b4a7d6; --s-tmethod: #d99b4f;
-    --s-fn: #6fd3a0; --s-method: #54b98a; --s-struct: #6fa8dc; --s-field: #8fa3b8; --s-enum: #8e7cc3;
-    --s-trait: #e0a45e; --s-const: #d78a8a; --s-macro: #d6a3d6; --s-alias: #76c7c0;
-    --buy-bg: #7ed782; --buy-fg: #0d0f14;
     color-scheme: dark;
   }
-}
-:root[data-theme="dark"] {
-  --bg: #0d0f14; --surface: #131820; --raised: #1c2330; --border: #2a3444;
-  --text: #b8c9e0; --dim: #8599b8; --bright: #ebf2ff; --link: #8fb3ef;
-  --h0: #fff28c; --h1: #ffa84d; --h2: #f57059; --h3: #c75c8c; --h4: #8c59ad;
-  --canvas: #0d0f14;
-  --pkg: #b8d1fa; --mod: #94b3db; --ty: #ad94cc;
-  --c-ws: #242b38; --c-pkg: #97acce; --c-mod: #6b82a0; --c-ty: #7b6992;
-  --chip: #293345; --hl: #ebf2ff; --pane: #171c24;
-  --s-variant: #b4a7d6; --s-tmethod: #d99b4f;
-  --s-fn: #6fd3a0; --s-method: #54b98a; --s-struct: #6fa8dc; --s-field: #8fa3b8; --s-enum: #8e7cc3;
-  --s-trait: #e0a45e; --s-const: #d78a8a; --s-macro: #d6a3d6; --s-alias: #76c7c0;
-  --buy-bg: #7ed782; --buy-fg: #0d0f14;
-  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -211,6 +233,22 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 }
 .shot canvas, .shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .shot-col { display: grid; gap: 14px; min-width: 0; }
+/* The strip under the hero: one row that scrolls sideways, its edges fading where chips are cut. */
+.theme-strip { display: flex; align-items: center; gap: 14px; padding-block: 0 26px; }
+.theme-strip-label { font-size: 13px; color: var(--dim); flex: none; }
+.strip-scroll {
+  min-width: 0; flex: 1;
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none;
+}
+.strip-scroll::-webkit-scrollbar { display: none; }
+.strip-scroll.fade-left { -webkit-mask-image: linear-gradient(to right, transparent, #000 40px); mask-image: linear-gradient(to right, transparent, #000 40px); }
+.strip-scroll.fade-right { -webkit-mask-image: linear-gradient(to left, transparent, #000 40px); mask-image: linear-gradient(to left, transparent, #000 40px); }
+.strip-scroll.fade-left.fade-right {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+}
+.strip-scroll .themes { flex-wrap: nowrap; width: max-content; padding-block: 2px; }
 .themes { display: flex; flex-wrap: wrap; gap: 8px; }
 .theme-chip {
   display: inline-flex; align-items: center; gap: 8px;
@@ -345,6 +383,13 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   </div>
 </header>
 
+<div class="wrap theme-strip">
+  <span class="theme-strip-label" id="theme-strip-label">Theme</span>
+  <div class="strip-scroll">
+    <div class="themes" data-themes role="radiogroup" aria-labelledby="theme-strip-label"></div>
+  </div>
+</div>
+
 <main class="wrap" id="features">
   <section class="cat" id="node-graph">
     <div class="cat-text">
@@ -362,7 +407,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   <section class="cat" id="thermal">
     <div class="cat-text">
       <h2>Thermal Vision Profiler</h2>
-      <p>Color the map by where your program spends its time. Windows only.</p>
+      <p>Color the node graph by where your program spends its time. Windows only.</p>
       <ul class="points">
         <li>One click builds, runs and samples your program 8,000 times a second</li>
         <li>Hot functions glow, and call edges thicken with traffic</li>
@@ -400,7 +445,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 
   <section class="cat" id="refactoring">
     <div class="cat-text">
-      <h2>Restructure</h2>
+      <h2>Code Structure</h2>
       <p>Reshape crates and modules from the graph.</p>
       <ul class="points">
         <li>Rename symbols, modules and folders everywhere they're used</li>
@@ -423,7 +468,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
     </div>
     <div class="shot-col">
       <figure class="shot"><canvas data-graphic="workflow" role="img" aria-label="The sample workspace with a selection, beside a History pane listing the places visited, drawn in the page's current theme."></canvas></figure>
-      <div class="themes" id="themes" role="radiogroup" aria-label="Page theme"></div>
+      <div class="themes" data-themes role="radiogroup" aria-label="Page theme"></div>
     </div>
   </section>
 
@@ -469,7 +514,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 /* ---------- the dark/light switch and the theme chips ---------- */
 (() => {
   const button = document.getElementById('theme-toggle');
-  const chips = document.getElementById('themes');
+  const groups = [...document.querySelectorAll('[data-themes]')];
   const sync = () => {
     const dark = SiteTheme.isDark();
     const label = dark ? 'Switch to light theme' : 'Switch to dark theme';
@@ -477,13 +522,16 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
     button.setAttribute('aria-label', label);
     button.title = label;
     const current = SiteTheme.current();
-    for (const chip of chips.children) chip.setAttribute('aria-checked', String(chip.dataset.theme === current));
+    for (const group of groups) {
+      for (const chip of group.children) chip.setAttribute('aria-checked', String(chip.dataset.theme === current));
+    }
   };
   const pick = id => { SiteTheme.apply(id, true); sync(); };
-  button.addEventListener('click', () => pick(SiteTheme.isDark() ? 'light' : 'dark'));
+  button.addEventListener('click', () => pick(SiteTheme.isDark() ? SiteTheme.DEFAULT.light : SiteTheme.DEFAULT.dark));
 
-  // The theme chips under the Workflow graphic: each one restyles the whole page.
-  for (const id of SiteTheme.ORDER) {
+  // The theme chips, in the strip below the hero and under the Workflow graphic: each one restyles
+  // the whole page.
+  for (const group of groups) for (const id of SiteTheme.ORDER) {
     const theme = SiteTheme.ALL[id];
     const chip = document.createElement('button');
     chip.type = 'button';
@@ -500,7 +548,28 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
     }
     chip.append(swatch, theme.name);
     chip.addEventListener('click', () => pick(id));
-    chips.append(chip);
+    group.append(chip);
+  }
+
+  // The strip scrolls sideways: a mouse wheel scrolls it too, and its edges fade where chips are cut.
+  for (const scroller of document.querySelectorAll('.strip-scroll')) {
+    const edges = () => {
+      const max = scroller.scrollWidth - scroller.clientWidth;
+      scroller.classList.toggle('fade-left', scroller.scrollLeft > 1);
+      scroller.classList.toggle('fade-right', scroller.scrollLeft < max - 1);
+    };
+    scroller.addEventListener('scroll', edges, { passive: true });
+    scroller.addEventListener('wheel', e => {
+      const max = scroller.scrollWidth - scroller.clientWidth;
+      if (!max || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      const next = Math.max(0, Math.min(max, scroller.scrollLeft + e.deltaY));
+      if (next === scroller.scrollLeft) return;
+      e.preventDefault();
+      scroller.scrollLeft = next;
+      edges();
+    }, { passive: false });
+    new ResizeObserver(edges).observe(scroller);
+    edges();
   }
   SiteTheme.system.addEventListener('change', sync);
   sync();
