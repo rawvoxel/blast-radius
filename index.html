@@ -179,9 +179,8 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
    size. */
 .enlarge { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
 .enlarge img { display: block; width: 100%; height: 100%; object-fit: cover; }
-/* A theme change dissolves the new theme's screenshot in over the old one. */
-.enlarge img.dissolve { position: absolute; inset: 0; opacity: 0; transition: opacity 450ms ease; }
-.enlarge img.dissolve.in { opacity: 1; }
+/* A theme change dissolves the new theme's screenshot in over the old one; the script animates it. */
+.enlarge img.dissolve { position: absolute; inset: 0; opacity: 0; }
 .zoom {
   padding: 0; border: 1px solid var(--border); border-radius: 10px;
   background: var(--canvas);
@@ -556,14 +555,16 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       // The one beneath has the same picture cached; drop the top one once it is drawn.
       image.decode().catch(() => {}).then(() => next.remove());
     };
-    next.addEventListener('transitionend', done, { once: true });
     next.src = src;
-    image.after(next);
+    // Last in the frame, so it lies over everything, a finishing dissolve's leftover included.
+    image.parentElement.append(next);
     next.decode().catch(() => {}).then(() => {
       if (fading.get(image) !== next) return;
-      next.classList.add('in');
-      // No transition runs if the page is hidden or the frame never paints; finish regardless.
-      setTimeout(done, 600);
+      // Animated rather than transitioned: a theme seen before is cached and decodes at once, often
+      // before the overlay has been styled at all, and a transition needs a styled start to run
+      // from. An animation runs from its first keyframe whatever came before.
+      next.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, easing: 'ease', fill: 'forwards' })
+        .finished.then(done, () => {});
     });
   };
 
