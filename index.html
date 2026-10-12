@@ -175,12 +175,14 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   border: 1px solid var(--border);
   border-radius: 10px;
 }
-/* A screenshot is a whole 1920×1080 window shown a third of its size, so a click opens it full
-   size. */
+/* A screenshot is the app's own SVG export, put inline so the page's theme can recolor it, and shown
+   a third of its size, so a click opens it full size. Its ground is its first color, so any room the
+   frame has around it is the app's background too. */
 .enlarge { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
-.enlarge img { display: block; width: 100%; height: 100%; object-fit: cover; }
-/* A theme change dissolves the whole page into the new theme at once, the script starting it once
-   the new theme's screenshots are ready. */
+.svg-shot { display: block; width: 100%; height: 100%; }
+.svg-shot svg, .zoom svg { display: block; background: var(--c0); }
+.svg-shot svg { width: 100%; height: 100%; }
+/* A theme change dissolves the whole page into the new theme at once. */
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 450ms; animation-timing-function: ease; }
 .zoom {
   padding: 0; border: 1px solid var(--border); border-radius: 10px;
@@ -189,7 +191,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   cursor: zoom-out;
 }
 .zoom::backdrop { background: rgb(0 0 0 / 0.72); }
-.zoom img { display: block; width: 100%; height: auto; max-height: 94vh; object-fit: contain; }
+.zoom svg { width: min(1920px, 96vw); height: auto; max-height: 94vh; }
 .shot-col { display: grid; gap: 14px; min-width: 0; }
 /* The strip under the hero: one row that scrolls sideways, its edges fading where chips are cut. */
 .theme-strip { display: flex; align-items: center; gap: 14px; padding-block: 0 26px; }
@@ -331,7 +333,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <a class="buy" href="#TODO-GUMROAD">Buy on Gumroad</a>
       </div>
     </div>
-    <figure class="viewport" style="margin:0"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="hero" width="1920" height="1080" alt="Blast Radius on a sixteen-crate workspace: base::graph::Graph::insert is selected, and the 22 functions and methods that call it sit on a ring around it, across eight crates."></button></figure>
+    <figure class="viewport" style="margin:0"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><span class="svg-shot" data-shot="hero" role="img" aria-label="Blast Radius on a sixteen-crate workspace: base::graph::Graph::insert is selected, and the 22 functions and methods that call it sit on a ring around it, across eight crates."></span></button></figure>
   </div>
 </header>
 
@@ -353,7 +355,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <li>Spring layout shows how code is organized; gravity shows how it's used</li>
       </ul>
     </div>
-    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="node-graph" width="1920" height="1080" loading="lazy" alt="Socket::connect selected in the sample workspace: its five direct dependents sit on a ring around it across the cli and net crates, and the Connections pane counts them as 5 symbols in 4 files."></button></figure>
+    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><span class="svg-shot" data-shot="node-graph" role="img" aria-label="Socket::connect selected in the sample workspace: its five direct dependents sit on a ring around it across the cli and net crates."></span></button></figure>
   </section>
 
   <section class="cat" id="thermal">
@@ -366,7 +368,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <li>The Profile pane ranks the hottest, with callers and callees</li>
       </ul>
     </div>
-    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="thermal" width="1920" height="1080" loading="lazy" alt="The sample workspace colored by a profile run: the functions on the hot path from main glow yellow and orange, beside the Profile pane ranking the hottest."></button></figure>
+    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><span class="svg-shot" data-shot="thermal" role="img" aria-label="The sample workspace colored by a profile run: the functions on the hot path from main glow yellow and orange."></span></button></figure>
   </section>
 
   <section class="cat" id="flow">
@@ -379,7 +381,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <li>Ride an arrow to the card at its far end</li>
       </ul>
     </div>
-    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="flow" width="1920" height="1080" loading="lazy" alt="The flow graph of connect_cmd: everything it calls unfolded as indented cards down to Socket::connect, joined by colored arrows."></button></figure>
+    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><span class="svg-shot" data-shot="flow" role="img" aria-label="The flow graph of connect_cmd: everything it calls unfolded as indented cards down to Socket::connect, joined by colored arrows."></span></button></figure>
   </section>
 
   <section class="cat" id="health">
@@ -392,7 +394,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <li>A list of every symbol nothing references</li>
       </ul>
     </div>
-    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="health" width="1920" height="1080" loading="lazy" alt="The sample workspace showing only dead code, beside the browser's Unreferenced list of the constants, functions and variant nothing references."></button></figure>
+    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><span class="svg-shot" data-shot="health" role="img" aria-label="The sample workspace showing only dead code: the constants, functions and variant nothing references, each named."></span></button></figure>
   </section>
 
   <section class="cat" id="refactoring">
@@ -405,7 +407,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <li>Refuses edits that would create cycles or break the orphan rule</li>
       </ul>
     </div>
-    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="structure" width="1920" height="1080" loading="lazy" alt="Moving the frame module into session from the browser tree: a Move dialog says two paths will be rewritten across two files before anything changes."></button></figure>
+    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><span class="svg-shot" data-shot="structure" role="img" aria-label="The net crate's modules nested in the node graph, with frame outlined: the module being moved into session."></span></button></figure>
   </section>
 
   <section class="cat" id="workflow">
@@ -419,7 +421,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       </ul>
     </div>
     <div class="shot-col">
-      <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="workflow" width="1920" height="1080" loading="lazy" alt="The History pane after a walk from main through dispatch, connect_cmd, start and open to Socket::connect, beside what depends on connect."></button></figure>
+      <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><span class="svg-shot" data-shot="workflow" role="img" aria-label="Socket::connect, reached by a walk from main through dispatch, connect_cmd, start and open, with what depends on it on a ring around it."></span></button></figure>
       <div class="themes" data-themes role="radiogroup" aria-label="Page theme"></div>
     </div>
   </section>
@@ -459,7 +461,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   <a class="buy" href="#TODO-GUMROAD">Buy on Gumroad</a>
 </section>
 
-<dialog class="zoom" id="zoom" aria-label="Enlarged screenshot"><img alt=""></dialog>
+<dialog class="zoom" id="zoom" aria-label="Enlarged screenshot"></dialog>
 
 <footer class="wrap foot">
   <span>© 2026 Robert Ware</span>
@@ -467,51 +469,54 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 </footer>
 
 <script>
-/* ---------- screenshots: the page's theme picks the set ---------- */
-// Each screenshot is taken in every theme the page offers, under shots/<theme>/<name>.webp, so the
-// app in the pictures always wears the page's colors.
+/* ---------- screenshots: one SVG each, recolored by the page's theme ---------- */
+// Each screenshot is an SVG the app exported in every theme the page offers: its colors are CSS
+// variables, with a block of values for each theme, chosen by `data-theme` on the SVG. So a shot is
+// fetched once, put inline (an <img> could not be reached by the page's styles), and recolored by
+// setting that attribute — there is no other picture to load when the theme changes.
 const Shots = (() => {
-  const images = [...document.querySelectorAll('img[data-shot]')];
+  const holders = [...document.querySelectorAll('[data-shot]')];
+  const paint = svg => { svg.dataset.theme = SiteTheme.current(); };
 
-  // Point every screenshot at the current theme's. The ones in view are loaded and decoded first,
-  // off to the side, and only then swapped in, so the promise settles on a page whose pictures are
-  // all there; a theme change waits on it, up to a second and a half. (Decoding the <img> itself
-  // would not do: Firefox answers for the picture it is still showing.) One out of view, lazily
-  // loaded, just takes the new source and waits to be scrolled to. With `now`, as on the first load
-  // or when the system flips the theme, every one takes its new source at once.
-  let latest = 0;
-  const show = async now => {
-    const mine = ++latest;
-    const theme = SiteTheme.current();
-    const swaps = [];
-    for (const image of images) {
-      const src = `shots/${theme}/${image.dataset.shot}.webp`;
-      if (image.getAttribute('src') === src) continue;
-      const box = image.getBoundingClientRect();
-      if (!now && box.bottom > 0 && box.top < window.innerHeight) swaps.push({ image, src });
-      else image.src = src;
-    }
-    const loads = swaps.map(({ src }) => {
-      const next = new Image();
-      next.src = src;
-      return next.decode().catch(() => {});
-    });
-    await Promise.race([Promise.all(loads), new Promise(resolve => setTimeout(resolve, 1500))]);
-    // A later pick may have finished loading first; its pictures stand.
-    if (mine !== latest) return;
-    for (const { image, src } of swaps) image.src = src;
+  // A shot is fetched as it comes near the screen, the hero at once.
+  const load = async holder => {
+    try {
+      const response = await fetch(`shots/${holder.dataset.shot}.svg`);
+      if (!response.ok) return;
+      holder.innerHTML = await response.text();
+      const svg = holder.querySelector('svg');
+      // It fills its frame; the frame has the shape it was taken in.
+      svg.removeAttribute('width');
+      svg.removeAttribute('height');
+      svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('focusable', 'false');
+      paint(svg);
+    } catch {}
   };
-  show(true);
-  SiteTheme.system.addEventListener('change', () => show(true));
+  const near = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      near.unobserve(entry.target);
+      load(entry.target);
+    }
+  }, { rootMargin: '800px 0px' });
+  for (const holder of holders) near.observe(holder);
+
+  // Every shot on the page, and the one enlarged, takes the page's theme.
+  const show = () => {
+    for (const svg of document.querySelectorAll('[data-shot] svg, #zoom svg')) paint(svg);
+  };
+  SiteTheme.system.addEventListener('change', show);
 
   // A click on a screenshot opens it full size; a click anywhere on it, or Escape, closes it.
   const zoom = document.getElementById('zoom');
-  const big = zoom.querySelector('img');
   for (const button of document.querySelectorAll('.enlarge')) {
     button.addEventListener('click', () => {
-      const image = button.querySelector('img');
-      big.src = image.currentSrc || image.src;
-      big.alt = image.alt;
+      const holder = button.querySelector('[data-shot]');
+      const svg = holder.querySelector('svg');
+      if (!svg) return;
+      zoom.replaceChildren(svg.cloneNode(true));
+      zoom.setAttribute('aria-label', holder.getAttribute('aria-label'));
       zoom.showModal();
     });
   }
@@ -536,8 +541,8 @@ const Shots = (() => {
     }
   };
   // A theme change dissolves the whole page at once: colors, text and screenshots fade together,
-  // from a picture of the old theme to one of the new. The new theme is put together first, its
-  // screenshots in view decoded, and only then does the fade start, so nothing pops in partway.
+  // from a picture of the old theme to one of the new. The screenshots recolor with the page, so
+  // there is nothing to wait for before the fade starts.
   const still = window.matchMedia('(prefers-reduced-motion: reduce)');
   const pick = id => {
     const change = () => { SiteTheme.apply(id, true); sync(); return Shots.show(); };

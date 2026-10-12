@@ -6,7 +6,7 @@ from the root of `main`. The product itself is sold on Gumroad; this repo holds 
 | File | What it is |
 |---|---|
 | `index.html` | The whole page: styles, content and scripts inline |
-| `shots/<theme>/` | The page's seven screenshots, taken in that theme |
+| `shots/<name>.svg` | The page's seven screenshots, each carrying every theme's colors |
 | `favicon.svg` | Browser-tab icon |
 | `.nojekyll` | Tells Pages to serve the files as they are, without a Jekyll build |
 
@@ -17,7 +17,7 @@ Replace `#TODO-GUMROAD` with the Gumroad product URL. It appears in three links 
 
 ## Preview locally
 
-Open `index.html` in a browser, or serve the folder:
+Serve the folder: the screenshots are fetched, which a page opened straight from disk cannot do.
 
 ```bash
 python -m http.server 8000
@@ -25,17 +25,20 @@ python -m http.server 8000
 
 ## Screenshots
 
-The hero and each feature section show a screenshot of the app: `<img data-shot="<name>">`, in a
-16:9 frame. The names are `hero`, `node-graph`, `thermal`, `flow`, `health`, `structure` and
-`workflow`.
+The hero and each feature section show a picture of the app in a 16:9 frame:
+`<span data-shot="<name>">`, which a script fills with `shots/<name>.svg`. The names are `hero`,
+`node-graph`, `thermal`, `flow`, `health`, `structure` and `workflow`.
 
-Each is taken in every theme the page offers. A script sets the source to
-`shots/<theme>/<name>.webp` for the page's current theme, and swaps it when the theme changes.
+Each one is the app's own SVG export, taken once in every theme the page offers. Its colors are CSS
+variables, with a block of values for each theme, chosen by `data-theme`. The script puts the file
+inline, because an `<img>` cannot be restyled by the page. It then sets each picture's `data-theme` to
+the page's theme, so a theme change recolors the pictures in place.
 
-Clicking a screenshot opens it full size.
+Clicking one opens it full size.
 
-The screenshots are 1920×1080 lossless WebP. They are captured from two sample workspaces by
-scripts kept outside this repo, beside the samples, in `blast-radius-samples/capture`; its README
-has the steps.
+They are exported from two sample workspaces by scripts kept outside this repo, beside the samples,
+in `blast-radius-samples/capture` (`svgs.ps1`); its README has the steps. The themes an export
+carries come from the app's `[export] themes` setting, written as `site-id=app-theme` pairs.
 
-A new theme needs a full set of seven before its chip goes on the page.
+A new theme needs its pair added to that setting, and the seven shots exported again, before its chip
+goes on the page.
