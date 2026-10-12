@@ -6,7 +6,7 @@
 <title>Blast Radius · Impact analysis for Rust</title>
 <meta name="description" content="Blast Radius draws your Rust workspace as nested circles. Pick any symbol and everything that depends on it lights up in rings around it.">
 <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#282828" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Blast Radius · Impact analysis for Rust">
 <meta property="og:description" content="See everything a change to your Rust code would reach before you make it.">
@@ -16,12 +16,12 @@
 <script>
   // The site's theme: one of the app's shipped themes, turned into the page's colors the way the app
   // turns it into the graph's. A remembered pick is applied here, before the first paint, so the
-  // page never shows another theme first; without one, the system setting chooses between Beans
+  // page never shows another theme first; without one, the system setting chooses between Gruvbox
   // and Ayu Light.
   window.SiteTheme = (() => {
-    const THEMES = {"beans":{"name":"Beans","dark":true,"swatch":["#111111","#fad07a","#48c6ff"],"vars":{"--bg":"#111111","--surface":"#1c1c1c","--border":"#343431","--text":"#ebebd8","--dim":"#7f7f7c","--bright":"#ffffff","--link":"#ffffff","--canvas":"#111111","--buy-bg":"#5a9f81","--buy-fg":"#0d0f14"}},"ayu-light":{"name":"Ayu Light","dark":false,"swatch":["#fafafa","#cc7600","#2293e3"],"vars":{"--bg":"#fafafa","--surface":"#e7eaed","--border":"#e1e2e2","--text":"#5c6166","--dim":"#6b747c","--bright":"#333538","--link":"#5c6166","--canvas":"#fafafa","--buy-bg":"#86b300","--buy-fg":"#0d0f14"}},"catppuccin-mocha":{"name":"Catppuccin Mocha","dark":true,"swatch":["#1e1e2e","#89b4fa","#f9e2af"],"vars":{"--bg":"#1e1e2e","--surface":"#313244","--border":"#3a3b4e","--text":"#cdd6f4","--dim":"#9399b2","--bright":"#e4e8f9","--link":"#f5e0dc","--canvas":"#1e1e2e","--buy-bg":"#a6e3a1","--buy-fg":"#0d0f14"}},"catppuccin-latte":{"name":"Catppuccin Latte","dark":false,"swatch":["#eff1f5","#1e66f5","#b17217"],"vars":{"--bg":"#eff1f5","--surface":"#ccd0da","--border":"#d5d7df","--text":"#4c4f69","--dim":"#686c83","--bright":"#2a2b3a","--link":"#4c4f69","--canvas":"#eff1f5","--buy-bg":"#40a02b","--buy-fg":"#0d0f14"}},"gruvbox":{"name":"Gruvbox","dark":true,"swatch":["#282828","#b8bb26","#fabd2f"],"vars":{"--bg":"#282828","--surface":"#3c3836","--border":"#47453e","--text":"#ebdbb2","--dim":"#a2937f","--bright":"#b8bb26","--link":"#bdae93","--canvas":"#282828","--buy-bg":"#b8bb26","--buy-fg":"#0d0f14"}},"nord":{"name":"Nord","dark":true,"swatch":["#2e3440","#88c0d0","#8fbcbb"],"vars":{"--bg":"#2e3440","--surface":"#3b4252","--border":"#494f5b","--text":"#d8dee9","--dim":"#949eb0","--bright":"#88c0d0","--link":"#88c0d0","--canvas":"#2e3440","--buy-bg":"#a3be8c","--buy-fg":"#0d0f14"}},"tokyo-night":{"name":"Tokyo Night","dark":true,"swatch":["#1a1b26","#7aa2f7","#2ac3de"],"vars":{"--bg":"#1a1b26","--surface":"#16161e","--border":"#353747","--text":"#c0caf5","--dim":"#7982ac","--bright":"#dce2fa","--link":"#7aa2f7","--canvas":"#1a1b26","--buy-bg":"#449dab","--buy-fg":"#0d0f14"}},"dracula":{"name":"Dracula","dark":true,"swatch":["#282a36","#50fa7b","#8be9fd"],"vars":{"--bg":"#282a36","--surface":"#191a21","--border":"#494b54","--text":"#f8f8f2","--dim":"#8995b8","--bright":"#8be9fd","--link":"#bd93f9","--canvas":"#282a36","--buy-bg":"#50fa7b","--buy-fg":"#0d0f14"}},"one-dark":{"name":"One Dark","dark":true,"swatch":["#282c34","#61afef","#e5c07b"],"vars":{"--bg":"#282c34","--surface":"#3e4452","--border":"#3d414a","--text":"#abb2bf","--dim":"#8e95a2","--bright":"#d1d5dc","--link":"#61afef","--canvas":"#282c34","--buy-bg":"#98c379","--buy-fg":"#0d0f14"}},"rose-pine":{"name":"Rosé Pine","dark":true,"swatch":["#191724","#ebbcba","#9ccfd8"],"vars":{"--bg":"#191724","--surface":"#1f1d2e","--border":"#393745","--text":"#e0def4","--dim":"#837f9a","--bright":"#eeedf9","--link":"#e0def4","--canvas":"#191724","--buy-bg":"#9ccfd8","--buy-fg":"#0d0f14"}},"solarized-light":{"name":"Solarized Light","dark":false,"swatch":["#fdf6e3","#268bd2","#9c7600"],"vars":{"--bg":"#fdf6e3","--surface":"#eee8d5","--border":"#e1decf","--text":"#4d6066","--dim":"#637478","--bright":"#1e6fa6","--link":"#268bd2","--canvas":"#fdf6e3","--buy-bg":"#859900","--buy-fg":"#0d0f14"}},"kanagawa":{"name":"Kanagawa","dark":true,"swatch":["#1f1f28","#7e9cd8","#7aa89f"],"vars":{"--bg":"#1f1f28","--surface":"#16161d","--border":"#3d3c3f","--text":"#dcd7ba","--dim":"#8a887b","--bright":"#ece9d9","--link":"#7e9cd8","--canvas":"#1f1f28","--buy-bg":"#76946a","--buy-fg":"#0d0f14"}}};
+    const THEMES = {"gruvbox":{"name":"Gruvbox","dark":true,"swatch":["#282828","#b8bb26","#fabd2f"],"vars":{"--bg":"#282828","--surface":"#3c3836","--border":"#47453e","--text":"#ebdbb2","--dim":"#a2937f","--bright":"#b8bb26","--link":"#bdae93","--canvas":"#282828","--buy-bg":"#b8bb26","--buy-fg":"#0d0f14"}},"ayu-light":{"name":"Ayu Light","dark":false,"swatch":["#fafafa","#cc7600","#2293e3"],"vars":{"--bg":"#fafafa","--surface":"#e7eaed","--border":"#e1e2e2","--text":"#5c6166","--dim":"#6b747c","--bright":"#333538","--link":"#5c6166","--canvas":"#fafafa","--buy-bg":"#86b300","--buy-fg":"#0d0f14"}},"beans":{"name":"Beans","dark":true,"swatch":["#111111","#fad07a","#48c6ff"],"vars":{"--bg":"#111111","--surface":"#1c1c1c","--border":"#343431","--text":"#ebebd8","--dim":"#7f7f7c","--bright":"#ffffff","--link":"#ffffff","--canvas":"#111111","--buy-bg":"#5a9f81","--buy-fg":"#0d0f14"}},"catppuccin-mocha":{"name":"Catppuccin Mocha","dark":true,"swatch":["#1e1e2e","#89b4fa","#f9e2af"],"vars":{"--bg":"#1e1e2e","--surface":"#313244","--border":"#3a3b4e","--text":"#cdd6f4","--dim":"#9399b2","--bright":"#e4e8f9","--link":"#f5e0dc","--canvas":"#1e1e2e","--buy-bg":"#a6e3a1","--buy-fg":"#0d0f14"}},"catppuccin-latte":{"name":"Catppuccin Latte","dark":false,"swatch":["#eff1f5","#1e66f5","#b17217"],"vars":{"--bg":"#eff1f5","--surface":"#ccd0da","--border":"#d5d7df","--text":"#4c4f69","--dim":"#686c83","--bright":"#2a2b3a","--link":"#4c4f69","--canvas":"#eff1f5","--buy-bg":"#40a02b","--buy-fg":"#0d0f14"}},"nord":{"name":"Nord","dark":true,"swatch":["#2e3440","#88c0d0","#8fbcbb"],"vars":{"--bg":"#2e3440","--surface":"#3b4252","--border":"#494f5b","--text":"#d8dee9","--dim":"#949eb0","--bright":"#88c0d0","--link":"#88c0d0","--canvas":"#2e3440","--buy-bg":"#a3be8c","--buy-fg":"#0d0f14"}},"tokyo-night":{"name":"Tokyo Night","dark":true,"swatch":["#1a1b26","#7aa2f7","#2ac3de"],"vars":{"--bg":"#1a1b26","--surface":"#16161e","--border":"#353747","--text":"#c0caf5","--dim":"#7982ac","--bright":"#dce2fa","--link":"#7aa2f7","--canvas":"#1a1b26","--buy-bg":"#449dab","--buy-fg":"#0d0f14"}},"dracula":{"name":"Dracula","dark":true,"swatch":["#282a36","#50fa7b","#8be9fd"],"vars":{"--bg":"#282a36","--surface":"#191a21","--border":"#494b54","--text":"#f8f8f2","--dim":"#8995b8","--bright":"#8be9fd","--link":"#bd93f9","--canvas":"#282a36","--buy-bg":"#50fa7b","--buy-fg":"#0d0f14"}},"one-dark":{"name":"One Dark","dark":true,"swatch":["#282c34","#61afef","#e5c07b"],"vars":{"--bg":"#282c34","--surface":"#3e4452","--border":"#3d414a","--text":"#abb2bf","--dim":"#8e95a2","--bright":"#d1d5dc","--link":"#61afef","--canvas":"#282c34","--buy-bg":"#98c379","--buy-fg":"#0d0f14"}},"rose-pine":{"name":"Rosé Pine","dark":true,"swatch":["#191724","#ebbcba","#9ccfd8"],"vars":{"--bg":"#191724","--surface":"#1f1d2e","--border":"#393745","--text":"#e0def4","--dim":"#837f9a","--bright":"#eeedf9","--link":"#e0def4","--canvas":"#191724","--buy-bg":"#9ccfd8","--buy-fg":"#0d0f14"}},"solarized-light":{"name":"Solarized Light","dark":false,"swatch":["#fdf6e3","#268bd2","#9c7600"],"vars":{"--bg":"#fdf6e3","--surface":"#eee8d5","--border":"#e1decf","--text":"#4d6066","--dim":"#637478","--bright":"#1e6fa6","--link":"#268bd2","--canvas":"#fdf6e3","--buy-bg":"#859900","--buy-fg":"#0d0f14"}},"kanagawa":{"name":"Kanagawa","dark":true,"swatch":["#1f1f28","#7e9cd8","#7aa89f"],"vars":{"--bg":"#1f1f28","--surface":"#16161d","--border":"#3d3c3f","--text":"#dcd7ba","--dim":"#8a887b","--bright":"#ece9d9","--link":"#7e9cd8","--canvas":"#1f1f28","--buy-bg":"#76946a","--buy-fg":"#0d0f14"}}};
     // With no pick, the system setting chooses between these two.
-    const DEFAULT = { dark: 'beans', light: 'ayu-light' };
+    const DEFAULT = { dark: 'gruvbox', light: 'ayu-light' };
     const ALL = THEMES;
     const ORDER = Object.keys(ALL);
     const root = document.documentElement;
@@ -54,7 +54,7 @@
 </script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
-/* Layout: the app's own themes (Beans and Ayu Light by default) and system font; a screenshot of
+/* Layout: the app's own themes (Gruvbox and Ayu Light by default) and system font; a screenshot of
    the node graph with a selection as the hero; then one section per feature area, a screenshot
    beside three points, closing on a buy section. Every screenshot is taken in each theme the page
    offers and swapped with it. The green accent has one job: the buy button. */
@@ -78,19 +78,19 @@
   --bar-h: 64px;
   color-scheme: light;
 }
-/* Beans: the page's colors when the system is dark and no theme is picked. A picked theme sets
+/* Gruvbox: the page's colors when the system is dark and no theme is picked. A picked theme sets
    every color on the root element itself. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    --bg: #111111;
-    --surface: #1c1c1c;
-    --border: #343431;
-    --text: #ebebd8;
-    --dim: #7f7f7c;
-    --bright: #ffffff;
-    --link: #ffffff;
-    --canvas: #111111;
-    --buy-bg: #5a9f81;
+    --bg: #282828;
+    --surface: #3c3836;
+    --border: #47453e;
+    --text: #ebdbb2;
+    --dim: #a2937f;
+    --bright: #b8bb26;
+    --link: #bdae93;
+    --canvas: #282828;
+    --buy-bg: #b8bb26;
     --buy-fg: #0d0f14;
     --h0: #fff28c; --h1: #ffa84d; --h2: #f57059; --h3: #c75c8c;
     color-scheme: dark;
