@@ -177,10 +177,11 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 }
 /* A screenshot is a whole 1920×1080 window shown a third of its size, so a click opens it full
    size. */
-.enlarge { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.enlarge { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
 .enlarge img { display: block; width: 100%; height: 100%; object-fit: cover; }
-/* A theme change dissolves the new theme's screenshot in over the old one; the script animates it. */
-.enlarge img.dissolve { position: absolute; inset: 0; opacity: 0; }
+/* A theme change dissolves the whole page into the new theme at once, the script starting it once
+   the new theme's screenshots are ready. */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 450ms; animation-timing-function: ease; }
 .zoom {
   padding: 0; border: 1px solid var(--border); border-radius: 10px;
   background: var(--canvas);
@@ -466,6 +467,59 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 </footer>
 
 <script>
+/* ---------- screenshots: the page's theme picks the set ---------- */
+// Each screenshot is taken in every theme the page offers, under shots/<theme>/<name>.webp, so the
+// app in the pictures always wears the page's colors.
+const Shots = (() => {
+  const images = [...document.querySelectorAll('img[data-shot]')];
+
+  // Point every screenshot at the current theme's. The ones in view are loaded and decoded first,
+  // off to the side, and only then swapped in, so the promise settles on a page whose pictures are
+  // all there; a theme change waits on it, up to a second and a half. (Decoding the <img> itself
+  // would not do: Firefox answers for the picture it is still showing.) One out of view, lazily
+  // loaded, just takes the new source and waits to be scrolled to. With `now`, as on the first load
+  // or when the system flips the theme, every one takes its new source at once.
+  let latest = 0;
+  const show = async now => {
+    const mine = ++latest;
+    const theme = SiteTheme.current();
+    const swaps = [];
+    for (const image of images) {
+      const src = `shots/${theme}/${image.dataset.shot}.webp`;
+      if (image.getAttribute('src') === src) continue;
+      const box = image.getBoundingClientRect();
+      if (!now && box.bottom > 0 && box.top < window.innerHeight) swaps.push({ image, src });
+      else image.src = src;
+    }
+    const loads = swaps.map(({ src }) => {
+      const next = new Image();
+      next.src = src;
+      return next.decode().catch(() => {});
+    });
+    await Promise.race([Promise.all(loads), new Promise(resolve => setTimeout(resolve, 1500))]);
+    // A later pick may have finished loading first; its pictures stand.
+    if (mine !== latest) return;
+    for (const { image, src } of swaps) image.src = src;
+  };
+  show(true);
+  SiteTheme.system.addEventListener('change', () => show(true));
+
+  // A click on a screenshot opens it full size; a click anywhere on it, or Escape, closes it.
+  const zoom = document.getElementById('zoom');
+  const big = zoom.querySelector('img');
+  for (const button of document.querySelectorAll('.enlarge')) {
+    button.addEventListener('click', () => {
+      const image = button.querySelector('img');
+      big.src = image.currentSrc || image.src;
+      big.alt = image.alt;
+      zoom.showModal();
+    });
+  }
+  zoom.addEventListener('click', () => zoom.close());
+
+  return { show };
+})();
+
 /* ---------- the dark/light switch and the theme chips ---------- */
 (() => {
   const button = document.getElementById('theme-toggle');
@@ -481,7 +535,15 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       for (const chip of group.children) chip.setAttribute('aria-checked', String(chip.dataset.theme === current));
     }
   };
-  const pick = id => { SiteTheme.apply(id, true); sync(); };
+  // A theme change dissolves the whole page at once: colors, text and screenshots fade together,
+  // from a picture of the old theme to one of the new. The new theme is put together first, its
+  // screenshots in view decoded, and only then does the fade start, so nothing pops in partway.
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const pick = id => {
+    const change = () => { SiteTheme.apply(id, true); sync(); return Shots.show(); };
+    if (!document.startViewTransition || still.matches || id === SiteTheme.current()) change();
+    else document.startViewTransition(change);
+  };
   button.addEventListener('click', () => pick(SiteTheme.isDark() ? SiteTheme.DEFAULT.light : SiteTheme.DEFAULT.dark));
 
   // The theme chips, in the strip below the hero and under the Workflow graphic: each one restyles
@@ -529,83 +591,6 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   SiteTheme.system.addEventListener('change', sync);
   sync();
   button.hidden = false;
-})();
-
-
-/* ---------- screenshots: the page's theme picks the set ---------- */
-// Each screenshot is taken in every theme the page offers, under shots/<theme>/<name>.webp, so the
-// app in the pictures always wears the page's colors. On a theme change the new screenshot loads
-// on top of the old one, unseen, then dissolves in; only then does it replace the old one beneath.
-(() => {
-  const images = [...document.querySelectorAll('img[data-shot]')];
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const fading = new Map();
-
-  const dissolve = (image, src) => {
-    fading.get(image)?.remove();
-    const next = document.createElement('img');
-    next.className = 'dissolve';
-    next.alt = '';
-    next.setAttribute('aria-hidden', 'true');
-    fading.set(image, next);
-    const done = () => {
-      if (fading.get(image) !== next) return;
-      fading.delete(image);
-      image.src = src;
-      // The one beneath has the same picture cached; drop the top one once it is drawn.
-      image.decode().catch(() => {}).then(() => next.remove());
-    };
-    next.src = src;
-    // Last in the frame, so it lies over everything, a finishing dissolve's leftover included.
-    image.parentElement.append(next);
-    next.decode().catch(() => {}).then(() => {
-      if (fading.get(image) !== next) return;
-      // Animated rather than transitioned: a theme seen before is cached and decodes at once, often
-      // before the overlay has been styled at all, and a transition needs a styled start to run
-      // from. An animation runs from its first keyframe whatever came before.
-      next.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, easing: 'ease', fill: 'forwards' })
-        .finished.then(done, () => {});
-    });
-  };
-
-  const show = () => {
-    const theme = SiteTheme.current();
-    for (const image of images) {
-      const src = `shots/${theme}/${image.dataset.shot}.webp`;
-      // Already showing it: a dissolve toward another theme, if one is running, is called off.
-      if (image.getAttribute('src') === src) {
-        fading.get(image)?.remove();
-        fading.delete(image);
-        continue;
-      }
-      // Only a screenshot already on screen dissolves. One not yet loaded (lazily, below the fold)
-      // just takes the new source, and still waits to load until it is scrolled to.
-      const shown = image.complete && image.naturalWidth > 0;
-      if (!shown || still.matches) {
-        fading.get(image)?.remove();
-        fading.delete(image);
-        image.src = src;
-      } else {
-        dissolve(image, src);
-      }
-    }
-  };
-  show();
-  SiteTheme.system.addEventListener('change', show);
-  new MutationObserver(show).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-
-  // A click on a screenshot opens it full size; a click anywhere on it, or Escape, closes it.
-  const zoom = document.getElementById('zoom');
-  const big = zoom.querySelector('img');
-  for (const button of document.querySelectorAll('.enlarge')) {
-    button.addEventListener('click', () => {
-      const image = button.querySelector('img');
-      big.src = image.currentSrc || image.src;
-      big.alt = image.alt;
-      zoom.showModal();
-    });
-  }
-  zoom.addEventListener('click', () => zoom.close());
 })();
 </script>
 </body>
