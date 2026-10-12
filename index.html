@@ -24,11 +24,11 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,750&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,1,0&icon_names=auto_awesome,data_object,extension,folder,functions,inventory,link,list_alt,lock,radio_button_checked,rule,subdirectory_arrow_right,tag&display=block">
 <style>
-/* Layout: the app's own window colors; the node graph with a selection as the hero; then a catalog where each
-   category is a sticky label beside a two-column list of features, closing on a buy section. */
+/* Layout: the app's own window colors and system font; the node graph with a selection as the hero; then
+   one section per feature area, a graphic beside three points, closing on a buy section. The
+   orange accent has one job: the buy button. */
 :root {
   --bg: #e7eaef;
   --surface: #f6f7fa;
@@ -38,7 +38,6 @@
   --dim: #5d6779;
   --bright: #0c1017;
   --link: #2f6cb5;
-  --heat: #b4561a;
   --h0: #e8c21c; --h1: #f08a2c; --h2: #e0533f; --h3: #b84679; --h4: #7d4aa3;
   /* The graph's own colors, as the app derives them from its light theme. */
   --canvas: #e7eaef;
@@ -50,9 +49,9 @@
   --r1: #ffa84d; --r2: #f57059; --r3: #c75c8c; --r4: #8c59ad;
   --s-fn: #1d7a4c; --s-method: #186340; --s-struct: #1f5f9e; --s-field: #4a5c70; --s-enum: #5a3f9c;
   --s-trait: #9a5f10; --s-const: #a33b3b; --s-macro: #8e3a8e; --s-alias: #17706a;
-  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --display: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --body: var(--display);
+  --mono: "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, "SF Mono", Menlo, monospace;
   --buy-bg: #b4561a; --buy-fg: #ffffff;
   --bar-h: 64px;
   color-scheme: light;
@@ -62,7 +61,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0d0f14; --surface: #131820; --raised: #1c2330; --border: #2a3444;
-    --text: #b8c9e0; --dim: #8599b8; --bright: #ebf2ff; --link: #8fb3ef; --heat: #ffa84d;
+    --text: #b8c9e0; --dim: #8599b8; --bright: #ebf2ff; --link: #8fb3ef;
     --h0: #fff28c; --h1: #ffa84d; --h2: #f57059; --h3: #c75c8c; --h4: #8c59ad;
     --canvas: #0d0f14;
     --pkg: #b8d1fa; --mod: #94b3db; --ty: #ad94cc;
@@ -77,7 +76,7 @@
 }
 :root[data-theme="dark"] {
   --bg: #0d0f14; --surface: #131820; --raised: #1c2330; --border: #2a3444;
-  --text: #b8c9e0; --dim: #8599b8; --bright: #ebf2ff; --link: #8fb3ef; --heat: #ffa84d;
+  --text: #b8c9e0; --dim: #8599b8; --bright: #ebf2ff; --link: #8fb3ef;
   --h0: #fff28c; --h1: #ffa84d; --h2: #f57059; --h3: #c75c8c; --h4: #8c59ad;
   --canvas: #0d0f14;
   --pkg: #b8d1fa; --mod: #94b3db; --ty: #ad94cc;
@@ -106,17 +105,10 @@ body {
 }
 .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; }
 a { color: var(--link); }
-:focus-visible { outline: 2px solid var(--heat); outline-offset: 3px; border-radius: 4px; }
+:focus-visible { outline: 2px solid var(--bright); outline-offset: 3px; border-radius: 4px; }
 h1, h2, h3 { font-family: var(--display); color: var(--bright); text-wrap: balance; margin: 0; }
 p { margin: 0; }
 code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
-.eyebrow {
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--heat);
-}
 
 /* ---------- hero ---------- */
 .hero { padding-block: 56px 40px; }
@@ -128,20 +120,12 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 }
 .hero h1 {
   font-size: clamp(40px, 6.2vw, 74px);
-  font-weight: 750;
-  line-height: 0.98;
+  font-weight: 700;
+  line-height: 1;
   letter-spacing: -0.025em;
-  font-variation-settings: "opsz" 96;
-  margin-block: 14px 22px;
+  margin-block: 0 22px;
 }
-.hero h1 .hot { color: var(--heat); }
 .lede { font-size: 19px; color: var(--text); max-width: 34em; }
-.hero-meta {
-  display: flex; flex-wrap: wrap; gap: 8px 20px;
-  margin-top: 26px;
-  font-family: var(--mono); font-size: 13px; color: var(--dim);
-}
-.hero-meta span::before { content: "◦ "; color: var(--heat); }
 
 .viewport {
   background: var(--canvas);
@@ -155,25 +139,10 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center;
   border-top: 1px solid var(--border);
   padding: 9px 14px;
-  font-family: var(--mono); font-size: 12px; color: var(--dim);
+  font-size: 13px; color: var(--dim);
   font-variant-numeric: tabular-nums;
 }
-.viewport-foot b { color: var(--bright); font-weight: 500; }
-
-/* ---------- catalog ---------- */
-.catalog-head { padding-block: 8px 20px; }
-.catalog-head h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
-.jump {
-  display: flex; flex-wrap: wrap; gap: 8px;
-  padding-block: 4px 24px;
-}
-.jump a {
-  font-size: 14px; text-decoration: none; color: var(--text);
-  border: 1px solid var(--border); border-radius: 999px;
-  padding: 5px 12px;
-  background: var(--surface);
-}
-.jump a:hover { color: var(--bright); border-color: var(--heat); }
+.viewport-foot b { font-family: var(--mono); font-size: 12.5px; color: var(--bright); font-weight: 400; }
 
 /* Each feature area: a graphic and three points, the sides alternating down the page. A graphic's
    canvas can be swapped for a screenshot <img>; the frame keeps the same size either way. */
@@ -196,7 +165,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 .points li::before {
   content: ""; position: absolute; left: 0; top: 0.4em;
   width: 11px; height: 11px; border-radius: 50%;
-  border: 2px solid var(--heat);
+  border: 2px solid var(--dim);
   box-sizing: border-box;
 }
 .shot {
@@ -210,7 +179,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 .shot canvas, .shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .term { overflow: auto; }
 .term pre { margin: 0; padding: 20px 22px; font: 13px/1.7 var(--mono); color: var(--text); }
-.term .p { color: var(--heat); }
+.term .p { color: var(--dim); }
 .term .c { color: var(--bright); }
 .term .d { color: var(--dim); }
 
@@ -256,13 +225,13 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   border-radius: 8px;
   cursor: pointer;
 }
-.theme-toggle:hover { color: var(--bright); border-color: var(--heat); }
+.theme-toggle:hover { color: var(--bright); border-color: var(--dim); }
 .theme-toggle svg { width: 18px; height: 18px; }
 .theme-toggle .sun, .theme-toggle[data-mode="dark"] .moon { display: none; }
 .theme-toggle[data-mode="dark"] .sun { display: block; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 .closing { padding-block: 56px 64px; border-top: 1px solid var(--border); text-align: left; }
-.closing h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 750; letter-spacing: -0.02em; line-height: 1.05; }
+.closing h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
 .closing p { color: var(--dim); font-size: 17px; max-width: 36em; margin-block: 12px 26px; }
 .foot {
   display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between;
@@ -311,17 +280,10 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 <header class="hero">
   <div class="wrap hero-grid">
     <div>
-      <div class="eyebrow">Impact analysis for Rust</div>
-      <h1>If I change this, <span class="hot">what breaks?</span></h1>
+      <h1>If I change this, what breaks?</h1>
       <p class="lede">Blast Radius draws your Rust workspace as nested circles, from packages down to the fields of a struct. Pick any symbol and everything that depends on it lights up in rings around it.</p>
       <div class="hero-actions">
         <a class="buy" href="#TODO-GUMROAD">Buy on Gumroad</a>
-      </div>
-      <div class="hero-meta">
-        <span>indexes in about 0.5 s</span>
-        <span>never runs your code</span>
-        <span>keyboard-first</span>
-        <span>209 themes</span>
       </div>
     </div>
     <figure class="viewport" style="margin:0">
@@ -335,13 +297,6 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 </header>
 
 <main class="wrap" id="features">
-  <div class="catalog-head">
-    <div>
-      <h2>Everything in Blast Radius</h2>
-    </div>
-  </div>
-  <nav class="jump" id="jump" aria-label="Feature areas"></nav>
-
   <section class="cat" id="node-graph">
     <div class="cat-text">
       <h2>Symbol Node Graph</h2>
@@ -486,16 +441,6 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   button.hidden = false;
 })();
 
-/* ---------- catalog: jump links ---------- */
-(() => {
-  const jump = document.getElementById('jump');
-  for (const cat of document.querySelectorAll('.cat')) {
-    const a = document.createElement('a');
-    a.href = '#' + cat.id;
-    a.textContent = cat.querySelector('h2').textContent;
-    jump.append(a);
-  }
-})();
 
 /* ---------- graphics: one sample workspace, drawn by every feature section ---------- */
 // The sample is packed once, the way Blast Radius packs a workspace: filled circles for packages,
@@ -785,7 +730,7 @@ const Graphics = (() => {
     const v = n => cs.getPropertyValue('--' + n).trim();
     return {
       canvas: v('canvas'), chip: v('chip'), hl: v('hl'), pane: v('pane'), rule: v('border'),
-      text: v('text'), dim: v('dim'), bright: v('bright'), heat: v('heat'),
+      text: v('text'), dim: v('dim'), bright: v('bright'),
       fill: { workspace: v('c-ws'), package: v('c-pkg'), module: v('c-mod'), type: v('c-ty') },
       name: { package: v('pkg'), module: v('mod'), type: v('ty') },
       ring: [v('r1'), v('r1'), v('r2'), v('r3'), v('r4')],
@@ -809,7 +754,7 @@ const Graphics = (() => {
   const LABEL_FONT = '12px "Segoe UI", system-ui, -apple-system, sans-serif';
   const STRONG_FONT = '600 13px "Segoe UI", system-ui, -apple-system, sans-serif';
   const SMALL_FONT = '11.5px "Segoe UI", system-ui, -apple-system, sans-serif';
-  const MONO_FONT = '12px "JetBrains Mono", ui-monospace, Consolas, monospace';
+  const MONO_FONT = '12px "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, "SF Mono", Menlo, monospace';
   const ICON_FONT = '13px "Material Symbols Outlined"';
   let icons = false;
   function checkIcons() {
@@ -1148,7 +1093,7 @@ const Graphics = (() => {
     y += 26;
     ctx.font = LABEL_FONT;
     for (const line of ['becomes net::' + MOVE.into.name + '::' + MOVE.from.name, '3 paths rewritten', '1 visibility widened']) {
-      ctx.fillStyle = pal.heat;
+      ctx.fillStyle = pal.dim;
       ctx.fillText('•', r.x + 16, y);
       ctx.fillStyle = pal.text;
       ctx.fillText(ellipsize(ctx, line, r.w - 44), r.x + 28, y);
