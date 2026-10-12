@@ -19,7 +19,7 @@
   // page never shows another theme first; without one, the system setting chooses between Beans
   // and Ayu Light.
   window.SiteTheme = (() => {
-    const THEMES = {"beans":{"name":"Beans","dark":true,"swatch":["#111111","#fad07a","#48c6ff"],"vars":{"--bg":"#111111","--surface":"#1c1c1c","--raised":"#292929","--border":"#343431","--text":"#ebebd8","--dim":"#7f7f7c","--bright":"#ffffff","--link":"#ffffff","--canvas":"#111111","--pkg":"#8197bf","--mod":"#be67e1","--ty":"#48c6ff","--c-ws":"#292929","--c-pkg":"#46536b","--c-mod":"#502860","--c-ty":"#39a1d0","--chip":"#292929","--hl":"#ffffff","--pane":"#1c1c1c","--buy-bg":"#5a9f81","--buy-fg":"#0d0f14","--s-fn":"#fad07a","--s-method":"#f8c04e","--s-struct":"#48c6ff","--s-field":"#be67e1","--s-enum":"#48c6ff","--s-variant":"#9243b2","--s-trait":"#ccff00","--s-tmethod":"#a7d100","--s-alias":"#80d7ff","--s-const":"#ff005b","--s-macro":"#ccff00"}},"ayu-light":{"name":"Ayu Light","dark":false,"swatch":["#fafafa","#cc7600","#2293e3"],"vars":{"--bg":"#fafafa","--surface":"#e7eaed","--raised":"#c9d0d7","--border":"#e1e2e2","--text":"#5c6166","--dim":"#6b747c","--bright":"#333538","--link":"#5c6166","--canvas":"#fafafa","--pkg":"#ffaa33","--mod":"#399ee6","--ty":"#399ee6","--c-ws":"#c9d0d7","--c-pkg":"#c68325","--c-mod":"#1c5984","--c-ty":"#236a9c","--chip":"#d8dde2","--hl":"#5c6166","--pane":"#e7eaed","--buy-bg":"#86b300","--buy-fg":"#0d0f14","--s-fn":"#cc7600","--s-method":"#d07a00","--s-struct":"#2293e3","--s-field":"#5c6166","--s-enum":"#2293e3","--s-variant":"#2695e3","--s-trait":"#2293e3","--s-tmethod":"#1b88d6","--s-alias":"#1a82cd","--s-const":"#a37acc","--s-macro":"#cc7600"}},"catppuccin-mocha":{"name":"Catppuccin Mocha","dark":true,"swatch":["#1e1e2e","#89b4fa","#f9e2af"],"vars":{"--bg":"#1e1e2e","--surface":"#313244","--raised":"#20202d","--border":"#3a3b4e","--text":"#cdd6f4","--dim":"#9399b2","--bright":"#e4e8f9","--link":"#f5e0dc","--canvas":"#1e1e2e","--pkg":"#cba6f7","--mod":"#f9e2af","--ty":"#f9e2af","--c-ws":"#20202d","--c-pkg":"#987cba","--c-mod":"#d7c396","--c-ty":"#dec99b","--chip":"#181825","--hl":"#cdd6f4","--pane":"#313244","--buy-bg":"#a6e3a1","--buy-fg":"#0d0f14","--s-fn":"#89b4fa","--s-method":"#5d98f8","--s-struct":"#f9e2af","--s-field":"#89b4fa","--s-enum":"#f9e2af","--s-variant":"#94e2d5","--s-trait":"#f9e2af","--s-tmethod":"#f6d384","--s-alias":"#cba6f7","--s-const":"#fab387","--s-macro":"#f5e0dc"}},"catppuccin-latte":{"name":"Catppuccin Latte","dark":false,"swatch":["#eff1f5","#1e66f5","#b17217"],"vars":{"--bg":"#eff1f5","--surface":"#ccd0da","--raised":"#e8ecf1","--border":"#d5d7df","--text":"#4c4f69","--dim":"#686c83","--bright":"#2a2b3a","--link":"#4c4f69","--canvas":"#eff1f5","--pkg":"#8839ef","--mod":"#df8e1d","--ty":"#df8e1d","--c-ws":"#e8ecf1","--c-pkg":"#000000","--c-mod":"#8f590f","--c-ty":"#a26612","--chip":"#e6e9ef","--hl":"#4c4f69","--pane":"#ccd0da","--buy-bg":"#40a02b","--buy-fg":"#0d0f14","--s-fn":"#1e66f5","--s-method":"#0a50db","--s-struct":"#b17217","--s-field":"#1e66f5","--s-enum":"#b17217","--s-variant":"#179299","--s-trait":"#b17217","--s-tmethod":"#b67418","--s-alias":"#8839ef","--s-const":"#ef5801","--s-macro":"#d26650"}},"gruvbox":{"name":"Gruvbox","dark":true,"swatch":["#282828","#b8bb26","#fabd2f"],"vars":{"--bg":"#282828","--surface":"#3c3836","--raised":"#494542","--border":"#47453e","--text":"#ebdbb2","--dim":"#a2937f","--bright":"#b8bb26","--link":"#bdae93","--canvas":"#282828","--pkg":"#8ec07c","--mod":"#ebdbb2","--ty":"#fabd2f","--c-ws":"#494542","--c-pkg":"#688e5a","--c-mod":"#c8ba97","--c-ty":"#d39f26","--chip":"#504945","--hl":"#b8bb26","--pane":"#3c3836","--buy-bg":"#b8bb26","--buy-fg":"#0d0f14","--s-fn":"#b8bb26","--s-method":"#92951e","--s-struct":"#fabd2f","--s-field":"#83a598","--s-enum":"#fabd2f","--s-variant":"#fbce66","--s-trait":"#8ec07c","--s-tmethod":"#73b15d","--s-alias":"#eba606","--s-const":"#d3869b","--s-macro":"#83a598"}},"nord":{"name":"Nord","dark":true,"swatch":["#2e3440","#88c0d0","#8fbcbb"],"vars":{"--bg":"#2e3440","--surface":"#3b4252","--raised":"#464e61","--border":"#494f5b","--text":"#d8dee9","--dim":"#949eb0","--bright":"#88c0d0","--link":"#88c0d0","--canvas":"#2e3440","--pkg":"#81a1c1","--mod":"#d8dee9","--ty":"#8fbcbb","--c-ws":"#464e61","--c-pkg":"#4f6378","--c-mod":"#b8bdc7","--c-ty":"#719695","--chip":"#464e61","--hl":"#88c0d0","--pane":"#3b4252","--buy-bg":"#a3be8c","--buy-fg":"#0d0f14","--s-fn":"#88c0d0","--s-method":"#67afc3","--s-struct":"#8fbcbb","--s-field":"#d8dee9","--s-enum":"#8fbcbb","--s-variant":"#b2d1d0","--s-trait":"#81a1c1","--s-tmethod":"#628ab2","--s-alias":"#6ca7a6","--s-const":"#d8dee9","--s-macro":"#81a1c1"}},"tokyo-night":{"name":"Tokyo Night","dark":true,"swatch":["#1a1b26","#7aa2f7","#2ac3de"],"vars":{"--bg":"#1a1b26","--surface":"#16161e","--raised":"#2c2c3c","--border":"#353747","--text":"#c0caf5","--dim":"#7982ac","--bright":"#dce2fa","--link":"#7aa2f7","--canvas":"#1a1b26","--pkg":"#7dcfff","--mod":"#7dcfff","--ty":"#2ac3de","--c-ws":"#2c2c3c","--c-pkg":"#63a6cd","--c-mod":"#63a6cd","--c-ty":"#1f9bb1","--chip":"#000000","--hl":"#c0caf5","--pane":"#16161e","--buy-bg":"#449dab","--buy-fg":"#0d0f14","--s-fn":"#7aa2f7","--s-method":"#4f84f4","--s-struct":"#2ac3de","--s-field":"#73daca","--s-enum":"#2ac3de","--s-variant":"#5bd1e6","--s-trait":"#7dcfff","--s-tmethod":"#4fbeff","--s-alias":"#1c9db4","--s-const":"#ff9e64","--s-macro":"#7dcfff"}},"dracula":{"name":"Dracula","dark":true,"swatch":["#282a36","#50fa7b","#8be9fd"],"vars":{"--bg":"#282a36","--surface":"#191a21","--raised":"#2d303e","--border":"#494b54","--text":"#f8f8f2","--dim":"#8995b8","--bright":"#8be9fd","--link":"#bd93f9","--canvas":"#282a36","--pkg":"#ff79c6","--mod":"#ff79c6","--ty":"#8be9fd","--c-ws":"#2d303e","--c-pkg":"#b05288","--c-mod":"#b05288","--c-ty":"#79cdde","--chip":"#222430","--hl":"#8be9fd","--pane":"#191a21","--buy-bg":"#50fa7b","--buy-fg":"#0d0f14","--s-fn":"#50fa7b","--s-method":"#23f959","--s-struct":"#8be9fd","--s-field":"#f8f8f2","--s-enum":"#8be9fd","--s-variant":"#c2f3fe","--s-trait":"#50fa7b","--s-tmethod":"#7dfb9d","--s-alias":"#54dffc","--s-const":"#bd93f9","--s-macro":"#bd93f9"}},"one-dark":{"name":"One Dark","dark":true,"swatch":["#282c34","#61afef","#e5c07b"],"vars":{"--bg":"#282c34","--surface":"#3e4452","--raised":"#2c323c","--border":"#3d414a","--text":"#abb2bf","--dim":"#8e95a2","--bright":"#d1d5dc","--link":"#61afef","--canvas":"#282c34","--pkg":"#e06c75","--mod":"#61afef","--ty":"#e5c07b","--c-ws":"#2c323c","--c-pkg":"#6e3236","--c-mod":"#4179a6","--c-ty":"#c1a166","--chip":"#2c323c","--hl":"#abb2bf","--pane":"#3e4452","--buy-bg":"#98c379","--buy-fg":"#0d0f14","--s-fn":"#61afef","--s-method":"#379aeb","--s-struct":"#e5c07b","--s-field":"#e06c75","--s-enum":"#e5c07b","--s-variant":"#eed6aa","--s-trait":"#e5c07b","--s-tmethod":"#ddae55","--s-alias":"#dcaa4c","--s-const":"#56b6c2","--s-macro":"#c678dd"}},"rose-pine":{"name":"Rosé Pine","dark":true,"swatch":["#191724","#ebbcba","#9ccfd8"],"vars":{"--bg":"#191724","--surface":"#1f1d2e","--raised":"#0b0b10","--border":"#393745","--text":"#e0def4","--dim":"#837f9a","--bright":"#eeedf9","--link":"#e0def4","--canvas":"#191724","--pkg":"#31748f","--mod":"#e0def4","--ty":"#9ccfd8","--c-ws":"#0b0b10","--c-pkg":"#000000","--c-mod":"#c0bed1","--c-ty":"#83aeb6","--chip":"#2a273e","--hl":"#e0def4","--pane":"#1f1d2e","--buy-bg":"#9ccfd8","--buy-fg":"#0d0f14","--s-fn":"#ebbcba","--s-method":"#e19996","--s-struct":"#9ccfd8","--s-field":"#9ccfd8","--s-enum":"#9ccfd8","--s-variant":"#c4e3e8","--s-trait":"#c4a7e7","--s-tmethod":"#ac83dd","--s-alias":"#74bbc8","--s-const":"#9ccfd8","--s-macro":"#ebbcba"}},"solarized-light":{"name":"Solarized Light","dark":false,"swatch":["#fdf6e3","#268bd2","#9c7600"],"vars":{"--bg":"#fdf6e3","--surface":"#eee8d5","--raised":"#e0d4b1","--border":"#e1decf","--text":"#4d6066","--dim":"#637478","--bright":"#1e6fa6","--link":"#268bd2","--canvas":"#fdf6e3","--pkg":"#859900","--mod":"#6c71c4","--ty":"#b58900","--c-ws":"#e0d4b1","--c-pkg":"#3e4900","--c-mod":"#000000","--c-ty":"#705400","--chip":"#657b83","--hl":"#1e6fa6","--pane":"#eee8d5","--buy-bg":"#859900","--buy-fg":"#0d0f14","--s-fn":"#268bd2","--s-method":"#1f71ab","--s-struct":"#9c7600","--s-field":"#586e75","--s-enum":"#9c7600","--s-variant":"#a27a00","--s-trait":"#6c71c4","--s-tmethod":"#4b51b7","--s-alias":"#7d5f00","--s-const":"#258d85","--s-macro":"#d33682"}},"kanagawa":{"name":"Kanagawa","dark":true,"swatch":["#1f1f28","#7e9cd8","#7aa89f"],"vars":{"--bg":"#1f1f28","--surface":"#16161d","--raised":"#363646","--border":"#3d3c3f","--text":"#dcd7ba","--dim":"#8a887b","--bright":"#ece9d9","--link":"#7e9cd8","--canvas":"#1f1f28","--pkg":"#957fb8","--mod":"#ffa066","--ty":"#7aa89f","--c-ws":"#363646","--c-pkg":"#362c44","--c-mod":"#c1784b","--c-ty":"#567871","--chip":"#000000","--hl":"#dcd7ba","--pane":"#16161d","--buy-bg":"#76946a","--buy-fg":"#0d0f14","--s-fn":"#7e9cd8","--s-method":"#5b81cd","--s-struct":"#7aa89f","--s-field":"#e6c384","--s-enum":"#7aa89f","--s-variant":"#9cbeb7","--s-trait":"#e46876","--s-tmethod":"#dd4153","--s-alias":"#7fb4ca","--s-const":"#ffa066","--s-macro":"#e46876"}}};
+    const THEMES = {"beans":{"name":"Beans","dark":true,"swatch":["#111111","#fad07a","#48c6ff"],"vars":{"--bg":"#111111","--surface":"#1c1c1c","--border":"#343431","--text":"#ebebd8","--dim":"#7f7f7c","--bright":"#ffffff","--link":"#ffffff","--canvas":"#111111","--buy-bg":"#5a9f81","--buy-fg":"#0d0f14"}},"ayu-light":{"name":"Ayu Light","dark":false,"swatch":["#fafafa","#cc7600","#2293e3"],"vars":{"--bg":"#fafafa","--surface":"#e7eaed","--border":"#e1e2e2","--text":"#5c6166","--dim":"#6b747c","--bright":"#333538","--link":"#5c6166","--canvas":"#fafafa","--buy-bg":"#86b300","--buy-fg":"#0d0f14"}},"catppuccin-mocha":{"name":"Catppuccin Mocha","dark":true,"swatch":["#1e1e2e","#89b4fa","#f9e2af"],"vars":{"--bg":"#1e1e2e","--surface":"#313244","--border":"#3a3b4e","--text":"#cdd6f4","--dim":"#9399b2","--bright":"#e4e8f9","--link":"#f5e0dc","--canvas":"#1e1e2e","--buy-bg":"#a6e3a1","--buy-fg":"#0d0f14"}},"catppuccin-latte":{"name":"Catppuccin Latte","dark":false,"swatch":["#eff1f5","#1e66f5","#b17217"],"vars":{"--bg":"#eff1f5","--surface":"#ccd0da","--border":"#d5d7df","--text":"#4c4f69","--dim":"#686c83","--bright":"#2a2b3a","--link":"#4c4f69","--canvas":"#eff1f5","--buy-bg":"#40a02b","--buy-fg":"#0d0f14"}},"gruvbox":{"name":"Gruvbox","dark":true,"swatch":["#282828","#b8bb26","#fabd2f"],"vars":{"--bg":"#282828","--surface":"#3c3836","--border":"#47453e","--text":"#ebdbb2","--dim":"#a2937f","--bright":"#b8bb26","--link":"#bdae93","--canvas":"#282828","--buy-bg":"#b8bb26","--buy-fg":"#0d0f14"}},"nord":{"name":"Nord","dark":true,"swatch":["#2e3440","#88c0d0","#8fbcbb"],"vars":{"--bg":"#2e3440","--surface":"#3b4252","--border":"#494f5b","--text":"#d8dee9","--dim":"#949eb0","--bright":"#88c0d0","--link":"#88c0d0","--canvas":"#2e3440","--buy-bg":"#a3be8c","--buy-fg":"#0d0f14"}},"tokyo-night":{"name":"Tokyo Night","dark":true,"swatch":["#1a1b26","#7aa2f7","#2ac3de"],"vars":{"--bg":"#1a1b26","--surface":"#16161e","--border":"#353747","--text":"#c0caf5","--dim":"#7982ac","--bright":"#dce2fa","--link":"#7aa2f7","--canvas":"#1a1b26","--buy-bg":"#449dab","--buy-fg":"#0d0f14"}},"dracula":{"name":"Dracula","dark":true,"swatch":["#282a36","#50fa7b","#8be9fd"],"vars":{"--bg":"#282a36","--surface":"#191a21","--border":"#494b54","--text":"#f8f8f2","--dim":"#8995b8","--bright":"#8be9fd","--link":"#bd93f9","--canvas":"#282a36","--buy-bg":"#50fa7b","--buy-fg":"#0d0f14"}},"one-dark":{"name":"One Dark","dark":true,"swatch":["#282c34","#61afef","#e5c07b"],"vars":{"--bg":"#282c34","--surface":"#3e4452","--border":"#3d414a","--text":"#abb2bf","--dim":"#8e95a2","--bright":"#d1d5dc","--link":"#61afef","--canvas":"#282c34","--buy-bg":"#98c379","--buy-fg":"#0d0f14"}},"rose-pine":{"name":"Rosé Pine","dark":true,"swatch":["#191724","#ebbcba","#9ccfd8"],"vars":{"--bg":"#191724","--surface":"#1f1d2e","--border":"#393745","--text":"#e0def4","--dim":"#837f9a","--bright":"#eeedf9","--link":"#e0def4","--canvas":"#191724","--buy-bg":"#9ccfd8","--buy-fg":"#0d0f14"}},"solarized-light":{"name":"Solarized Light","dark":false,"swatch":["#fdf6e3","#268bd2","#9c7600"],"vars":{"--bg":"#fdf6e3","--surface":"#eee8d5","--border":"#e1decf","--text":"#4d6066","--dim":"#637478","--bright":"#1e6fa6","--link":"#268bd2","--canvas":"#fdf6e3","--buy-bg":"#859900","--buy-fg":"#0d0f14"}},"kanagawa":{"name":"Kanagawa","dark":true,"swatch":["#1f1f28","#7e9cd8","#7aa89f"],"vars":{"--bg":"#1f1f28","--surface":"#16161d","--border":"#3d3c3f","--text":"#dcd7ba","--dim":"#8a887b","--bright":"#ece9d9","--link":"#7e9cd8","--canvas":"#1f1f28","--buy-bg":"#76946a","--buy-fg":"#0d0f14"}}};
     // With no pick, the system setting chooses between these two.
     const DEFAULT = { dark: 'beans', light: 'ayu-light' };
     const ALL = THEMES;
@@ -53,50 +53,25 @@
   })();
 </script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,1,0&icon_names=auto_awesome,data_object,extension,folder,functions,inventory,link,list_alt,lock,radio_button_checked,rule,subdirectory_arrow_right,tag&display=block">
 <style>
-/* Layout: the app's own themes (Beans and Ayu Light by default) and system font; the node graph with a selection as the hero; then
-   one section per feature area, a graphic beside three points, closing on a buy section. The
-   green accent has one job: the buy button. */
+/* Layout: the app's own themes (Beans and Ayu Light by default) and system font; a screenshot of
+   the node graph with a selection as the hero; then one section per feature area, a screenshot
+   beside three points, closing on a buy section. Every screenshot is taken in each theme the page
+   offers and swapped with it. The green accent has one job: the buy button. */
 :root {
   /* Ayu Light: the page's colors when the system is light and no theme is picked. */
   --bg: #fafafa;
   --surface: #e7eaed;
-  --raised: #c9d0d7;
   --border: #e1e2e2;
   --text: #5c6166;
   --dim: #6b747c;
   --bright: #333538;
   --link: #5c6166;
   --canvas: #fafafa;
-  --pkg: #ffaa33;
-  --mod: #399ee6;
-  --ty: #399ee6;
-  --c-ws: #c9d0d7;
-  --c-pkg: #c68325;
-  --c-mod: #1c5984;
-  --c-ty: #236a9c;
-  --chip: #d8dde2;
-  --hl: #5c6166;
-  --pane: #e7eaed;
   --buy-bg: #86b300;
   --buy-fg: #0d0f14;
-  --s-fn: #cc7600;
-  --s-method: #d07a00;
-  --s-struct: #2293e3;
-  --s-field: #5c6166;
-  --s-enum: #2293e3;
-  --s-variant: #2695e3;
-  --s-trait: #2293e3;
-  --s-tmethod: #1b88d6;
-  --s-alias: #1a82cd;
-  --s-const: #a37acc;
-  --s-macro: #cc7600;
-  --h0: #e8c21c; --h1: #f08a2c; --h2: #e0533f; --h3: #b84679; --h4: #7d4aa3;
-  /* Ring colors are a fixed heat scale in the app, the same over every theme. */
-  --r1: #ffa84d; --r2: #f57059; --r3: #c75c8c; --r4: #8c59ad;
+  /* The logo's rings. */
+  --h0: #e8c21c; --h1: #f08a2c; --h2: #e0533f; --h3: #b84679;
   --display: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
   --body: var(--display);
   --mono: "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, "SF Mono", Menlo, monospace;
@@ -109,37 +84,15 @@
   :root:not([data-theme]) {
     --bg: #111111;
     --surface: #1c1c1c;
-    --raised: #292929;
     --border: #343431;
     --text: #ebebd8;
     --dim: #7f7f7c;
     --bright: #ffffff;
     --link: #ffffff;
     --canvas: #111111;
-    --pkg: #8197bf;
-    --mod: #be67e1;
-    --ty: #48c6ff;
-    --c-ws: #292929;
-    --c-pkg: #46536b;
-    --c-mod: #502860;
-    --c-ty: #39a1d0;
-    --chip: #292929;
-    --hl: #ffffff;
-    --pane: #1c1c1c;
     --buy-bg: #5a9f81;
     --buy-fg: #0d0f14;
-    --s-fn: #fad07a;
-    --s-method: #f8c04e;
-    --s-struct: #48c6ff;
-    --s-field: #be67e1;
-    --s-enum: #48c6ff;
-    --s-variant: #9243b2;
-    --s-trait: #ccff00;
-    --s-tmethod: #a7d100;
-    --s-alias: #80d7ff;
-    --s-const: #ff005b;
-    --s-macro: #ccff00;
-    --h0: #fff28c; --h1: #ffa84d; --h2: #f57059; --h3: #c75c8c; --h4: #8c59ad;
+    --h0: #fff28c; --h1: #ffa84d; --h2: #f57059; --h3: #c75c8c;
     color-scheme: dark;
   }
 }
@@ -189,18 +142,9 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   overflow: hidden;
   min-width: 0;
 }
-.viewport canvas { display: block; width: 100%; height: clamp(300px, 44vw, 470px); }
-.viewport-foot {
-  display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center;
-  border-top: 1px solid var(--border);
-  padding: 9px 14px;
-  font-size: 13px; color: var(--dim);
-  font-variant-numeric: tabular-nums;
-}
-.viewport-foot b { font-family: var(--mono); font-size: 12.5px; color: var(--bright); font-weight: 400; }
+.viewport { aspect-ratio: 16 / 9; }
 
-/* Each feature area: a graphic and three points, the sides alternating down the page. A graphic's
-   canvas can be swapped for a screenshot <img>; the frame keeps the same size either way. */
+/* Each feature area: a screenshot and three points, the sides alternating down the page. */
 .cat {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
@@ -225,13 +169,24 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 }
 .shot {
   margin: 0; min-width: 0; max-width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   background: var(--canvas);
   border: 1px solid var(--border);
   border-radius: 10px;
 }
-.shot canvas, .shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* A screenshot is a whole 1920×1080 window shown a third of its size, so a click opens it full
+   size. */
+.enlarge { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.enlarge img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.zoom {
+  padding: 0; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--canvas);
+  max-width: min(1920px, 96vw); max-height: 94vh;
+  cursor: zoom-out;
+}
+.zoom::backdrop { background: rgb(0 0 0 / 0.72); }
+.zoom img { display: block; width: 100%; height: auto; max-height: 94vh; object-fit: contain; }
 .shot-col { display: grid; gap: 14px; min-width: 0; }
 /* The strip under the hero: one row that scrolls sideways, its edges fading where chips are cut. */
 .theme-strip { display: flex; align-items: center; gap: 14px; padding-block: 0 26px; }
@@ -373,13 +328,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <a class="buy" href="#TODO-GUMROAD">Buy on Gumroad</a>
       </div>
     </div>
-    <figure class="viewport" style="margin:0">
-      <canvas id="blast" role="img" aria-label="A generated workspace of sixteen crates, packed as nested circles. Graph::insert is selected, and everything that depends on it gathers on four rings around it, crate by crate, while the rest fades away."></canvas>
-      <figcaption class="viewport-foot">
-        <span><b id="selection">core::graph::Graph::insert</b></span>
-        <span id="reach">dependents</span>
-      </figcaption>
-    </figure>
+    <figure class="viewport" style="margin:0"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="hero" width="1920" height="1080" alt="Blast Radius on a sixteen-crate workspace: base::graph::Graph::insert is selected, and the 22 functions and methods that call it sit on a ring around it, across eight crates."></button></figure>
   </div>
 </header>
 
@@ -401,7 +350,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <li>Spring layout shows how code is organized; gravity shows how it's used</li>
       </ul>
     </div>
-    <figure class="shot"><canvas data-graphic="node-graph" role="img" aria-label="The sample workspace with Socket::connect selected: its dependents are pulled toward it on rings, and the Connections pane beside the graph lists all eleven, counted in symbols and files."></canvas></figure>
+    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="node-graph" width="1920" height="1080" loading="lazy" alt="Socket::connect selected in the sample workspace: its five direct dependents sit on a ring around it across the cli and net crates, and the Connections pane counts them as 5 symbols in 4 files."></button></figure>
   </section>
 
   <section class="cat" id="thermal">
@@ -414,7 +363,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <li>The Profile pane ranks the hottest, with callers and callees</li>
       </ul>
     </div>
-    <figure class="shot"><canvas data-graphic="thermal" role="img" aria-label="The sample workspace in the thermal view: functions colored from cold purple to hot yellow by their share of a run, call edges thickened by traffic, and a Profile pane ranking the hottest functions."></canvas></figure>
+    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="thermal" width="1920" height="1080" loading="lazy" alt="The sample workspace colored by a profile run: the functions on the hot path from main glow yellow and orange, beside the Profile pane ranking the hottest."></button></figure>
   </section>
 
   <section class="cat" id="flow">
@@ -427,7 +376,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <li>Ride an arrow to the card at its far end</li>
       </ul>
     </div>
-    <figure class="shot"><canvas data-graphic="flow" role="img" aria-label="An outline of cards from main down through dispatch, send_cmd and connect_cmd to Socket::connect, each card showing its owner and signature, joined by colored arrows, with a jump control on one arrow."></canvas></figure>
+    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="flow" width="1920" height="1080" loading="lazy" alt="The flow graph of connect_cmd: everything it calls unfolded as indented cards down to Socket::connect, joined by colored arrows."></button></figure>
   </section>
 
   <section class="cat" id="health">
@@ -440,7 +389,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <li>A list of every symbol nothing references</li>
       </ul>
     </div>
-    <figure class="shot"><canvas data-graphic="health" role="img" aria-label="Two views of the sample workspace side by side: on the left, only the dead symbols stand out; on the right, two changed symbols are outlined and everything that depends on them is lit."></canvas></figure>
+    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="health" width="1920" height="1080" loading="lazy" alt="The sample workspace showing only dead code, beside the browser's Unreferenced list of the constants, functions and variant nothing references."></button></figure>
   </section>
 
   <section class="cat" id="refactoring">
@@ -453,7 +402,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
         <li>Refuses edits that would create cycles or break the orphan rule</li>
       </ul>
     </div>
-    <figure class="shot"><canvas data-graphic="refactoring" role="img" aria-label="A module of the net crate traced with a dashed outline and an arrow into the lit session module, beside a Move dialog listing the paths it will rewrite."></canvas></figure>
+    <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="structure" width="1920" height="1080" loading="lazy" alt="Moving the frame module into session from the browser tree: a Move dialog says two paths will be rewritten across two files before anything changes."></button></figure>
   </section>
 
   <section class="cat" id="workflow">
@@ -467,7 +416,7 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
       </ul>
     </div>
     <div class="shot-col">
-      <figure class="shot"><canvas data-graphic="workflow" role="img" aria-label="The sample workspace with a selection, beside a History pane listing the places visited, drawn in the page's current theme."></canvas></figure>
+      <figure class="shot"><button type="button" class="enlarge" aria-label="Enlarge screenshot"><img data-shot="workflow" width="1920" height="1080" loading="lazy" alt="The History pane after a walk from main through dispatch, connect_cmd, start and open to Socket::connect, beside what depends on connect."></button></figure>
       <div class="themes" data-themes role="radiogroup" aria-label="Page theme"></div>
     </div>
   </section>
@@ -485,16 +434,18 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
     <figure class="shot term" aria-label="A terminal running blast_radius --diff on the sample workspace.">
 <pre><span class="p">&gt;</span> <span class="c">blast_radius --diff</span>
 <span class="d">Workspace</span>  C:\code\relay
-<span class="d">Indexing</span>   0.07s
-<span class="d">Parse</span>      0.00s     <span class="d">Ingest</span> 0.01s
+<span class="d">Indexing</span>   0.09s
+<span class="d">Parse</span>      0.01s     <span class="d">Ingest</span> 0.00s
 
 <span class="c">Working tree blast radius</span>
-  <span class="d">changed hunks</span>      4 across 2 files
-  <span class="d">changed symbols</span>    2
+  <span class="d">changed hunks</span>      3 across 2 files
+  <span class="d">changed symbols</span>    4
 
   <span class="d">Changed symbols with the most dependents:</span>
-       3  net::session::Session::start
-       2  net::socket::Socket::connect</pre>
+       6  net::socket::socket
+       5  net::socket::Socket::connect
+       2  net::session::session
+       2  net::session::Session::start</pre>
     </figure>
   </section>
 </main>
@@ -504,6 +455,8 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
   <p>Point Blast Radius at any Cargo workspace. It indexes in about half a second and never runs your code.</p>
   <a class="buy" href="#TODO-GUMROAD">Buy on Gumroad</a>
 </section>
+
+<dialog class="zoom" id="zoom" aria-label="Enlarged screenshot"><img alt=""></dialog>
 
 <footer class="wrap foot">
   <span>© 2026 Robert Ware</span>
@@ -577,1480 +530,35 @@ code { font-family: var(--mono); font-size: 0.86em; color: var(--bright); }
 })();
 
 
-/* ---------- graphics: one sample workspace, drawn by every feature section ---------- */
-// The sample is packed once, the way Blast Radius packs a workspace: filled circles for packages,
-// modules and types, and one dot per symbol sized 4 + 2.2·√(dependents). Selecting a symbol pulls
-// what depends on it toward it without leaving its circles. Each graphic draws that one model in a
-// mode of the app's own: a selection, the thermal view, dead code, uncommitted changes, or a module
-// being moved. Names sit on their dots as chips, moved aside only when something is already there,
-// and left out when nowhere is free. A section's canvas can be swapped for a screenshot <img>.
-const Graphics = (() => {
-  // The app's own numbers.
-  const SIBLING_PAD = 3, CONTAINER_PAD = 10, UNLINKED_SCALE = 0.6, DEFOCUS = 0.12, FILL = 0.2;
-  // Screen radii over which a container's name fades in, per container type.
-  const NAME_BAND = { package: [38, 70], module: [50, 85], type: [30, 55] };
-  const ICON = {
-    fn: 'functions', method: 'subdirectory_arrow_right', struct: 'data_object', field: 'tag',
-    enum: 'list_alt', variant: 'radio_button_checked', trait: 'extension', tmethod: 'rule',
-    alias: 'link', const: 'lock', macro: 'auto_awesome',
-    package: 'inventory', module: 'folder', type: 'data_object',
-  };
-  const CALLABLE = new Set(['fn', 'method', 'tmethod']);
-
-  // ---- the sample workspace ----
-  const S = (name, kind, weight = 0) => ({ name, kind, weight });
-  const T = (name, kind, weight, members) => ({ name, type: 'type', self: S(name, kind, weight), children: members });
-  const M = (name, children) => ({ name, type: 'module', children });
-  const P = (name, children) => ({ name, type: 'package', children });
-  const root = { name: 'relay', type: 'workspace', children: [
-    P('net', [
-      M('socket', [
-        T('Socket', 'struct', 6, [S('addr', 'field'), S('timeout', 'field'), S('peer', 'field'),
-          S('connect', 'method', 2), S('open', 'method', 2), S('reconnect', 'method', 2), S('close', 'method', 1)]),
-        S('resolve', 'fn', 3), S('DEFAULT_PORT', 'const', 2), S('dial', 'fn', 1), S('bind', 'fn', 1),
-      ]),
-      M('session', [
-        T('Session', 'struct', 5, [S('socket', 'field'), S('state', 'field'), S('start', 'method', 3),
-          S('resume', 'method', 0), S('send', 'method', 1), S('recv', 'method', 1)]),
-        T('State', 'enum', 3, [S('Idle', 'variant'), S('Open', 'variant'), S('Closed', 'variant')]),
-        S('spawn_reader', 'fn', 1),
-      ]),
-      M('retry', [
-        T('Policy', 'struct', 2, [S('attempts', 'field'), S('delay', 'field')]),
-        S('with_retry', 'fn', 1), S('backoff', 'fn', 2), S('MAX_TRIES', 'const', 1),
-      ]),
-      M('tls', [
-        T('TlsConfig', 'struct', 1, [S('cert', 'field'), S('key', 'field')]),
-        S('handshake', 'fn', 1), S('verify', 'fn', 1),
-      ]),
-      M('frame', [
-        T('Frame', 'struct', 4, [S('header', 'field'), S('payload', 'field'), S('decode', 'method', 2), S('encode', 'method', 2)]),
-        T('Kind', 'enum', 2, [S('Data', 'variant'), S('Ping', 'variant'), S('Close', 'variant')]),
-        S('checksum', 'fn', 1), S('MAX_FRAME', 'const', 2),
-      ]),
-    ]),
-    P('proto', [
-      M('codec', [
-        T('Codec', 'trait', 4, [S('write', 'tmethod', 2), S('read', 'tmethod', 2)]),
-        S('encode_frame', 'fn', 2), S('decode_frame', 'fn', 2), S('impl_codec', 'macro', 3),
-      ]),
-      M('message', [
-        T('Message', 'struct', 3, [S('id', 'field'), S('body', 'field'), S('new', 'method', 2), S('to_bytes', 'method', 1)]),
-        T('Body', 'enum', 1, [S('Text', 'variant'), S('Bin', 'variant')]),
-      ]),
-      M('schema', [S('Result', 'alias', 4), S('validate', 'fn', 1), S('VERSION', 'const', 1)]),
-    ]),
-    P('cli', [
-      S('main', 'fn', 0),
-      M('args', [T('Args', 'struct', 2, [S('host', 'field'), S('port', 'field'), S('verbose', 'field'), S('parse', 'method', 1)])]),
-      M('commands', [S('connect_cmd', 'fn', 1), S('send_cmd', 'fn', 1), S('ping_cmd', 'fn', 1), S('dispatch', 'fn', 2)]),
-    ]),
-    P('util', [
-      M('buf', [T('Buf', 'struct', 3, [S('data', 'field'), S('pos', 'field'), S('push', 'method', 2), S('take', 'method', 1)]),
-        S('hexdump', 'fn', 1)]),
-    ]),
-  ]};
-
-  // What depends on Socket::connect, ring by ring, and which symbol of the ring before each one uses.
-  const SELECTED = 'net/socket/Socket/connect';
-  const BLAST = [
-    ['net/socket/Socket/open', 1, [SELECTED]],
-    ['net/socket/Socket/reconnect', 1, [SELECTED]],
-    ['net/socket/dial', 2, ['net/socket/Socket/open']],
-    ['net/session/Session/start', 2, ['net/socket/Socket/open']],
-    ['net/session/Session/resume', 2, ['net/socket/Socket/reconnect']],
-    ['net/retry/with_retry', 2, ['net/socket/Socket/reconnect']],
-    ['net/session/Session/send', 3, ['net/session/Session/start']],
-    ['net/session/spawn_reader', 3, ['net/session/Session/start']],
-    ['net/tls/handshake', 3, ['net/retry/with_retry']],
-    ['cli/commands/connect_cmd', 3, ['net/session/Session/start']],
-    ['cli/commands/ping_cmd', 3, ['net/socket/dial']],
-  ];
-
-  // ---- index the tree ----
-  const containers = [], symbols = [], byPath = new Map();
-  (function walk(n, parent) {
-    n.parent = parent;
-    n.path = !parent ? '' : parent.path ? parent.path + '/' + n.name : n.name;
-    n.x = n.y = 0;
-    if (n.type) {
-      n.kids = n.self ? [n.self, ...n.children] : n.children;
-      n.depth = parent ? parent.depth + 1 : 0;
-      containers.push(n);
-      for (const kid of n.kids) walk(kid, n);
-    } else {
-      n.r = 4 + 2.2 * Math.sqrt(n.weight);
-      symbols.push(n);
-    }
-    byPath.set(n.path, n);
-  })(root, null);
-  const node = path => {
-    const n = byPath.get(path);
-    if (!n) throw new Error('the sample has no ' + path);
-    return n;
-  };
-  const byDepth = containers.slice().sort((a, b) => a.depth - b.depth);
-
-  const epi = node(SELECTED);
-  const hopOf = new Map([[epi, 0]]);
-  const edges = [];
-  for (const [path, hop, from] of BLAST) {
-    const n = node(path);
-    hopOf.set(n, hop);
-    for (const f of from) edges.push([n, node(f), hop]);
-  }
-  for (const n of hopOf.keys()) for (let c = n.parent; c; c = c.parent) c.holdsReached = true;
-  for (let c = epi.parent; c; c = c.parent) c.holdsEpi = true;
-  const fileOf = n => {
-    let c = n.parent;
-    while (c.type !== 'module' && c.type !== 'package') c = c.parent;
-    return c;
-  };
-  const dependents = [...hopOf.keys()].filter(n => n !== epi);
-  const files = new Set(dependents.map(fileOf)).size;
-  const DEPENDENTS_LINE = 'dependents: ' + dependents.length + ' symbols in ' + files + ' files';
-
-  // Thermal: each function's share of a profiled run, counting what it calls, and the calls made.
-  const HEAT = new Map(Object.entries({
-    'cli/main': 1, 'cli/commands/dispatch': 0.96, 'cli/commands/send_cmd': 0.62,
-    'net/session/Session/send': 0.6, 'net/frame/Frame/encode': 0.42, 'net/frame/checksum': 0.38,
-    'cli/commands/connect_cmd': 0.3, 'net/session/Session/start': 0.28, 'net/socket/Socket/connect': 0.22,
-    'net/session/spawn_reader': 0.2, 'net/session/Session/recv': 0.18, 'net/frame/Frame/decode': 0.16,
-    'net/socket/resolve': 0.12, 'cli/args/Args/parse': 0.05, 'cli/commands/ping_cmd': 0.04,
-  }).map(([path, heat]) => [node(path), heat]));
-  const CALLS = [
-    ['cli/main', 'cli/commands/dispatch'], ['cli/main', 'cli/args/Args/parse'],
-    ['cli/commands/dispatch', 'cli/commands/send_cmd'], ['cli/commands/dispatch', 'cli/commands/connect_cmd'],
-    ['cli/commands/dispatch', 'cli/commands/ping_cmd'], ['cli/commands/send_cmd', 'net/session/Session/send'],
-    ['net/session/Session/send', 'net/frame/Frame/encode'], ['net/frame/Frame/encode', 'net/frame/checksum'],
-    ['cli/commands/connect_cmd', 'net/session/Session/start'], ['net/session/Session/start', 'net/socket/Socket/connect'],
-    ['net/socket/Socket/connect', 'net/socket/resolve'], ['net/session/Session/start', 'net/session/spawn_reader'],
-    ['net/session/spawn_reader', 'net/session/Session/recv'], ['net/session/Session/recv', 'net/frame/Frame/decode'],
-  ].map(([a, b]) => [node(a), node(b)]);
-
-  // Dead code: never reached from main, tests or trait impls, including hexdump and the take only it calls.
-  const DEAD = new Set(['net/socket/bind', 'net/retry/MAX_TRIES', 'proto/schema/validate', 'proto/schema/VERSION',
-    'util/buf/hexdump', 'util/buf/Buf/take', 'proto/message/Body/Bin'].map(node));
-  for (const n of DEAD) for (let c = n.parent; c; c = c.parent) c.holdsDead = true;
-  // Uncommitted changes: two edited symbols, and everything that depends on them.
-  const SEEDS = [epi, node('net/session/Session/start')];
-  // A module on its way into another: whichever of net's modules sits farthest from session, picked
-  // once the sample is packed, so the arrow between them has room to read.
-  const MOVE = { from: null, into: node('net/session') };
-
-  // ---- pack: sunflower seeding, then overlaps relaxed apart, innermost circles first ----
-  const GOLDEN = Math.PI * (3 - Math.sqrt(5));
-  function separate(items, bound) {
-    for (let i = 0; i < items.length; i++) {
-      for (let j = i + 1; j < items.length; j++) {
-        const a = items[i], b = items[j];
-        let dx = b.x - a.x, dy = b.y - a.y;
-        const d = Math.hypot(dx, dy) || 1e-3, over = a.r + b.r + SIBLING_PAD - d;
-        if (over <= 0) continue;
-        dx /= d; dy /= d;
-        const wa = a.pinned ? 0 : b.pinned ? 1 : 0.5, wb = b.pinned ? 0 : a.pinned ? 1 : 0.5;
-        a.x -= dx * over * wa; a.y -= dy * over * wa;
-        b.x += dx * over * wb; b.y += dy * over * wb;
-      }
-    }
-    if (!bound) return;
-    for (const a of items) {
-      if (a.pinned) continue;
-      const d = Math.hypot(a.x, a.y), max = bound - a.r - CONTAINER_PAD;
-      if (d > max && d > 0) { a.x *= max / d; a.y *= max / d; }
-    }
-  }
-  const enclose = n => {
-    n.r = Math.max(...n.kids.map(k => Math.hypot(k.x, k.y) + k.r)) + CONTAINER_PAD;
-  };
-  (function pack(n) {
-    if (!n.type) return;
-    n.kids.forEach(pack);
-    const order = n.kids.slice().sort((a, b) => b.r - a.r);
-    const step = 1.7 * order.reduce((sum, k) => sum + k.r, 0) / order.length;
-    order.forEach((k, i) => {
-      const d = step * Math.sqrt(i);
-      k.x = Math.cos(i * GOLDEN) * d;
-      k.y = Math.sin(i * GOLDEN) * d;
-    });
-    for (let it = 0; it < 240; it++) {
-      for (const k of order) { k.x *= 0.98; k.y *= 0.98; }
-      separate(order, 0);
-    }
-    for (let it = 0; it < 40; it++) separate(order, 0);
-    const xs = order.map(k => k.x), ys = order.map(k => k.y);
-    const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
-    for (const k of order) { k.x -= cx; k.y -= cy; }
-    enclose(n);
-  })(root);
-
-  function place(n, ox, oy) {
-    n.ax = ox + n.x;
-    n.ay = oy + n.y;
-    if (n.type) for (const kid of n.kids) place(kid, n.ax, n.ay);
-  }
-  const nodes = [...containers, ...symbols];
-  for (const n of nodes) { n.hx = n.x; n.hy = n.y; }
-
-  // ---- the pull: whatever holds part of the answer is towed toward the selection, top down,
-  // never leaving its own circle; the selection and the circles around it hold still ----
-  for (const c of containers) {
-    place(root, 0, 0);
-    const tx = epi.ax - c.ax, ty = epi.ay - c.ay;
-    const movers = c.kids.filter(k => k !== epi && !k.holdsEpi && (k.type ? k.holdsReached : hopOf.has(k)));
-    if (!movers.length) continue;
-    for (const k of c.kids) k.pinned = k === epi || !!k.holdsEpi;
-    const bound = c === root ? 0 : c.r;
-    for (let it = 0; it < 160; it++) {
-      for (const k of movers) { k.x += (tx - k.x) * 0.05; k.y += (ty - k.y) * 0.05; }
-      separate(c.kids, bound);
-    }
-    for (let it = 0; it < 40; it++) separate(c.kids, bound);
-    for (const k of c.kids) k.pinned = false;
-  }
-  enclose(root);
-  for (const n of nodes) { n.px = n.x; n.py = n.y; }
-  for (const n of nodes) { n.x = n.hx; n.y = n.hy; }
-  place(root, 0, 0);
-  MOVE.from = node('net').kids.filter(k => k.type === 'module' && k !== MOVE.into)
-    .sort((a, b) => Math.hypot(b.ax - MOVE.into.ax, b.ay - MOVE.into.ay) - Math.hypot(a.ax - MOVE.into.ax, a.ay - MOVE.into.ay))[0];
-  for (const n of nodes) { n.x = n.px; n.y = n.py; }
-  place(root, 0, 0);
-
-  // One ring per step outward, sized to its members as the app sizes it.
-  const ringR = [0, 0, 0, 0];
-  for (const [n, hop] of hopOf) {
-    if (hop > 0) ringR[hop] = Math.max(ringR[hop], Math.hypot(n.ax - epi.ax, n.ay - epi.ay) + n.r + 4);
-  }
-  const reach = Math.max(...ringR);
-
-  // ---- colors ----
-  // The page's own theme, read from its tokens so both themes follow.
-  function pagePalette() {
-    const cs = getComputedStyle(document.documentElement);
-    const v = n => cs.getPropertyValue('--' + n).trim();
-    return {
-      canvas: v('canvas'), chip: v('chip'), hl: v('hl'), pane: v('pane'), rule: v('border'),
-      text: v('text'), dim: v('dim'), bright: v('bright'),
-      fill: { workspace: v('c-ws'), package: v('c-pkg'), module: v('c-mod'), type: v('c-ty') },
-      name: { package: v('pkg'), module: v('mod'), type: v('ty') },
-      ring: [v('r1'), v('r1'), v('r2'), v('r3'), v('r4')],
-      kind: {
-        fn: v('s-fn'), method: v('s-method'), struct: v('s-struct'), field: v('s-field'),
-        enum: v('s-enum'), variant: v('s-variant'), trait: v('s-trait'), tmethod: v('s-tmethod'),
-        alias: v('s-alias'), const: v('s-const'), macro: v('s-macro'),
-      },
-    };
-  }
-
-  // The thermal ramp, cold to hot, mixed as the app mixes it. A temperature, so the same in every theme.
-  const THERMAL = [[0.12, 0.14, 0.32], [0.42, 0.18, 0.55], [0.90, 0.28, 0.32], [1.00, 0.64, 0.24], [1.00, 0.97, 0.72]];
-  function thermal(t) {
-    const k = Math.min(1, Math.max(0, t)) * (THERMAL.length - 1);
-    const i = Math.min(Math.floor(k), THERMAL.length - 2), f = k - i;
-    return 'rgb(' + THERMAL[i].map((v, j) => Math.round(255 * (v + (THERMAL[i + 1][j] - v) * f))).join(',') + ')';
-  }
-
-  // ---- drawing helpers ----
-  const LABEL_FONT = '12px "Segoe UI", system-ui, -apple-system, sans-serif';
-  const STRONG_FONT = '600 13px "Segoe UI", system-ui, -apple-system, sans-serif';
-  const SMALL_FONT = '11.5px "Segoe UI", system-ui, -apple-system, sans-serif';
-  const MONO_FONT = '12px "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, "SF Mono", Menlo, monospace';
-  const ICON_FONT = '13px "Material Symbols Outlined"';
-  let icons = false;
-  function checkIcons() {
-    const probe = document.createElement('canvas').getContext('2d');
-    probe.font = ICON_FONT;
-    // A ligature draws as one glyph; a missing font spells the word out.
-    icons = !!document.fonts && document.fonts.check(ICON_FONT, 'functions') && probe.measureText('functions').width < 24;
-  }
-
-  const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-  const mix = (a, b, t) => a + (b - a) * t;
-  const clamp01 = t => Math.min(1, Math.max(0, t));
-  function circle(ctx, x, y, r) { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, Math.PI * 2); }
-  function rounded(ctx, x, y, w, h, r) {
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(x, y, w, h, r);
-    else ctx.rect(x, y, w, h);
-  }
-  function ellipsize(ctx, text, max) {
-    if (ctx.measureText(text).width <= max) return text;
-    let cut = text;
-    while (cut.length > 1 && ctx.measureText(cut + '…').width > max) cut = cut.slice(0, -1);
-    return cut + '…';
-  }
-
-  // Cameras: a world point at the middle of a rect, and a scale.
-  const fitWorkspace = r => ({ x: 0, y: 0, s: Math.min(r.w, r.h) / (2 * root.r * 1.04) });
-  const fitSelection = r => ({ x: epi.ax, y: epi.ay, s: Math.min(r.w, r.h) / (2 * reach * 1.12) });
-  const fitCircle = (c, pad) => r => ({ x: c.ax, y: c.ay, s: Math.min(r.w, r.h) / (2 * c.r * pad) });
-
-  // ---- legibility ----
-  // A theme's colors are chosen for its background; a name drawn on a chip or a pane can fall short
-  // of that. Text below 4.5:1 against what it sits on is moved toward black or white, whichever the
-  // background allows more of, until it reads.
-  const rgbOf = c => (c[0] === '#' ? [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16)) : c.match(/[\d.]+/g).slice(0, 3).map(Number));
-  const linear = v => ((v /= 255) <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
-  const lumOf = c => 0.2126 * linear(c[0]) + 0.7152 * linear(c[1]) + 0.0722 * linear(c[2]);
-  const ratio = (a, b) => { const x = lumOf(a), y = lumOf(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
-  const legibleCache = new Map();
-  function legible(color, bg, need = 4.5) {
-    const key = color + '|' + bg + '|' + need;
-    if (legibleCache.has(key)) return legibleCache.get(key);
-    let c = rgbOf(color);
-    const b = rgbOf(bg);
-    let out = color;
-    if (ratio(c, b) < need) {
-      const toward = ratio([255, 255, 255], b) > ratio([0, 0, 0], b) ? [255, 255, 255] : [0, 0, 0];
-      for (let i = 0; i < 24 && ratio(c, b) < need; i++) c = c.map((v, j) => v + (toward[j] - v) * 0.12);
-      out = 'rgb(' + c.map(Math.round).join(',') + ')';
-    }
-    legibleCache.set(key, out);
-    return out;
-  }
-
-  // ---- name chips ----
-  const CHIP_H = 18;
-  const STEPS = [];
-  for (let gx = -4; gx <= 4; gx++) for (let gy = -4; gy <= 4; gy++) STEPS.push([gx, gy]);
-  function chip(ctx, x, y, w, it, pal) {
-    ctx.globalAlpha = it.alpha;
-    ctx.fillStyle = pal.chip;
-    rounded(ctx, x - w / 2, y - CHIP_H / 2, w, CHIP_H, 4);
-    ctx.fill();
-    ctx.textBaseline = 'middle';
-    let cursor = x - w / 2 + 8;
-    if (icons && it.icon) {
-      ctx.font = ICON_FONT;
-      ctx.fillStyle = legible(it.iconColor || it.color, pal.chip, 3);
-      ctx.fillText(it.icon, cursor - 1, y + 0.5);
-      cursor += 17;
-    }
-    ctx.font = LABEL_FONT;
-    ctx.fillStyle = legible(it.color, pal.chip);
-    ctx.fillText(it.text, cursor, y + 0.5);
-  }
-  // Each name sits on its anchor if that is clear, else on the nearest clear spot (pushed outward
-  // from its own circle), and is left out if there is none. `reserve` keeps spots for overlays.
-  function placeChips(ctx, rect, pal, items, reserve) {
-    const placed = (reserve || []).map(b => ({ x: b.x + b.w / 2, y: b.y + b.h / 2, w: b.w, h: b.h }));
-    const clear = (x, y, w) =>
-      x - w / 2 >= rect.x + 3 && x + w / 2 <= rect.x + rect.w - 3 &&
-      y - CHIP_H / 2 >= rect.y + 3 && y + CHIP_H / 2 <= rect.y + rect.h - 3 &&
-      placed.every(b => Math.abs(b.x - x) * 2 >= b.w + w + 6 || Math.abs(b.y - y) * 2 >= (b.h || CHIP_H) + CHIP_H + 4);
-    for (const it of items) {
-      if (it.alpha < 0.02) continue;
-      ctx.font = LABEL_FONT;
-      const w = 16 + ctx.measureText(it.text).width + (icons && it.icon ? 17 : 0);
-      let spot = null;
-      if (it.fixed) {
-        spot = [it.x, it.y];
-      } else {
-        let ux = it.x - it.ox, uy = it.y - it.oy;
-        const len = Math.hypot(ux, uy) || 1;
-        ux /= len; uy /= len;
-        let best = Infinity;
-        for (const [gx, gy] of STEPS) {
-          const dx = gx * 26, dy = gy * (CHIP_H + 4);
-          const score = Math.hypot(dx, dy) - 0.35 * (dx * ux + dy * uy);
-          if (score < best && clear(it.x + dx, it.y + dy, w)) { best = score; spot = [it.x + dx, it.y + dy]; }
-        }
-      }
-      if (!spot) continue;
-      placed.push({ x: spot[0], y: spot[1], w, h: CHIP_H });
-      chip(ctx, spot[0], spot[1], w, it, pal);
-    }
-  }
-
-  // ---- the graph, in one of the app's modes ----
-  // o.mode: 'select' (a selection and what depends on it), 'thermal', 'dead', 'diff', 'move'.
-  // o.pull and o.sel run 0..1: how far the pull has gone, and how far the selection has landed.
-  function drawGraph(ctx, rect, pal, o) {
-    const mode = o.mode || 'select';
-    const pull = o.pull ?? 0, sel = o.sel ?? 1;
-    for (const n of nodes) { n.x = mix(n.hx, n.px, pull); n.y = mix(n.hy, n.py, pull); }
-    place(root, 0, 0);
-    const cam = typeof o.camera === 'function' ? o.camera(rect) : o.camera;
-    const s = cam.s;
-    const X = x => (x - cam.x) * s + rect.x + rect.w / 2;
-    const Y = y => (y - cam.y) * s + rect.y + rect.h / 2;
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(rect.x, rect.y, rect.w, rect.h);
-    ctx.clip();
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = pal.canvas;
-    ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-
-    // What the view is about. Everything else fades, by `fade`.
-    const fade = mode === 'select' ? sel : 1;
-    const focus = mode === 'select' || mode === 'diff' ? n => hopOf.has(n)
-      : mode === 'dead' ? n => DEAD.has(n) : null;
-    const holds = mode === 'dead' ? c => c.holdsDead : c => c.holdsReached;
-
-    // Circles: filled, deeper ones over shallower; one holding none of the answer fades.
-    for (const c of byDepth) {
-      circle(ctx, X(c.ax), Y(c.ay), c.r * s);
-      ctx.globalAlpha = FILL * (focus && !holds(c) ? mix(1, DEFOCUS, fade) : 1);
-      ctx.fillStyle = pal.fill[c.type];
-      ctx.fill();
-    }
-
-    // A module being moved: its own circle traced faintly, the one it goes into lit.
-    if (mode === 'move') {
-      circle(ctx, X(MOVE.into.ax), Y(MOVE.into.ay), MOVE.into.r * s);
-      ctx.globalAlpha = 0.12;
-      ctx.fillStyle = pal.hl;
-      ctx.fill();
-      ctx.globalAlpha = 0.9;
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = pal.hl;
-      ctx.stroke();
-      circle(ctx, X(MOVE.from.ax), Y(MOVE.from.ay), MOVE.from.r * s);
-      ctx.setLineDash([5, 4]);
-      ctx.globalAlpha = 0.7;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
-
-    // Edges beneath the dots.
-    ctx.lineCap = 'round';
-    if (mode === 'select' || mode === 'diff') {
-      ctx.lineWidth = 1.5;
-      for (const [a, b, hop] of edges) {
-        ctx.beginPath();
-        ctx.moveTo(X(a.ax), Y(a.ay));
-        ctx.lineTo(X(b.ax), Y(b.ay));
-        ctx.globalAlpha = 0.5 * fade;
-        ctx.strokeStyle = pal.ring[hop];
-        ctx.stroke();
-      }
-    } else if (mode === 'thermal') {
-      // A call edge in its callee's heat, wider and stronger the more of the run went through it.
-      for (const [a, b] of CALLS) {
-        const share = HEAT.get(b) || 0;
-        ctx.beginPath();
-        ctx.moveTo(X(a.ax), Y(a.ay));
-        ctx.lineTo(X(b.ax), Y(b.ay));
-        ctx.globalAlpha = 0.12 + 0.55 * share;
-        ctx.lineWidth = 1 + 3 * share;
-        ctx.strokeStyle = thermal(share);
-        ctx.stroke();
-      }
-    }
-
-    // Dots.
-    for (const n of symbols) {
-      let color = pal.kind[n.kind], alpha = 1, scale = 1;
-      if (mode === 'thermal') {
-        if (!CALLABLE.has(n.kind)) continue;
-        color = thermal(HEAT.get(n) || 0);
-      } else if (focus && !focus(n)) {
-        alpha = mix(1, DEFOCUS, fade);
-        scale = mix(1, UNLINKED_SCALE, fade);
-      }
-      circle(ctx, X(n.ax), Y(n.ay), n.r * s * scale);
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = color;
-      ctx.fill();
-    }
-
-    // Rings about a selection and its outline; in diff mode, an outline on each changed symbol.
-    ctx.lineWidth = 1.5;
-    if (mode === 'select') {
-      for (let hop = 1; hop <= 3; hop++) {
-        circle(ctx, X(epi.ax), Y(epi.ay), ringR[hop] * s);
-        ctx.globalAlpha = 0.55 * sel;
-        ctx.strokeStyle = pal.ring[hop];
-        ctx.stroke();
-      }
-    }
-    if (mode === 'select' || mode === 'diff') {
-      for (const n of mode === 'select' ? [epi] : SEEDS) {
-        circle(ctx, X(n.ax), Y(n.ay), n.r * s + 2);
-        ctx.globalAlpha = mode === 'select' ? sel : 1;
-        ctx.strokeStyle = pal.hl;
-        ctx.stroke();
-      }
-    }
-
-    // The move's path: an arrow from the module to the circle it goes into.
-    if (mode === 'move') {
-      const ax = X(MOVE.from.ax), ay = Y(MOVE.from.ay), bx = X(MOVE.into.ax), by = Y(MOVE.into.ay);
-      const d = Math.hypot(bx - ax, by - ay) || 1, ux = (bx - ax) / d, uy = (by - ay) / d;
-      // From the middle of the module out to the rim of its new home: neighbors' rims touch, so a
-      // rim-to-rim arrow would have no length.
-      const sx = ax + ux * 8, sy = ay + uy * 8;
-      const ex = bx - ux * (MOVE.into.r * s + 4), ey = by - uy * (MOVE.into.r * s + 4);
-      const bend = Math.min(30, Math.hypot(ex - sx, ey - sy) * 0.3);
-      const mx = (sx + ex) / 2 - uy * bend, my = (sy + ey) / 2 + ux * bend;
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = pal.hl;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(sx, sy);
-      ctx.quadraticCurveTo(mx, my, ex, ey);
-      ctx.stroke();
-      const tx = ex - mx, ty = ey - my, tl = Math.hypot(tx, ty) || 1;
-      const hx = tx / tl, hy = ty / tl;
-      ctx.fillStyle = pal.hl;
-      ctx.beginPath();
-      ctx.moveTo(ex + hx * 2, ey + hy * 2);
-      ctx.lineTo(ex - hx * 9 - hy * 5, ey - hy * 9 + hx * 5);
-      ctx.lineTo(ex - hx * 9 + hy * 5, ey - hy * 9 - hx * 5);
-      ctx.closePath();
-      ctx.fill();
-    }
-
-    // Names: what the view is about first, then the circles, outermost first.
-    if (o.chips !== false) {
-      const items = [];
-      const symbolChip = (n, extra) => ({ x: X(n.ax), y: Y(n.ay), text: n.name, icon: ICON[n.kind],
-        color: pal.kind[n.kind], alpha: 1, ox: X(n.parent.ax), oy: Y(n.parent.ay), ...extra });
-      if (mode === 'select') {
-        const named = [...hopOf.keys()].sort((a, b) => hopOf.get(a) - hopOf.get(b));
-        for (const n of named) items.push(symbolChip(n, { alpha: sel, fixed: n === epi }));
-      } else if (mode === 'diff') {
-        for (const n of SEEDS) items.push(symbolChip(n));
-        for (const n of dependents) if (!SEEDS.includes(n)) items.push(symbolChip(n));
-      } else if (mode === 'dead') {
-        for (const n of DEAD) items.push(symbolChip(n));
-      } else if (mode === 'thermal') {
-        const hottest = [...HEAT].sort((a, b) => b[1] - a[1]).slice(0, 6);
-        for (const [n, heat] of hottest) items.push(symbolChip(n, { color: pal.bright, iconColor: thermal(heat) }));
-      }
-      if (o.names !== false) {
-        const named = mode === 'move' ? [MOVE.from, MOVE.into, ...byDepth.filter(c => c !== MOVE.from && c !== MOVE.into)] : byDepth;
-        for (const c of named) {
-          const band = NAME_BAND[c.type];
-          if (!band) continue;
-          const forced = mode === 'move' && (c === MOVE.from || c === MOVE.into);
-          const alpha = forced ? 1 : Math.pow(clamp01((c.r * s - band[0]) / (band[1] - band[0])), 2.5);
-          items.push({ x: X(c.ax), y: Y(c.ay - c.r), text: c.name, icon: ICON[c.type], color: pal.name[c.type],
-            alpha, ox: X(c.parent.ax), oy: Y(c.parent.ay) });
-        }
-      }
-      placeChips(ctx, rect, pal, items, o.reserve);
-    }
-    ctx.restore();
-  }
-
-  // ---- panes and dialogs, as the app's right sidebar and its dialogs draw them ----
-  function pane(ctx, r, pal) {
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = pal.pane;
-    rounded(ctx, r.x, r.y, r.w, r.h, 8);
-    ctx.fill();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = pal.rule;
-    ctx.stroke();
-  }
-  function list(ctx, r, pal, title, rows, pinned) {
-    ctx.save();
-    pane(ctx, r, pal);
-    ctx.beginPath();
-    ctx.rect(r.x, r.y, r.w, r.h);
-    ctx.clip();
-    ctx.textBaseline = 'middle';
-    ctx.font = SMALL_FONT;
-    ctx.fillStyle = pal.dim;
-    ctx.fillText(ellipsize(ctx, title, r.w - 24), r.x + 12, r.y + 18);
-    let y = r.y + 42;
-    const row = it => {
-      if (it.current) {
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = pal.chip;
-        rounded(ctx, r.x + 6, y - 11, r.w - 12, 22, 4);
-        ctx.fill();
-      }
-      let x = r.x + 12;
-      if (it.dot) {
-        circle(ctx, x + 4, y, 4);
-        ctx.fillStyle = it.dot;
-        ctx.fill();
-        x += 14;
-      }
-      const under = it.current ? pal.chip : pal.pane;
-      if (icons && it.icon) {
-        ctx.font = ICON_FONT;
-        ctx.fillStyle = legible(it.iconColor || it.color, under, 3);
-        ctx.fillText(it.icon, x - 1, y + 0.5);
-        x += 17;
-      }
-      ctx.font = LABEL_FONT;
-      let right = r.x + r.w - 12;
-      if (it.right) {
-        ctx.fillStyle = legible(pal.dim, under);
-        const tw = ctx.measureText(it.right).width;
-        ctx.fillText(it.right, right - tw, y + 0.5);
-        right -= tw + 10;
-      }
-      ctx.fillStyle = legible(it.color, under);
-      ctx.fillText(ellipsize(ctx, it.text, right - x), x, y + 0.5);
-      if (it.bar != null) {
-        ctx.globalAlpha = 0.7;
-        ctx.fillStyle = it.dot || it.color;
-        ctx.fillRect(r.x + 12, y + 10, (r.w - 24) * it.bar, 2);
-        ctx.globalAlpha = 1;
-      }
-      y += it.bar != null ? 27 : 23;
-    };
-    if (pinned) {
-      row(pinned);
-      ctx.fillStyle = pal.rule;
-      ctx.fillRect(r.x + 12, y - 11, r.w - 24, 1);
-      y += 4;
-    }
-    for (const it of rows) {
-      if (y > r.y + r.h - 12) break;
-      row(it);
-    }
-    ctx.restore();
-  }
-  function dialog(ctx, r, pal) {
-    ctx.save();
-    pane(ctx, r, pal);
-    ctx.textBaseline = 'middle';
-    let y = r.y + 24;
-    ctx.font = STRONG_FONT;
-    ctx.fillStyle = pal.bright;
-    ctx.fillText('Move ' + MOVE.from.name, r.x + 16, y);
-    y += 22;
-    ctx.font = SMALL_FONT;
-    ctx.fillStyle = pal.dim;
-    ctx.fillText(ellipsize(ctx, 'into net::' + MOVE.into.name, r.w - 32), r.x + 16, y);
-    y += 26;
-    ctx.font = LABEL_FONT;
-    for (const line of ['becomes net::' + MOVE.into.name + '::' + MOVE.from.name, '3 paths rewritten', '1 visibility widened']) {
-      ctx.fillStyle = pal.dim;
-      ctx.fillText('•', r.x + 16, y);
-      ctx.fillStyle = pal.text;
-      ctx.fillText(ellipsize(ctx, line, r.w - 44), r.x + 28, y);
-      y += 21;
-    }
-    // The buttons, the one that acts on the right.
-    const bh = 26, by = r.y + r.h - bh - 14;
-    const button = (label, right, strong) => {
-      ctx.font = LABEL_FONT;
-      const w = ctx.measureText(label).width + 26;
-      ctx.fillStyle = pal.chip;
-      rounded(ctx, right - w, by, w, bh, 5);
-      ctx.fill();
-      if (strong) {
-        ctx.strokeStyle = pal.hl;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-      ctx.fillStyle = strong ? pal.bright : pal.text;
-      ctx.fillText(label, right - w + 13, by + bh / 2 + 0.5);
-      return w;
-    };
-    const moveW = button('move', r.x + r.w - 16, true);
-    button('cancel', r.x + r.w - 16 - moveW - 8, false);
-    ctx.restore();
-  }
-  function caption(ctx, r, pal, text) {
-    ctx.font = SMALL_FONT;
-    const w = ctx.measureText(text).width + 18, box = { x: r.x + 12, y: r.y + 12, w, h: 22 };
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = pal.pane;
-    rounded(ctx, box.x, box.y, box.w, box.h, 5);
-    ctx.fill();
-    ctx.strokeStyle = pal.rule;
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.fillStyle = pal.text;
-    ctx.textBaseline = 'middle';
-    ctx.fillText(text, box.x + 9, box.y + box.h / 2 + 0.5);
-    return box;
-  }
-
-  // ---- the flow graph: a function's callees as an indented outline of cards ----
-  const FLOW = [
-    [0, 'cli', 'package', 'fn main()'],
-    [1, 'commands', 'module', 'fn dispatch(args: Args) -> Result<()>'],
-    [2, 'commands', 'module', 'fn send_cmd(session: &mut Session, msg: Message)'],
-    [3, 'Session', 'type', 'fn send(&mut self, msg: &Message) -> Result<()>'],
-    [4, 'Frame', 'type', 'fn encode(&self) -> Vec<u8>'],
-    [4, 'frame', 'module', 'fn checksum(data: &[u8]) -> u32'],
-    [2, 'commands', 'module', 'fn connect_cmd(args: &Args) -> Result<Session>'],
-    [3, 'Session', 'type', 'fn start(addr: &str) -> Result<Session>'],
-    [4, 'Socket', 'type', 'fn connect(&mut self, addr: &str) -> io::Result<()>'],
-  ];
-  const FLOW_TYPES = { Args: 'struct', Session: 'struct', Message: 'struct', Socket: 'struct', Result: 'alias' };
-  // A signature as tokens with their x offsets: keywords and punctuation dim, the name in its
-  // kind's color, and each workspace type a chip.
-  function signature(ctx, sig, method, pal) {
-    ctx.font = MONO_FONT;
-    const tokens = [];
-    let x = 0, after = '';
-    for (const word of sig.match(/[A-Za-z_][A-Za-z0-9_]*|\s+|./g)) {
-      const w = ctx.measureText(word).width;
-      let color = pal.dim, pad = 0;
-      if (after === 'fn') color = pal.kind[method ? 'method' : 'fn'];
-      else if (FLOW_TYPES[word]) { color = pal.kind[FLOW_TYPES[word]]; pad = 4; }
-      else if (/^[a-z_]/.test(word) && word !== 'fn' && word !== 'mut' && word !== 'self') color = pal.text;
-      tokens.push({ word, x: x + pad, w, color, chip: pad > 0 });
-      x += w + pad * 2;
-      if (!/^\s+$/.test(word)) after = word;
-    }
-    return { tokens, w: x };
-  }
-  function drawFlow(ctx, r, pal) {
-    ctx.save();
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = pal.canvas;
-    ctx.fillRect(r.x, r.y, r.w, r.h);
-    // The jump control rides the arrow into card JUMP_TO, with its label in the room left above it.
-    const INDENT = 34, ROW = 40, CARD_H = 28, PAD = 24, JUMP_TO = 6, JUMP_ROOM = 18;
-    const cards = FLOW.map(([depth, owner, type, sig], i) => {
-      ctx.font = SMALL_FONT;
-      const ownerW = ctx.measureText(owner).width + 14 + (icons ? 16 : 0);
-      const layout = signature(ctx, sig, type === 'type', pal);
-      return { depth, owner, type, layout, ownerW, x: PAD + 16 + depth * INDENT, y: PAD + i * ROW + (i >= JUMP_TO ? JUMP_ROOM : 0),
-        w: 8 + ownerW + 10 + layout.w + 12 };
-    });
-    const needW = Math.max(...cards.map(c => c.x + c.w)) + PAD;
-    const needH = PAD * 2 + (cards.length - 1) * ROW + JUMP_ROOM + CARD_H;
-    const k = Math.min(1, r.w / needW, r.h / needH);
-    ctx.translate(r.x + (r.w - needW * k) / 2, r.y + (r.h - needH * k) / 2);
-    ctx.scale(k, k);
-
-    // Lanes: a card's callees hang off a line in its gutter, each lane in a color of its own.
-    const LANES = ['fn', 'struct', 'trait', 'const', 'macro', 'enum'].map(kind => pal.kind[kind]);
-    let lane = 0;
-    const laneOf = new Map();
-    cards.forEach((card, i) => {
-      const kids = [];
-      for (let j = i + 1; j < cards.length && cards[j].depth > card.depth; j++) {
-        if (cards[j].depth === card.depth + 1) kids.push(cards[j]);
-      }
-      if (!kids.length) return;
-      const color = LANES[lane++ % LANES.length];
-      const lx = card.x + 10, top = card.y + CARD_H, bottom = kids[kids.length - 1].y + CARD_H / 2;
-      laneOf.set(card, { lx, color });
-      ctx.strokeStyle = color;
-      ctx.fillStyle = color;
-      ctx.lineWidth = 1.5;
-      ctx.globalAlpha = 0.9;
-      ctx.beginPath();
-      ctx.moveTo(lx, top);
-      ctx.lineTo(lx, bottom);
-      ctx.stroke();
-      for (const kid of kids) {
-        const y = kid.y + CARD_H / 2;
-        ctx.beginPath();
-        ctx.moveTo(lx, y);
-        ctx.lineTo(kid.x - 5, y);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(kid.x - 1, y);
-        ctx.lineTo(kid.x - 7, y - 4);
-        ctx.lineTo(kid.x - 7, y + 4);
-        ctx.closePath();
-        ctx.fill();
-      }
-    });
-
-    // Cards: the owner as a chip, then the signature.
-    ctx.textBaseline = 'middle';
-    for (const c of cards) {
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = pal.pane;
-      rounded(ctx, c.x, c.y, c.w, CARD_H, 6);
-      ctx.fill();
-      ctx.strokeStyle = pal.rule;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      const cy = c.y + CARD_H / 2;
-      ctx.fillStyle = pal.chip;
-      rounded(ctx, c.x + 6, c.y + 5, c.ownerW, CARD_H - 10, 4);
-      ctx.fill();
-      let x = c.x + 12;
-      ctx.fillStyle = legible(pal.name[c.type], pal.chip);
-      if (icons) {
-        ctx.font = '12px "Material Symbols Outlined"';
-        ctx.fillText(ICON[c.type], x - 1, cy + 0.5);
-        x += 16;
-      }
-      ctx.font = SMALL_FONT;
-      ctx.fillText(c.owner, x, cy + 0.5);
-      const sx = c.x + 8 + c.ownerW + 10;
-      ctx.font = MONO_FONT;
-      for (const t of c.layout.tokens) {
-        if (t.chip) {
-          ctx.fillStyle = pal.chip;
-          rounded(ctx, sx + t.x - 3, c.y + 6, t.w + 6, CARD_H - 12, 3);
-          ctx.fill();
-        }
-        ctx.fillStyle = legible(t.color, t.chip ? pal.chip : pal.pane);
-        ctx.fillText(t.word, sx + t.x, cy + 0.5);
-      }
-    }
-
-    // A jump control riding the arrow to connect_cmd, naming the card at its far end.
-    const target = cards[JUMP_TO], from = laneOf.get(cards[1]);
-    if (target && from) {
-      const jx = from.lx, jy = target.y - 16;
-      circle(ctx, jx, jy, 8);
-      ctx.fillStyle = pal.chip;
-      ctx.fill();
-      ctx.strokeStyle = from.color;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(jx - 3, jy - 2);
-      ctx.lineTo(jx, jy + 2);
-      ctx.lineTo(jx + 3, jy - 2);
-      ctx.strokeStyle = pal.bright;
-      ctx.stroke();
-      ctx.font = LABEL_FONT;
-      const label = 'connect_cmd', w = ctx.measureText(label).width + 16;
-      ctx.fillStyle = pal.chip;
-      rounded(ctx, jx + 14, jy - 10, w, 20, 4);
-      ctx.fill();
-      ctx.fillStyle = legible(pal.bright, pal.chip);
-      ctx.fillText(label, jx + 22, jy + 0.5);
-    }
-    ctx.restore();
-  }
-
-  // ---- each section's graphic ----
-  const sidePane = (r, width) => {
-    const pw = r.w >= 520 ? Math.min(width, Math.round(r.w * 0.38)) : 0;
-    return { graph: { x: r.x, y: r.y, w: r.w - pw, h: r.h },
-      side: pw ? { x: r.x + r.w - pw + 4, y: r.y + 12, w: pw - 16, h: r.h - 24 } : null };
-  };
-  const GRAPHICS = {
-    'node-graph'(ctx, r, pal) {
-      const { graph, side } = sidePane(r, 250);
-      drawGraph(ctx, graph, pal, { mode: 'select', pull: 1, sel: 1, camera: fitSelection });
-      if (!side) return;
-      ctx.fillStyle = pal.canvas;
-      ctx.fillRect(graph.x + graph.w, r.y, r.w - graph.w, r.h);
-      const rows = dependents.slice().sort((a, b) => hopOf.get(a) - hopOf.get(b)).map(n =>
-        ({ dot: pal.ring[hopOf.get(n)], icon: ICON[n.kind], text: n.name, color: pal.kind[n.kind] }));
-      list(ctx, side, pal, DEPENDENTS_LINE, rows, { icon: ICON[epi.kind], text: epi.name, color: pal.kind[epi.kind] });
-    },
-    thermal(ctx, r, pal) {
-      const { graph, side } = sidePane(r, 250);
-      drawGraph(ctx, graph, pal, { mode: 'thermal', camera: fitWorkspace });
-      if (!side) return;
-      ctx.fillStyle = pal.canvas;
-      ctx.fillRect(graph.x + graph.w, r.y, r.w - graph.w, r.h);
-      const rows = [...HEAT].sort((a, b) => b[1] - a[1]).map(([n, heat]) =>
-        ({ dot: thermal(heat), text: n.name, color: pal.text, right: Math.round(heat * 100) + '%', bar: heat }));
-      list(ctx, side, pal, 'hottest nodes', rows);
-    },
-    flow(ctx, r, pal) {
-      drawFlow(ctx, r, pal);
-    },
-    health(ctx, r, pal) {
-      const half = Math.floor(r.w / 2);
-      const left = { x: r.x, y: r.y, w: half, h: r.h }, right = { x: r.x + half + 1, y: r.y, w: r.w - half - 1, h: r.h };
-      ctx.fillStyle = pal.rule;
-      ctx.fillRect(r.x + half, r.y, 1, r.h);
-      const reserve = rect => {
-        ctx.font = SMALL_FONT;
-        return [{ x: rect.x + 12, y: rect.y + 12, w: 140, h: 22 }];
-      };
-      drawGraph(ctx, left, pal, { mode: 'dead', camera: fitCircle(root, 0.9), reserve: reserve(left) });
-      drawGraph(ctx, right, pal, { mode: 'diff', camera: fitCircle(root, 0.9), reserve: reserve(right) });
-      caption(ctx, left, pal, 'dead code');
-      caption(ctx, right, pal, 'uncommitted changes');
-    },
-    refactoring(ctx, r, pal) {
-      const { graph, side } = sidePane(r, 270);
-      drawGraph(ctx, graph, pal, { mode: 'move', camera: fitCircle(node('net'), 1.06) });
-      if (!side) return;
-      ctx.fillStyle = pal.canvas;
-      ctx.fillRect(graph.x + graph.w, r.y, r.w - graph.w, r.h);
-      const h = Math.min(side.h, 196);
-      dialog(ctx, { x: side.x, y: r.y + (r.h - h) / 2, w: side.w, h }, pal);
-    },
-    workflow(ctx, r, pal) {
-      const { graph, side } = sidePane(r, 230);
-      drawGraph(ctx, graph, pal, { mode: 'select', pull: 1, sel: 1, camera: fitSelection });
-      if (!side) return;
-      ctx.fillStyle = pal.canvas;
-      ctx.fillRect(graph.x + graph.w, r.y, r.w - graph.w, r.h);
-      const places = [['cli/main'], ['cli/commands/dispatch'], ['net/session/Session/Session'],
-        ['net/session/Session/start'], [SELECTED, true], ['net/frame/Frame/Frame']];
-      const rows = places.map(([path, current]) => {
-        const n = node(path);
-        return { icon: ICON[n.kind], text: n.name, color: pal.kind[n.kind], current };
-      });
-      list(ctx, side, pal, 'history: ' + rows.length + ' places', rows);
-    },
-  };
-
-  // Draw a section's canvas at its size and the screen's pixel density.
-  function render(canvas) {
-    const draw = GRAPHICS[canvas.dataset.graphic];
-    if (!draw) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    if (!w || !h) return;
-    canvas.width = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
-    const ctx = canvas.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    draw(ctx, { x: 0, y: 0, w, h }, pagePalette());
-  }
-
-  return { render, pagePalette, checkIcons, placeChips, ICON, NAME_BAND };
-})();
-
-/* ---------- hero: a larger workspace, and a selection laid out on rings ---------- */
-// The hero opens on a whole workspace of a few hundred symbols, packed as the app packs one. Then
-// a symbol is selected and the app's radial layout takes over: the selection sits at the center
-// and everything that depends on it gathers on rings around it, one ring per step of distance.
-// Modules are the slots on a ring, packed around the symbols they show and turned so their
-// nearest dependents face the selection; crates are drawn around their modules; what the selection
-// doesn't reach fades away, as it does by default in the app.
-const Hero = (() => {
-  const SIBLING_PAD = 3, CONTAINER_PAD = 10, FILL = 0.2;
-  const RING_GAP = 16, PACKAGE_GAP = 34;
-
-  // A fixed seed, so every visitor sees the same workspace.
-  let seed = 0x5eed2610;
-  const rand = () => {
-    seed = (seed + 0x6D2B79F5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-  const pick = list => list[Math.floor(rand() * list.length)];
-  const between = (lo, hi) => lo + Math.floor(rand() * (hi - lo + 1));
-
-  // ---- the workspace: sixteen crates of generated, plausible Rust ----
-  const PACKAGES = [
-    ['core', ['graph', 'layout', 'index']],
-    ['query', ['plan', 'exec', 'cost']],
-    ['model', ['schema', 'types']],
-    ['cache', ['lru', 'disk']],
-    ['sync', ['lock', 'chan']],
-    ['store', ['db', 'txn', 'migrate']],
-    ['app', ['state', 'ui', 'config']],
-    ['input', ['keys', 'mouse']],
-    ['log', ['fmt', 'sink']],
-    ['plugin', ['host', 'api']],
-    ['render', ['scene', 'mesh', 'camera']],
-    ['text', ['font', 'shape']],
-    ['cli', ['args', 'commands', 'report']],
-    ['net', ['socket', 'session', 'tls']],
-    ['util', ['buf', 'hash', 'time']],
-    ['ffi', ['bind', 'abi']],
-  ];
-  const VERBS = ['load', 'parse', 'build', 'resolve', 'flush', 'spawn', 'apply', 'merge', 'encode', 'decode',
-    'fetch', 'sync', 'update', 'validate', 'emit', 'collect', 'walk', 'pack', 'split', 'scan'];
-  const NOUNS = ['frame', 'node', 'edge', 'batch', 'entry', 'path', 'layout', 'query', 'token', 'span',
-    'chunk', 'row', 'key', 'page', 'event'];
-  const TYPE_NAMES = ['Frame', 'Node', 'Edge', 'Batch', 'Entry', 'Index', 'Layout', 'Query', 'Token', 'Span',
-    'Chunk', 'Session', 'Cache', 'Scene', 'Mesh', 'Camera', 'Config', 'State', 'Handle', 'Store', 'Table',
-    'Plan', 'Cursor', 'Buffer'];
-  const METHODS = ['new', 'get', 'insert', 'remove', 'apply', 'build', 'len', 'iter', 'flush', 'push', 'find', 'merge'];
-  const FIELDS = ['id', 'len', 'data', 'pos', 'kind', 'next', 'root', 'size', 'cap', 'meta'];
-  const VARIANTS = ['Empty', 'Full', 'Open', 'Closed', 'Ready', 'Done', 'Pending'];
-  const CONSTS = ['MAX_DEPTH', 'DEFAULT_SIZE', 'VERSION', 'LIMIT', 'TIMEOUT', 'CAPACITY'];
-
-  const sym = (name, kind) => ({ name, kind, weight: Math.floor(Math.pow(rand(), 2.2) * 9) });
-  function generateModule(name, forced) {
-    const used = new Set();
-    const fresh = make => {
-      for (let i = 0; i < 12; i++) {
-        const n = make();
-        if (!used.has(n)) { used.add(n); return n; }
-      }
-      return make() + '_' + used.size;
-    };
-    const kids = forced ? [forced] : [];
-    if (forced) used.add(forced.name);
-    for (let i = between(0, 2); i > 0; i--) {
-      const kind = pick(['struct', 'struct', 'struct', 'enum', 'trait']);
-      const typeName = fresh(() => pick(TYPE_NAMES));
-      const members = [];
-      const memberUsed = new Set();
-      const add = (pool, k) => {
-        const n = pick(pool);
-        if (memberUsed.has(n)) return;
-        memberUsed.add(n);
-        members.push(sym(n, k));
-      };
-      if (kind === 'struct') {
-        for (let j = between(1, 3); j > 0; j--) add(FIELDS, 'field');
-        for (let j = between(1, 4); j > 0; j--) add(METHODS, 'method');
-      } else if (kind === 'enum') {
-        for (let j = between(2, 4); j > 0; j--) add(VARIANTS, 'variant');
-        for (let j = between(0, 2); j > 0; j--) add(METHODS, 'method');
-      } else {
-        for (let j = between(1, 3); j > 0; j--) add(METHODS, 'tmethod');
-      }
-      kids.push({ name: typeName, type: 'type', self: sym(typeName, kind), children: members });
-    }
-    for (let i = between(2, 5); i > 0; i--) kids.push(sym(fresh(() => pick(VERBS) + '_' + pick(NOUNS)), 'fn'));
-    if (rand() < 0.5) kids.push(sym(fresh(() => pick(CONSTS)), 'const'));
-    if (rand() < 0.15) kids.push(sym(fresh(() => pick(NOUNS) + '_impl'), 'macro'));
-    if (rand() < 0.2) kids.push(sym(fresh(() => pick(TYPE_NAMES) + 'Id'), 'alias'));
-    return { name, type: 'module', children: kids };
-  }
-  // The selection: Graph::insert, in core's graph module.
-  const GRAPH_TYPE = { name: 'Graph', type: 'type', self: { name: 'Graph', kind: 'struct', weight: 8 }, children: [
-    { name: 'nodes', kind: 'field', weight: 2 }, { name: 'edges', kind: 'field', weight: 2 },
-    { name: 'new', kind: 'method', weight: 5 }, { name: 'insert', kind: 'method', weight: 6 },
-    { name: 'remove', kind: 'method', weight: 2 }, { name: 'neighbors', kind: 'method', weight: 4 },
-  ] };
-  const root = { name: 'workspace', type: 'workspace', children: PACKAGES.map(([pkg, mods]) => ({
-    name: pkg, type: 'package',
-    children: mods.map(m => generateModule(m, pkg === 'core' && m === 'graph' ? GRAPH_TYPE : null)),
-  })) };
-
-  // ---- index ----
-  const containers = [], symbols = [], byPath = new Map();
-  (function walk(n, parent) {
-    n.parent = parent;
-    n.path = !parent ? '' : parent.path ? parent.path + '/' + n.name : n.name;
-    if (n.type) {
-      n.kids = n.self ? [n.self, ...n.children] : n.children;
-      n.depth = parent ? parent.depth + 1 : 0;
-      containers.push(n);
-      for (const kid of n.kids) walk(kid, n);
-    } else {
-      n.r = 4 + 2.2 * Math.sqrt(n.weight);
-      symbols.push(n);
-    }
-    if (!byPath.has(n.path)) byPath.set(n.path, n);
-  })(root, null);
-  const byDepth = containers.slice().sort((a, b) => a.depth - b.depth);
-  const moduleOf = n => { let c = n.parent; while (c.type !== 'module') c = c.parent; return c; };
-  const packageOf = n => { let c = n.parent; while (c.type !== 'package') c = c.parent; return c; };
-
-  // ---- the selection's dependents: which modules each ring reaches, and how many symbols in each ----
-  const epi = byPath.get('core/graph/Graph/insert');
-  // Each crate sits on one ring, or two neighboring ones, and each ring holds more modules than
-  // the one inside it, so the rings fill evenly and a crate covers a short arc.
-  const RINGS = [
-    [['core/graph', 2], ['core/layout', 3], ['core/index', 2], ['query/plan', 3], ['model/schema', 2]],
-    [['query/exec', 3], ['query/cost', 2], ['model/types', 2], ['cache/lru', 2], ['cache/disk', 2],
-      ['sync/lock', 2], ['sync/chan', 2], ['store/db', 3]],
-    [['store/txn', 2], ['store/migrate', 2], ['app/state', 3], ['app/ui', 3], ['app/config', 2], ['input/keys', 2],
-      ['input/mouse', 2], ['log/fmt', 2], ['log/sink', 2], ['plugin/host', 2], ['plugin/api', 2]],
-    [['render/scene', 3], ['render/mesh', 2], ['render/camera', 2], ['text/font', 2], ['text/shape', 2],
-      ['cli/args', 2], ['cli/commands', 3], ['cli/report', 2], ['net/socket', 2], ['net/session', 2],
-      ['net/tls', 2], ['util/buf', 2], ['util/hash', 2]],
-  ];
-  const hopOf = new Map([[epi, 0]]);
-  const byHop = [[epi]];
-  const edges = [];
-  RINGS.forEach((ring, i) => {
-    const hop = i + 1, these = [];
-    for (const [path, count] of ring) {
-      const mod = byPath.get(path);
-      const pool = [];
-      (function gather(n) { for (const k of n.kids) (k.type ? gather(k) : pool.push(k)); })(mod);
-      // Callables first: they are what calls and gets called.
-      pool.sort((a, b) => (/fn|method/.test(b.kind) ? 1 : 0) - (/fn|method/.test(a.kind) ? 1 : 0) || rand() - 0.5);
-      let taken = 0;
-      for (const n of pool) {
-        if (taken >= count) break;
-        if (hopOf.has(n)) continue;
-        hopOf.set(n, hop);
-        these.push(n);
-        taken++;
-      }
-    }
-    byHop.push(these);
-  });
-  const dependents = [...hopOf.keys()].filter(n => n !== epi);
-  const files = new Set(dependents.map(moduleOf)).size;
-  // Who uses whom, decided once the workspace is packed: see below.
-  const DEPENDENTS_LINE = 'dependents: ' + dependents.length + ' symbols in ' + files + ' files';
-  const SELECTION_PATH = 'core::graph::Graph::insert';
-
-  // ---- packing: sunflower seeding, then overlaps relaxed apart ----
-  const GOLDEN = Math.PI * (3 - Math.sqrt(5));
-  function separate(items) {
-    for (let i = 0; i < items.length; i++) {
-      for (let j = i + 1; j < items.length; j++) {
-        const a = items[i], b = items[j];
-        let dx = b.x - a.x, dy = b.y - a.y;
-        const d = Math.hypot(dx, dy) || 1e-3, over = a.r + b.r + SIBLING_PAD - d;
-        if (over <= 0) continue;
-        dx /= d; dy /= d;
-        a.x -= dx * over / 2; a.y -= dy * over / 2;
-        b.x += dx * over / 2; b.y += dy * over / 2;
-      }
-    }
-  }
-  // Pack circles {r} around the origin; returns the radius that holds them.
-  function packFlat(items) {
-    const order = items.slice().sort((a, b) => b.r - a.r);
-    const step = 1.7 * order.reduce((sum, k) => sum + k.r, 0) / order.length;
-    order.forEach((k, i) => {
-      const d = step * Math.sqrt(i);
-      k.x = Math.cos(i * GOLDEN) * d;
-      k.y = Math.sin(i * GOLDEN) * d;
-    });
-    for (let it = 0; it < 240; it++) {
-      for (const k of order) { k.x *= 0.98; k.y *= 0.98; }
-      separate(order);
-    }
-    for (let it = 0; it < 40; it++) separate(order);
-    const xs = order.map(k => k.x), ys = order.map(k => k.y);
-    const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
-    for (const k of order) { k.x -= cx; k.y -= cy; }
-    return Math.max(...order.map(k => Math.hypot(k.x, k.y) + k.r)) + CONTAINER_PAD;
-  }
-  (function pack(n) {
-    if (!n.type) return;
-    n.kids.forEach(pack);
-    n.r = packFlat(n.kids);
-  })(root);
-  root.x = root.y = 0;
-  (function home(n, ox, oy) {
-    n.hx = ox + n.x;
-    n.hy = oy + n.y;
-    n.hr = n.r;
-    if (n.type) for (const k of n.kids) home(k, n.hx, n.hy);
-  })(root, 0, 0);
-
-  // ---- the radial layout ----
-  // Each module holding part of the answer becomes a slot: packed around just the symbols it shows,
-  // a type's shown members packed into the type's circle first.
-  const slots = new Map();
-  for (const n of hopOf.keys()) {
-    const mod = moduleOf(n);
-    if (!slots.has(mod)) slots.set(mod, { mod, members: [], hop: Infinity });
-    const slot = slots.get(mod);
-    slot.members.push(n);
-    slot.hop = Math.min(slot.hop, hopOf.get(n));
-  }
-  for (const slot of slots.values()) {
-    const groups = new Map(), items = [];
-    for (const n of slot.members) {
-      const holder = n.parent.type === 'type' ? n.parent : null;
-      if (!holder) { items.push({ r: n.r, of: [n] }); continue; }
-      if (!groups.has(holder)) groups.set(holder, []);
-      groups.get(holder).push(n);
-    }
-    for (const [type, members] of groups) {
-      const dots = members.map(n => ({ r: n.r, n }));
-      const r = packFlat(dots);
-      items.push({ r, type, dots });
-    }
-    slot.r = packFlat(items);
-    // Each symbol's place within the slot, before the turn.
-    slot.parts = [];
-    for (const it of items) {
-      if (it.type) {
-        slot.parts.push({ type: it.type, x: it.x, y: it.y, r: it.r });
-        for (const d of it.dots) slot.parts.push({ n: d.n, x: it.x + d.x, y: it.y + d.y });
-      } else {
-        slot.parts.push({ n: it.of[0], x: it.x, y: it.y });
-      }
-    }
-    // Where the module sat in the packed workspace, seen from the selection.
-    slot.bearing = Math.atan2(slot.mod.hy - epi.hy, slot.mod.hx - epi.hx);
-    slot.pkg = slot.mod.parent;
-  }
-  const center = slots.get(moduleOf(epi));
-  const rings = [];
-  for (const slot of slots.values()) {
-    if (slot === center) continue;
-    (rings[slot.hop] = rings[slot.hop] || []).push(slot);
-  }
-  const angleDiff = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
-  const circularMean = angles => Math.atan2(angles.reduce((s, a) => s + Math.sin(a), 0), angles.reduce((s, a) => s + Math.cos(a), 0));
-  // Round each ring in container order: a crate's modules side by side, crates in the order of
-  // their bearings, and siblings by bearing.
-  for (const ring of rings) {
-    if (!ring) continue;
-    const pkgBearing = new Map();
-    for (const slot of ring) {
-      if (!pkgBearing.has(slot.pkg)) pkgBearing.set(slot.pkg, circularMean(ring.filter(s => s.pkg === slot.pkg).map(s => s.bearing)));
-    }
-    ring.sort((a, b) => pkgBearing.get(a.pkg) - pkgBearing.get(b.pkg) || a.bearing - b.bearing);
-  }
-  // One step between rings, the largest any ring needs: room round it for its slots and their gaps,
-  // and room between it and the ring inside.
-  const gapAfter = (ring, i) => (ring[i].pkg === ring[(i + 1) % ring.length].pkg ? RING_GAP : PACKAGE_GAP);
-  let step = 0;
-  rings.forEach((ring, hop) => {
-    if (!ring) return;
-    const need = ring.reduce((sum, s, i) => sum + 2 * s.r + gapAfter(ring, i), 0) / (2 * Math.PI);
-    const widest = Math.max(...ring.map(s => s.r));
-    const inner = hop === 1 ? center.r : Math.max(...(rings[hop - 1] || [center]).map(s => s.r));
-    step = Math.max(step, need / hop, widest + inner + RING_GAP);
-  });
-  // Seat each ring's slots round it, a crate's modules side by side and the spare room shared out
-  // between crates, then turn the ring toward the bearings they came from.
-  rings.forEach((ring, hop) => {
-    if (!ring) return;
-    const R = step * hop;
-    const used = ring.reduce((sum, s, i) => sum + 2 * s.r / R + gapAfter(ring, i) / R, 0);
-    const boundaries = ring.filter((s, i) => gapAfter(ring, i) === PACKAGE_GAP).length;
-    const extra = (2 * Math.PI - used) / (boundaries || ring.length);
-    let a = 0;
-    ring.forEach((slot, i) => {
-      slot.theta = a + slot.r / R;
-      const between = !boundaries || gapAfter(ring, i) === PACKAGE_GAP;
-      a += 2 * slot.r / R + gapAfter(ring, i) / R + (between ? extra : 0);
-    });
-    const turn = circularMean(ring.map(s => angleDiff(s.bearing, s.theta)));
-    for (const slot of ring) {
-      slot.cx = Math.cos(slot.theta + turn) * R;
-      slot.cy = Math.sin(slot.theta + turn) * R;
-    }
-  });
-  // Turn each slot so the side holding its nearest ring's symbols faces the selection; the center
-  // slot is placed so the selection itself sits at the center.
-  for (const slot of slots.values()) {
-    const near = slot.parts.filter(p => p.n && hopOf.get(p.n) === slot.hop);
-    const fx = near.reduce((s, p) => s + p.x, 0) / near.length, fy = near.reduce((s, p) => s + p.y, 0) / near.length;
-    let spin = 0;
-    if (slot === center) {
-      const self = slot.parts.find(p => p.n === epi);
-      slot.cx = -self.x;
-      slot.cy = -self.y;
-    } else if (Math.hypot(fx, fy) > 1) {
-      spin = angleDiff(Math.atan2(-slot.cy, -slot.cx), Math.atan2(fy, fx));
-    }
-    const c = Math.cos(spin), s = Math.sin(spin);
-    for (const p of slot.parts) {
-      const x = p.x * c - p.y * s, y = p.x * s + p.y * c;
-      if (p.n) { p.n.fx = slot.cx + x; p.n.fy = slot.cy + y; p.n.fr = p.n.r; }
-      else { p.type.fx = slot.cx + x; p.type.fy = slot.cy + y; p.type.fr = p.r; }
-    }
-    slot.mod.fx = slot.cx;
-    slot.mod.fy = slot.cy;
-    slot.mod.fr = slot.r;
-  }
-  // Each dependent uses one of the symbols a ring in that end up nearest it (now and then a second),
-  // so its edge runs outward to a neighbor rather than across the picture.
-  for (let hop = 1; hop < byHop.length; hop++) {
-    for (const n of byHop[hop]) {
-      const nearest = byHop[hop - 1].slice()
-        .sort((a, b) => Math.hypot(a.fx - n.fx, a.fy - n.fy) - Math.hypot(b.fx - n.fx, b.fy - n.fy));
-      edges.push([n, nearest[Math.floor(rand() * Math.min(2, nearest.length))], hop]);
-      if (rand() < 0.2 && nearest.length > 1) edges.push([n, nearest[Math.floor(rand() * Math.min(3, nearest.length))], hop]);
-    }
-  }
-  // Crates are fitted around their slots, and the workspace around the crates: the smallest circle,
-  // approached a pass at a time and then measured.
-  function enclose(circles) {
-    let x = circles.reduce((s, c) => s + c.x, 0) / circles.length, y = circles.reduce((s, c) => s + c.y, 0) / circles.length;
-    for (let i = 1; i <= 64; i++) {
-      let far = null, worst = -1;
-      for (const c of circles) {
-        const d = Math.hypot(c.x - x, c.y - y) + c.r;
-        if (d > worst) { worst = d; far = c; }
-      }
-      const d = Math.hypot(far.x - x, far.y - y) || 1;
-      const reachX = far.x + (far.x - x) / d * far.r, reachY = far.y + (far.y - y) / d * far.r;
-      x += (reachX - x) / (i + 1);
-      y += (reachY - y) / (i + 1);
-    }
-    return { x, y, r: Math.max(...circles.map(c => Math.hypot(c.x - x, c.y - y) + c.r)) + CONTAINER_PAD };
-  }
-  for (const pkg of root.kids) {
-    const held = [...slots.values()].filter(s => s.pkg === pkg).map(s => ({ x: s.cx, y: s.cy, r: s.r }));
-    if (!held.length) continue;
-    const fit = enclose(held);
-    pkg.fx = fit.x; pkg.fy = fit.y; pkg.fr = fit.r;
-  }
-  {
-    const fit = enclose(root.kids.filter(p => p.fr).map(p => ({ x: p.fx, y: p.fy, r: p.fr })));
-    root.fx = fit.x; root.fy = fit.y; root.fr = fit.r;
-  }
-  // Rings as the app draws them: about the selection, each just clear of its own members.
-  const ringR = [];
-  for (const [n, hop] of hopOf) {
-    if (hop > 0) ringR[hop] = Math.max(ringR[hop] || 0, Math.hypot(n.fx, n.fy) + n.r + 4);
-  }
-  const reach = Math.max(...ringR.filter(Boolean));
-
-  // ---- drawing ----
-  const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-  const mix = (a, b, t) => a + (b - a) * t;
-  const clamp01 = t => Math.min(1, Math.max(0, t));
-  const circle = (ctx, x, y, r) => { ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, Math.PI * 2); };
-  const shown = n => n.fr !== undefined;
-
-  function draw(ctx, rect, pal, t) {
-    const e = ease(t);
-    // The click lands at once: what it doesn't reach starts to go, and the rings come in as the
-    // layout settles.
-    const sel = clamp01(t * 4);
-    const at = n => shown(n)
-      ? { x: mix(n.hx, n.fx, e), y: mix(n.hy, n.fy, e), r: mix(n.hr, n.fr, e) }
-      : { x: n.hx, y: n.hy, r: n.hr };
-    const from = { x: 0, y: 0, s: Math.min(rect.w, rect.h) / (2 * root.hr * 1.04) };
-    const to = { x: 0, y: 0, s: Math.min(rect.w, rect.h) / (2 * reach * 1.06) };
-    const cam = { x: mix(from.x, to.x, e), y: mix(from.y, to.y, e), s: Math.exp(mix(Math.log(from.s), Math.log(to.s), e)) };
-    const s = cam.s;
-    const X = x => (x - cam.x) * s + rect.x + rect.w / 2;
-    const Y = y => (y - cam.y) * s + rect.y + rect.h / 2;
-    // A symbol or circle the selection doesn't reach swells a touch, then shrinks away.
-    const going = clamp01(t * 2.5);
-    const leaving = 1 + 0.25 * Math.sin(Math.PI * Math.min(going, 0.5)) - going;
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(rect.x, rect.y, rect.w, rect.h);
-    ctx.clip();
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = pal.canvas;
-    ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-
-    for (const c of byDepth) {
-      const p = at(c);
-      const keep = shown(c) ? 1 : Math.max(0, 1 - going);
-      if (keep <= 0) continue;
-      circle(ctx, X(p.x), Y(p.y), p.r * s * (shown(c) ? 1 : Math.max(0, leaving)));
-      ctx.globalAlpha = FILL * keep;
-      ctx.fillStyle = pal.fill[c.type];
-      ctx.fill();
-    }
-
-    ctx.lineWidth = 1.5;
-    ctx.lineCap = 'round';
-    for (const [a, b, hop] of edges) {
-      const p = at(a), q = at(b);
-      ctx.beginPath();
-      ctx.moveTo(X(p.x), Y(p.y));
-      ctx.lineTo(X(q.x), Y(q.y));
-      ctx.globalAlpha = 0.5 * sel;
-      ctx.strokeStyle = pal.ring[Math.min(hop, 3)];
-      ctx.stroke();
-    }
-
-    for (const n of symbols) {
-      const p = at(n), inBlast = hopOf.has(n);
-      const scale = inBlast ? 1 : Math.max(0, leaving);
-      if (scale <= 0) continue;
-      circle(ctx, X(p.x), Y(p.y), p.r * s * scale);
-      ctx.globalAlpha = inBlast ? 1 : Math.max(0, 1 - going);
-      ctx.fillStyle = pal.kind[n.kind];
-      ctx.fill();
-    }
-
-    // The rings, once the layout has mostly settled, and the selection's outline.
-    for (let hop = 1; hop < ringR.length; hop++) {
-      if (!ringR[hop]) continue;
-      circle(ctx, X(0), Y(0), ringR[hop] * s * mix(0.6, 1, e));
-      ctx.globalAlpha = 0.55 * clamp01((t - 0.45) * 3);
-      ctx.strokeStyle = pal.ring[Math.min(hop, 3)];
-      ctx.stroke();
-    }
-    const self = at(epi);
-    circle(ctx, X(self.x), Y(self.y), self.r * s + 2);
-    ctx.globalAlpha = sel;
-    ctx.strokeStyle = pal.hl;
-    ctx.stroke();
-
-    // Names: the selection, then the circles large enough to name.
-    const items = [];
-    const chipOf = (n, extra) => {
-      const p = at(n), q = at(n.parent);
-      return { x: X(p.x), y: Y(p.y), text: n.name, icon: Graphics.ICON[n.kind], color: pal.kind[n.kind],
-        alpha: sel, ox: X(q.x), oy: Y(q.y), ...extra };
-    };
-    items.push(chipOf(epi, { fixed: true }));
-    for (const c of byDepth) {
-      const band = Graphics.NAME_BAND[c.type];
-      if (!band || (!shown(c) && going >= 1)) continue;
-      const p = at(c), q = at(c.parent);
-      const alpha = Math.pow(clamp01((p.r * s - band[0]) / (band[1] - band[0])), 2.5) * (shown(c) ? 1 : 1 - going);
-      items.push({ x: X(p.x), y: Y(p.y - p.r), text: c.name, icon: Graphics.ICON[c.type], color: pal.name[c.type],
-        alpha, ox: X(q.x), oy: Y(q.y) });
-    }
-    Graphics.placeChips(ctx, rect, pal, items);
-    ctx.restore();
-  }
-
-  return { draw, DEPENDENTS_LINE, SELECTION_PATH };
-})();
-
-/* ---------- graphics: drawing them, and keeping them current ---------- */
+/* ---------- screenshots: the page's theme picks the set ---------- */
+// Each screenshot is taken in every theme the page offers, under shots/<theme>/<name>.webp, so the
+// app in the pictures always wears the page's colors. An image keeps showing the old theme's frame
+// until the new one has loaded.
 (() => {
-  const hero = document.getElementById('blast');
-  const heroCtx = hero.getContext('2d');
-  const shots = [...document.querySelectorAll('canvas[data-graphic]')];
-  document.getElementById('reach').textContent = Hero.DEPENDENTS_LINE;
-  document.getElementById('selection').textContent = Hero.SELECTION_PATH;
+  const images = [...document.querySelectorAll('img[data-shot]')];
+  const show = () => {
+    const theme = SiteTheme.current();
+    for (const image of images) {
+      const src = `shots/${theme}/${image.dataset.shot}.webp`;
+      if (image.getAttribute('src') !== src) image.src = src;
+    }
+  };
+  show();
+  SiteTheme.system.addEventListener('change', show);
+  new MutationObserver(show).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-  let pal = Graphics.pagePalette();
-  let dpr = 1, hw = 0, hh = 0;
-  const sizeHero = () => {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    hw = hero.clientWidth;
-    hh = hero.clientHeight;
-    hero.width = Math.round(hw * dpr);
-    hero.height = Math.round(hh * dpr);
-  };
-  const drawHero = t => {
-    heroCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    Hero.draw(heroCtx, { x: 0, y: 0, w: hw, h: hh }, pal, t);
-  };
-  const drawShots = () => shots.forEach(Graphics.render);
-
-  // A moment on the whole workspace, then the click lands; at rest when motion is reduced.
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const HOLD = 700, RUN = 2400;
-  let t = still.matches ? 1 : 0, started = 0, raf = 0;
-  const frame = now => {
-    if (!started) started = now;
-    t = Math.min(1, Math.max(0, (now - started - HOLD) / RUN));
-    drawHero(t);
-    raf = t < 1 ? requestAnimationFrame(frame) : 0;
-  };
-  const begin = () => {
-    if (still.matches || t >= 1 || raf) return;
-    raf = requestAnimationFrame(frame);
-  };
-
-  sizeHero();
-  drawHero(t);
-  drawShots();
-  // Wait for the icon font, but never long: without it the chips simply go without icons.
-  const ICON_FONT = '13px "Material Symbols Outlined"';
-  const ready = document.fonts
-    ? Promise.race([
-        Promise.all([document.fonts.load(ICON_FONT, 'functions'), document.fonts.ready]).catch(() => {}),
-        new Promise(resolve => setTimeout(resolve, 1500)),
-      ])
-    : Promise.resolve();
-  ready.then(() => {
-    Graphics.checkIcons();
-    drawHero(t);
-    drawShots();
-    new IntersectionObserver((entries, observer) => {
-      if (entries[0].isIntersecting) { begin(); observer.disconnect(); }
-    }).observe(hero);
-  });
-  // An icon font that arrives after the wait still reaches the chips.
-  if (document.fonts) document.fonts.addEventListener('loadingdone', () => {
-    Graphics.checkIcons();
-    if (!raf) drawHero(t);
-    drawShots();
-  });
-  new ResizeObserver(() => { sizeHero(); if (!raf) drawHero(t); }).observe(hero);
-  const resized = new ResizeObserver(entries => entries.forEach(entry => Graphics.render(entry.target)));
-  shots.forEach(canvas => resized.observe(canvas));
-  still.addEventListener('change', () => {
-    if (still.matches) { cancelAnimationFrame(raf); raf = 0; t = 1; drawHero(t); }
-  });
-  // Redraw in the new colors when the system theme changes or the header switch flips it.
-  const recolor = () => {
-    pal = Graphics.pagePalette();
-    if (!raf) drawHero(t);
-    drawShots();
-  };
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', recolor);
-  new MutationObserver(recolor).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  // A click on a screenshot opens it full size; a click anywhere on it, or Escape, closes it.
+  const zoom = document.getElementById('zoom');
+  const big = zoom.querySelector('img');
+  for (const button of document.querySelectorAll('.enlarge')) {
+    button.addEventListener('click', () => {
+      const image = button.querySelector('img');
+      big.src = image.currentSrc || image.src;
+      big.alt = image.alt;
+      zoom.showModal();
+    });
+  }
+  zoom.addEventListener('click', () => zoom.close());
 })();
 </script>
 </body>

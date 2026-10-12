@@ -5,7 +5,8 @@ from the root of `main`. The product itself is sold on Gumroad; this repo holds 
 
 | File | What it is |
 |---|---|
-| `index.html` | The whole page: styles, content and the hero drawing inline |
+| `index.html` | The whole page: styles, content and scripts inline |
+| `shots/<theme>/` | The page's seven screenshots, taken in that theme |
 | `favicon.svg` | Browser-tab icon |
 | `.nojekyll` | Tells Pages to serve the files as they are, without a Jekyll build |
 
@@ -22,14 +23,19 @@ Open `index.html` in a browser, or serve the folder:
 python -m http.server 8000
 ```
 
-## Swapping in screenshots
+## Screenshots
 
-Each feature section's graphic is drawn on a `<canvas data-graphic="…">` inside a
-`<figure class="shot">`. To use a real screenshot instead, replace the canvas with an image:
+The hero and each feature section show a screenshot of the app: `<img data-shot="<name>">`, in a
+16:9 frame. The names are `hero`, `node-graph`, `thermal`, `flow`, `health`, `structure` and
+`workflow`.
 
-```html
-<figure class="shot"><img src="shots/node-graph.png" alt="…"></figure>
-```
+Each is taken in every theme the page offers. A script sets the source to
+`shots/<theme>/<name>.webp` for the page's current theme, and swaps it when the theme changes.
 
-The frame is 16:10 and the image is cropped to cover it, so capture at 16:10 (for example
-1600×1000) to keep everything in view. The hero graph is separate and stays drawn.
+Clicking a screenshot opens it full size.
+
+The screenshots are 1920×1080 lossless WebP. They are captured from two sample workspaces by
+scripts kept outside this repo, beside the samples, in `blast-radius-samples/capture`; its README
+has the steps.
+
+A new theme needs a full set of seven before its chip goes on the page.
