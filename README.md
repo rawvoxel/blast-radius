@@ -9,11 +9,30 @@ from the root of `main`. The product itself is sold on Gumroad; this repo holds 
 | `shots/<name>.svg` | The page's seven screenshots, each carrying every theme's colors |
 | `favicon.svg` | Browser-tab icon |
 | `.nojekyll` | Tells Pages to serve the files as they are, without a Jekyll build |
+| `latest.json` | The newest version, which the app checks for updates (see below) |
 
-## Before launch
+## Buy links
 
-Replace `#TODO-GUMROAD` with the Gumroad product URL. It appears in three links in `index.html`
-(top bar, hero, closing section); the `TODO-GUMROAD` comment above the first one marks it.
+The three "Buy on Gumroad" links in `index.html` (top bar, hero, closing section) go to the product
+page, https://rawvoxel.gumroad.com/l/blast-radius. If its permalink changes, change all three.
+
+## Releasing a version
+
+The app reads `latest.json` from this site, once a launch, to tell people a newer version is out.
+Bump it with each release:
+
+```json
+{
+  "version": "0.2.0",
+  "download": "https://rawvoxel.github.io/blast-radius/",
+  "notes": "One line on what changed, shown under the version."
+}
+```
+
+- `version` is compared with the app's own (`major.minor.patch`). A higher one shows the notice.
+- `download` is where the app's download button goes. It must be an `https://` link, or the app
+  will not open it. Point it at the Gumroad page once there is one.
+- `notes` is optional.
 
 ## Preview locally
 
